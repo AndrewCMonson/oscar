@@ -10,7 +10,7 @@ const app = express();
 
 connectDB();
 
-const client = new OpenAI({
+export const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY ?? "",
 })
 

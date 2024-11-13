@@ -1,9 +1,9 @@
 import { User } from "@prisma/client";
 import express, { Request } from "express";
-import OpenAI from "openai";
 import { 
   createChat, createMessage, getAssistantUser, getMessages, getSystemUser, getUserChat
 } from "../index.js";
+import { client } from "../../../api/index.js";
 
 interface ChatRequest extends Request {
   body: {
@@ -13,10 +13,6 @@ interface ChatRequest extends Request {
 }
 
 const router = express.Router();
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY ?? "",
-});
 
 router.post("/chat", async (req: ChatRequest, res) => {
   const { user, message } = req.body;
