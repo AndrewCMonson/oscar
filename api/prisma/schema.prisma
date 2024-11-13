@@ -13,27 +13,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Message {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  role      String
-  content   String
-  userId    String
-  name      String
-  user      User     @relation(fields: [userId], references: [id])
-  Chat      Chat?    @relation(fields: [chatId], references: [id])
-  chatId    String?
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  BLOCKED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum UserRole {
+  USER
+  SYSTEM
+  ASSISTANT
+  FUNCTION
+}
+
+enum MessageRole {
+  SYSTEM
+  ASSISTANT
+  USER
+}
+
+enum ProjectType {
+  INTERNAL
+  CLIENT
+  PERSONAL
 }
 
 model User {
-  id        String    @id @default(cuid())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  email     String    @unique
-  name      String
-  messages  Message[]
-  chats     Chat[]
+  id                String    @id @default(cuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  email             String    @unique
+  firstName         String?
+  lastName          String?
+  username          String
+  role              UserRole  @default(USER)
+  messages          Message[]
+  chats             Chat[]
+  jiraIntegration   Json?
+  motionIntegration Json?
+  projects          Project[]
+  Task              Task[]
 }
 
 model Chat {
@@ -43,4 +70,52 @@ model Chat {
   messages  Message[]
   userId    String
   user      User      @relation(fields: [userId], references: [id])
+  projectId String?
+  project   Project?  @relation(fields: [projectId], references: [id])
+}
+
+model Message {
+  id        String      @id @default(cuid())
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  role      MessageRole
+  content   String
+  userId    String
+  name      String
+  user      User        @relation(fields: [userId], references: [id])
+  chatId    String?
+  Chat      Chat?       @relation(fields: [chatId], references: [id])
+  taskId    String?
+  task      Task?       @relation(fields: [taskId], references: [id])
+}
+
+model Project {
+  id          String      @id @default(cuid())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  name        String
+  description String?
+  type        ProjectType @default(PERSONAL)
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  tasks       Task[]
+  chats       Chat[]
+}
+
+model Task {
+  id            String       @id @default(cuid())
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  title         String
+  description   String?
+  status        TaskStatus   @default(TODO)
+  priority      TaskPriority @default(MEDIUM)
+  dueDate       DateTime?
+  projectId     String?
+  project       Project?     @relation(fields: [projectId], references: [id])
+  userId        String
+  user          User         @relation(fields: [userId], references: [id])
+  messages      Message[]
+  jiraTaskId    String?
+  motionEventId String?
 }

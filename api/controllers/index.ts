@@ -1,6 +1,9 @@
 import express from 'express';
-export * from './message/messageControllers.js';
-export * from './chat/chatControllers.js';
-export * from './user/userControllers.js';
+import { chatRouter } from '../routes/chatRoutes.js';
+export * from './chatController.js';
+export * from './messageController.js';
+export * from './userController.js';
 
-const router = express.Router();
+export const router = express.Router();
+
+router.use('/chat', chatRouter);

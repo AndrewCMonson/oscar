@@ -1,22 +1,27 @@
 import { prismadb } from "./db.js";
+import { UserRole } from "@prisma/client";
 
 export const seed = async () => {
   const user = await prismadb.user.create({
     data: {
       email: "andrew.c.monson@gmail.com",
-      name: "Andrew_Monson",
+      firstName: "Andrew",
+      lastName: "Monson",
+      username: "andrewmonson",
     },
   });
   const systemUser = await prismadb.user.create({
     data: {
       email: "test@test.com",
-      name: "System",
+      username: "System",
+      role: UserRole.SYSTEM,
     },
   });
   const assistantUser = await prismadb.user.create({
     data: {
       email: "assistant@test.com",
-      name: "Assistant",
+      username: "Assistant",
+      role: UserRole.ASSISTANT,
     },
   });
 

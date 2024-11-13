@@ -1,9 +1,9 @@
-import { Chat, User } from "@prisma/client";
-import { OpenAI } from "openai";
-import { prismadb } from "../../config/index.js";
-import { FormattedMessage } from "../../types.js";
+import { Chat, User } from '@prisma/client';
+import { OpenAI } from 'openai';
+import { prismadb } from '../config/index.js';
+import { FormattedMessage } from '../types.js';
 
-export const createMessage = async (message: string, user: User, chat: Chat) => {
+export const createNewMessage = async (message: string, user: User, chat: Chat) => {
   if (!message || !user || !chat) {
     throw new Error('Invalid input');
   }
@@ -14,8 +14,8 @@ export const createMessage = async (message: string, user: User, chat: Chat) => 
         content: message,
         chatId: chat.id,
         userId: user.id,
-        name: user.name,
-        role: "user"
+        name: user.firstName ?? user.username,
+        role: user.role
       }
     });
 
@@ -23,9 +23,9 @@ export const createMessage = async (message: string, user: User, chat: Chat) => 
       throw new Error('An error occurred sending the message');
     }
 
-    const formattedMessage: FormattedMessage = { role: newMessage.role, content: newMessage.content, name: newMessage.name };
+    const formattedMessage = { role: newMessage.role, content: newMessage.content, name: newMessage.name };
 
-    return formattedMessage as OpenAI.ChatCompletionMessageParam;
+    return formattedMessage;
   } catch (error) {
     console.error(error);
     throw new Error('An error occurred sending the message');

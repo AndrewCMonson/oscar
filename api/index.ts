@@ -1,8 +1,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
-import OpenAI from 'openai';
 import { connectDB } from './config';
-import router from './controllers/chat/chatRoutes.js';
+import { router }from './controllers/index.js';
 dotenv.config();
 
 const PORT = process.env.PORT || 3007;
@@ -10,9 +9,6 @@ const app = express();
 
 connectDB();
 
-export const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY ?? "",
-})
 
 app.use(express.json());
 
