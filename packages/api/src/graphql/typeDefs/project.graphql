@@ -16,6 +16,7 @@ enum ProjectType {
   CLIENT
   PERSONAL
 }
+
 type Query {
   projects: [Project]
   project(id: ID!): Project

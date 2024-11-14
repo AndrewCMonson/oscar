@@ -1,0 +1,6 @@
+enum ChatGPTRole {
+  USER
+  SYSTEM
+  ASSISTANT
+  FUNCTION
+}

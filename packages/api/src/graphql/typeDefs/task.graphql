@@ -21,6 +21,20 @@ type Query {
   task(id: ID!): Task
 }
 
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  BLOCKED
+}
+
 type Mutation {
   createTask(
     title: String!

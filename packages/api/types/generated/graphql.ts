@@ -98,6 +98,13 @@ export type Chat = {
   userId?: Maybe<Scalars['String']['output']>;
 };
 
+export enum ChatGptRole {
+  Assistant = 'ASSISTANT',
+  Function = 'FUNCTION',
+  System = 'SYSTEM',
+  User = 'USER'
+}
+
 export type FormattedMessage = {
   __typename?: 'FormattedMessage';
   content: Scalars['String']['output'];
@@ -325,6 +332,20 @@ export type Task = {
   userId: Scalars['String']['output'];
 };
 
+export enum TaskPriority {
+  High = 'HIGH',
+  Low = 'LOW',
+  Medium = 'MEDIUM',
+  Urgent = 'URGENT'
+}
+
+export enum TaskStatus {
+  Blocked = 'BLOCKED',
+  Completed = 'COMPLETED',
+  InProgress = 'IN_PROGRESS',
+  Todo = 'TODO'
+}
+
 export type User = {
   __typename?: 'User';
   chats?: Maybe<Array<Maybe<Chat>>>;
@@ -420,6 +441,7 @@ export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Byte: ResolverTypeWrapper<Scalars['Byte']['output']>;
   Chat: ResolverTypeWrapper<ChatModel>;
+  ChatGPTRole: ChatGptRole;
   CountryCode: ResolverTypeWrapper<Scalars['CountryCode']['output']>;
   Cuid: ResolverTypeWrapper<Scalars['Cuid']['output']>;
   Currency: ResolverTypeWrapper<Scalars['Currency']['output']>;
@@ -483,6 +505,8 @@ export type ResolversTypes = ResolversObject<{
   SemVer: ResolverTypeWrapper<Scalars['SemVer']['output']>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Task: ResolverTypeWrapper<TaskModel>;
+  TaskPriority: TaskPriority;
+  TaskStatus: TaskStatus;
   Time: ResolverTypeWrapper<Scalars['Time']['output']>;
   TimeZone: ResolverTypeWrapper<Scalars['TimeZone']['output']>;
   Timestamp: ResolverTypeWrapper<Scalars['Timestamp']['output']>;
