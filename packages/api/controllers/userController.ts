@@ -5,36 +5,36 @@ export const getUserByRole = async (role: UserRole) => {
   try {
     const user = await prismadb.user.findFirst({
       where: {
-        role
-      }
+        role,
+      },
     });
 
     if (!user) {
-      throw new Error('An error occurred getting the user');
+      throw new Error("An error occurred getting the user");
     }
 
     return user;
   } catch (error) {
     console.error(error);
-    throw new Error('An error occurred getting the user');
+    throw new Error("An error occurred getting the user");
   }
-}
+};
 
 const getUserById = async (userId: string) => {
   try {
     const user = await prismadb.user.findFirst({
       where: {
-        id: userId
-      }
+        id: userId,
+      },
     });
 
     if (!user) {
-      throw new Error('An error occurred getting the user');
+      throw new Error("An error occurred getting the user");
     }
 
     return user;
   } catch (error) {
     console.error(error);
-    throw new Error('An error occurred getting the user');
+    throw new Error("An error occurred getting the user");
   }
 };

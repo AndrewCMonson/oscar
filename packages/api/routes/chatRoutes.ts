@@ -1,13 +1,21 @@
-import { handleChatMessage, handleGetAllChats, handleGetChatById } from "../controllers/chatController.js";
+import {
+  handleChatMessage,
+  handleGetAllChats,
+  handleGetChatById,
+} from "../controllers/chatController.js";
 import express from "express";
-import { createNewChat, deleteChatById, getMessagesByChatId } from "../controllers/chatController.js";
+import {
+  createNewChat,
+  deleteChatById,
+  getMessagesByChatId,
+} from "../controllers/chatController.js";
 
 export const chatRouter = express.Router();
 
 // GET /api/chat
 chatRouter.get("/", handleGetAllChats);
 // GET /api/chat/:chatId
-chatRouter.get("/:chatId", handleGetChatById)
+chatRouter.get("/:chatId", handleGetChatById);
 // POST /api/chat
 chatRouter.post("/", handleChatMessage);
 
@@ -17,8 +25,8 @@ chatRouter.get("/:chatId/history", async (req, res) => {
   try {
     const messages = await getMessagesByChatId(chatId);
 
-    if(!messages) {
-      throw new Error('Failed to fetch chat history');
+    if (!messages) {
+      throw new Error("Failed to fetch chat history");
     }
 
     res.json({ messages });
@@ -27,7 +35,6 @@ chatRouter.get("/:chatId/history", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch chat history" });
   }
 });
-
 
 // DELETE /api/chat/:chatId
 chatRouter.delete("/:chatId", async (req, res) => {
@@ -40,4 +47,3 @@ chatRouter.delete("/:chatId", async (req, res) => {
     res.status(500).json({ error: "Failed to delete chat" });
   }
 });
-

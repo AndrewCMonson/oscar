@@ -3,14 +3,14 @@ import { UserRole } from "@prisma/client";
 export const convertEnums = (role: UserRole) => {
   switch (role) {
     case UserRole.USER:
-      return 'user';
+      return "user";
     case UserRole.ASSISTANT:
-      return 'assistant';
+      return "assistant";
     case UserRole.SYSTEM:
-      return 'system';
+      return "system";
     case UserRole.FUNCTION:
-      return 'function';
+      return "function";
     default:
-      return 'user';
+      return "user";
   }
-}
+};

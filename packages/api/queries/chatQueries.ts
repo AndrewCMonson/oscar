@@ -7,21 +7,21 @@ export const getAllChats = async () => {
     return chats;
   } catch (error) {
     console.error(error);
-    throw new Error('An error occurred getting the chats');
+    throw new Error("An error occurred getting the chats");
   }
-}
+};
 
 export const getChatById = async (chatId: string) => {
   try {
     const chat = await prismadb.chat.findUnique({
       where: {
-        id: chatId
-      }
+        id: chatId,
+      },
     });
 
     return chat;
   } catch (error) {
     console.error(error);
-    throw new Error('An error occurred getting the chat');
+    throw new Error("An error occurred getting the chat");
   }
 };

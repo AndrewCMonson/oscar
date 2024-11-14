@@ -30,4 +30,4 @@ export const seed = async () => {
   console.log(assistantUser);
 };
 
-seed()
+seed();
