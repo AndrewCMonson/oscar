@@ -3,7 +3,7 @@ import { expressMiddleware } from "@apollo/server/express4";
 import cors from "cors";
 import express, { Response } from "express";
 import { connectDB } from "./src/config/db.js";
-import { router } from "./src/controllers/index.js";
+// import { router } from "./src/controllers/index.js";
 import { schema } from "./src/graphql/schema.js";
 import { middlewareContext } from "./src/utils/expressMiddleware.js";
 
@@ -17,7 +17,7 @@ const startServer = async () => {
   });
   await server.start();
 
-  app.use("/api", router);
+  // app.use("/api", router);
 
   app.use(
     "/graphql",

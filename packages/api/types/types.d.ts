@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { User } from "@prisma/client";
 
 export interface MiddlewareContext {
-  user?: User | null;
+  user: User;
   req: Request;
   res: Response;
 }

@@ -1,5 +1,6 @@
 import { prismadb } from "@api/src/config/db.js";
 import { Resolvers } from "@api/types/";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
 
 export const projectResolvers: Resolvers = {
   Query: {
@@ -8,30 +9,52 @@ export const projectResolvers: Resolvers = {
       return projects;
     },
     project: async (_, { id }) => {
-      const project = await prismadb.project.findUnique({
-        where: {
-          id: id,
-        },
-      });
-      return project;
-    },
+      if (!id) {
+        throw new Error("Project ID is required");
+      }
+
+      try {
+        const project = await prismadb.project.findUnique({
+          where: {
+            id: id,
+          },
+        });
+
+        if (!project) {
+          throw new Error("Project not found");
+        }
+
+        return project;
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          throw new Error(e.message);
+        } else {
+          throw new Error("An error occurred while fetching the project");
+        }
+      }
+    }
   },
   Mutation: {
-    createProject: async (_, { data }) => {
+    createProject: async (_, { name, description, type }, { user }) => {
       const project = await prismadb.project.create({
         data: {
-          ...data,
+          name,
+          description,
+          type,
+          userId: user.id,
         },
       });
       return project;
     },
-    updateProject: async (_, { id, data }) => {
+    updateProject: async (_, { id, name, description }, { user }) => {
       const project = await prismadb.project.update({
         where: {
           id: id,
         },
         data: {
-          ...data,
+          name,
+          description,
+          userId: user.id,
         },
       });
       return project;
@@ -45,4 +68,27 @@ export const projectResolvers: Resolvers = {
       return project;
     },
   },
+  Project: {
+    user: async (project) => {
+      try{
+        const user = await prismadb.user.findUnique({
+          where: {
+            id: project.userId,
+          },
+        });
+
+        if (!user) {
+          throw new Error("User not found");
+        }
+
+        return user;
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          throw new Error(e.message);
+        } else {
+          throw new Error("An error occurred while fetching the user");
+        }
+      }
+    },
+  }
 };
