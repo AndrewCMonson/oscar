@@ -1,18 +1,39 @@
-import dotenv from "dotenv";
+// import dotenv from "dotenv";
 import express from "express";
 import { connectDB } from "./src/config";
 import { router } from "./src/controllers/index.js";
-dotenv.config();
+import { ApolloServer, BaseContext } from '@apollo/server';
+import { schema } from './src/graphql/schema';
+import cors from "cors";
 
-const PORT = process.env.PORT || 3007;
-const app = express();
+const PORT = process.env.PORT || 3005;
 
-connectDB();
+const startSever = async () => {
+  const app = express();
 
-app.use(express.json());
+  const server = new ApolloServer<BaseContext>({
+    schema,
+  });
 
-app.use("/api", router);
+  await server.start();
+  
+  app.use("/api", router);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+  app.use(
+    "/graphql",
+    express.json(),
+    express.urlencoded({ extended: true }),
+    cors(),
+  )
+
+  connectDB();
+
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
+
+
+
+startSever();
+

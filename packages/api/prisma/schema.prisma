@@ -60,7 +60,7 @@ model User {
   jiraIntegration   Json?
   motionIntegration Json?
   projects          Project[]
-  Task              Task[]
+  tasks              Task[]
 }
 
 model Chat {

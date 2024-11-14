@@ -1,0 +1,25 @@
+type Message {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  role: String!
+  content: String!
+  userId: String
+  name: String!
+  user: User
+  chatId: ID!
+  chat: Chat
+  taskId: String
+  task: Task
+}
+
+type Query {
+  messages: [Message]
+  message(id: ID!): Message
+}
+
+type Mutation{
+  createMessage(chatId: ID!, content: String!): Message
+  updateMessage(id: ID!, content: String!): Message
+  deleteMessage(id: ID!): Message
+}

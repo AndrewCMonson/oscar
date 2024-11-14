@@ -1,0 +1,23 @@
+type Project {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  description: String
+  type: String!
+  userId: String!
+  user: User
+  tasks: [Task]
+  chats: [Chat]
+}
+
+type Query {
+  projects: [Project]
+  project(id: ID!): Project
+}
+
+type Mutation{
+  createProject(name: String!, description: String, type: String!): Project
+  updateProject(id: ID!, name: String, description: String, type: String): Project
+  deleteProject(id: ID!): Project
+}

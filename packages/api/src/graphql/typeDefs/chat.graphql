@@ -1,0 +1,21 @@
+type Chat {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  messages: [Message]
+  userId: String!
+  user: User
+  projectId: String!
+  project: Project
+}
+
+type Query {
+  chats: [Chat]
+  chat(id: ID!): Chat
+}
+
+type Mutation{
+  createChat(projectId: String!): Chat
+  updateChat(id: ID!, projectId: String!): Chat
+  deleteChat(id: ID!): Chat
+}

@@ -1,0 +1,27 @@
+type User {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  email: String!
+  firstName: String
+  lastName: String
+  username: String!
+  role: String!
+  messages: [Message]
+  chats: [Chat]
+  jiraIntegration: JSON
+  motionIntegration: JSON
+  projects: [Project]
+  tasks: [Task]
+}
+
+type Query {
+  users: [User]
+  user(id: ID!): User
+}
+
+type Mutation{
+  createUser(email: String!, username: String!, role: String!): User
+  updateUser(id: ID!, email: String, firstName: String, lastName: String, username: String, role: String): User
+  deleteUser(id: ID!): User
+}
