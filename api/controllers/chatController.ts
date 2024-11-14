@@ -27,7 +27,7 @@ export const handleChatMessage = async (req: ChatRequest, res: Response) => {
       // Get the system user
       const systemUser = await getUserByRole(UserRole.SYSTEM);
       // Create a system message to give the assistant context
-      const systemMessage = { role: 'system', content: 'You are a personal project manager. Your task is to handle project management tasks for the user\'s development projects. You will create tasks and calendar events for a Motion calendar and coordinate with JIRA', name: systemUser?.username };
+      const systemMessage = { role: 'system', content: 'You are a personal project manager. Your task is to handle project management tasks for the user\'s development projects. You will create tasks and calendar events for a Motion calendar and coordinate with JIRA', name: systemUser.username };
       // Create and insert the first message into the DB
       const insertedMessage = await createNewMessage(systemMessage.content, systemUser, chat);
       // Create and insert the user's message into the DB
@@ -45,7 +45,7 @@ export const handleChatMessage = async (req: ChatRequest, res: Response) => {
       const assistantMessage = {
         role: 'assistant',
         content: response.choices[0].message.content ?? "No message returned",
-        name: assistantUser?.username
+        name: assistantUser.username
       };
 
       // Insert the assistant's response into the DB to be used later
@@ -69,7 +69,7 @@ export const handleChatMessage = async (req: ChatRequest, res: Response) => {
     const assistantMessage = {
       role: 'assistant',
       content: response.choices[0].message.content ?? "No message returned",
-      name: assistantUser?.username
+      name: assistantUser.username
     };
     // Insert the assistant's response into the DB to be used later
     const assistantMessageFormatted = await createNewMessage(assistantMessage.content, assistantUser, chat);
