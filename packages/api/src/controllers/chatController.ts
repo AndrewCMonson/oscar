@@ -1,8 +1,8 @@
-import { getAllChats } from "../queries/chatQueries.js";
 import { UserRole } from "@prisma/client";
 import { Request, Response } from "express";
-import { prismadb, openAIClient } from "../config/index.js";
-import { FormattedMessage, ChatRequest } from "../types.js";
+import { ChatRequest, FormattedMessage } from "../../types.js";
+import { openAIClient, prismadb } from "../config/index.js";
+import { getAllChats } from "../queries/chatQueries.js";
 import { convertEnums } from "../utils/messageUtils.js";
 import { createNewMessage } from "./messageController.js";
 import { getUserByRole } from "./userController.js";

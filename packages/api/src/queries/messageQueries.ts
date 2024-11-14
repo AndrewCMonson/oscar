@@ -1,7 +1,7 @@
-import { Chat, User, UserRole } from "@prisma/client";
+import { Chat, User } from "@prisma/client";
 import { OpenAI } from "openai";
+import { FormattedMessage } from "../../types.js";
 import { prismadb } from "../config/index.js";
-import { FormattedMessage } from "../types.js";
 
 export const createNewMessage = async (
   message: string,
@@ -27,13 +27,13 @@ export const createNewMessage = async (
       throw new Error("An error occurred sending the message");
     }
 
-    const formattedMessage: FormattedMessage = {
+    const formattedMessage = {
       role: newMessage.role,
       content: newMessage.content,
       name: newMessage.name,
     };
 
-    return formattedMessage as OpenAI.ChatCompletionMessageParam;
+    return formattedMessage;
   } catch (error) {
     console.error(error);
     throw new Error("An error occurred sending the message");

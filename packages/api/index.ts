@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
-import { connectDB } from "./config";
-import { router } from "./controllers/index.js";
+import { connectDB } from "./src/config";
+import { router } from "./src/controllers/index.js";
 dotenv.config();
 
 const PORT = process.env.PORT || 3007;
