@@ -1,6 +1,7 @@
 import { prismadb } from "@api/src/config/db.js";
+import { Resolvers } from "@api/types/";
 
-export const projectResolvers = {
+export const projectResolvers: Resolvers = {
   Query: {
     projects: async () => {
       const projects = await prismadb.project.findMany();

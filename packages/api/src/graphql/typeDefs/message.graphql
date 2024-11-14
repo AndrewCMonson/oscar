@@ -13,6 +13,12 @@ type Message {
   task: Task
 }
 
+type FormattedMessage {
+  role: String!
+  content: String!
+  name: String!
+}
+
 type Query {
   messages: [Message]
   message(id: ID!): Message

@@ -1,6 +1,6 @@
 import { Chat, User } from "@prisma/client";
 import { OpenAI } from "openai";
-import { FormattedMessage } from "../../types.js";
+import { FormattedMessage } from "../../types/types.js";
 import { prismadb } from "../config/index.js";
 
 export const createNewMessage = async (

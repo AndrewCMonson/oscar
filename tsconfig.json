@@ -13,5 +13,5 @@
       "@client/*": ["packages/client/src/*"]
     }
   },
-  "include": ["./packages/**/*"],
+  "include": ["./packages/**/*"]
 }

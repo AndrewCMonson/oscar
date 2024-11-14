@@ -1,15 +1,14 @@
-import { UserRole } from "@prisma/client";
+import { ChatGPTRole, User } from "@prisma/client";
 import { Request, Response } from "express";
-import { ChatRequest, FormattedMessage } from "../../types.js";
+import { FormattedMessage } from "../../types/types.js";
 import { openAIClient, prismadb } from "../config/index.js";
 import { getAllChats } from "../queries/chatQueries.js";
+import { initialPrompt } from "../utils/initialPrompt.js";
 import { convertEnums } from "../utils/messageUtils.js";
-import { createNewMessage } from "./messageController.js";
-import { getUserByRole } from "./userController.js";
+import { createNewMessage } from "./messageServices.js";
+import { getUserByRole } from "./userServices.js";
 
-export const handleChatMessage = async (req: ChatRequest, res: Response) => {
-  const { user, message } = req.body;
-
+export const handleChatMessage = async (message: string, user: User) => {
   try {
     // Check if the user has an existing chat
     let chat = await findUserChat(user.id);
@@ -25,12 +24,11 @@ export const handleChatMessage = async (req: ChatRequest, res: Response) => {
     // If there are no existing messages, create context for the chat assistant using the system user
     if (existingMessages.length === 0) {
       // Get the system user
-      const systemUser = await getUserByRole(UserRole.SYSTEM);
+      const systemUser = await getUserByRole(ChatGPTRole.SYSTEM);
       // Create a system message to give the assistant context
       const systemMessage = {
         role: "system",
-        content:
-          "You are a personal project manager. Your task is to handle project management tasks for the user's development projects. You will create tasks and calendar events for a Motion calendar and coordinate with JIRA",
+        content: initialPrompt,
         name: systemUser.username,
       };
       // Create and insert the first message into the DB
@@ -49,7 +47,7 @@ export const handleChatMessage = async (req: ChatRequest, res: Response) => {
         temperature: 0.7,
       });
       // Get the assistant user
-      const assistantUser = await getUserByRole(UserRole.ASSISTANT);
+      const assistantUser = await getUserByRole(ChatGPTRole.ASSISTANT);
       // Format the assistant's response
       const assistantMessage = {
         role: "assistant",
@@ -64,8 +62,7 @@ export const handleChatMessage = async (req: ChatRequest, res: Response) => {
         chat,
       );
       // Return the assistant's response to the user
-      res.json({ response: assistantMessageFormatted });
-      return;
+      return assistantMessageFormatted;
     }
     // If there are existing messages, create a new message for the user based on their input and insert it into the DB
     const newMessage = await createNewMessage(message, user, chat);
@@ -77,7 +74,7 @@ export const handleChatMessage = async (req: ChatRequest, res: Response) => {
       temperature: 0.7,
     });
     // Get the assistant user
-    const assistantUser = await getUserByRole(UserRole.ASSISTANT);
+    const assistantUser = await getUserByRole(ChatGPTRole.ASSISTANT);
     // Format the assistant's response and insert it into the DB
     const assistantMessage = {
       role: "assistant",
@@ -91,11 +88,10 @@ export const handleChatMessage = async (req: ChatRequest, res: Response) => {
       chat,
     );
 
-    res.json({ response: assistantMessageFormatted });
-    return;
+    return assistantMessageFormatted;
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "An error occurred" });
+    return { error: "An error occurred" };
   }
 };
 

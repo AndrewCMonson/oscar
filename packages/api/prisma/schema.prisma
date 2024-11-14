@@ -27,17 +27,11 @@ enum TaskPriority {
   URGENT
 }
 
-enum UserRole {
+enum ChatGPTRole {
   USER
   SYSTEM
   ASSISTANT
   FUNCTION
-}
-
-enum MessageRole {
-  SYSTEM
-  ASSISTANT
-  USER
 }
 
 enum ProjectType {
@@ -54,7 +48,7 @@ model User {
   firstName         String?
   lastName          String?
   username          String
-  role              UserRole  @default(USER)
+  role              ChatGPTRole  @default(USER)
   messages          Message[]
   chats             Chat[]
   jiraIntegration   Json?
@@ -78,7 +72,7 @@ model Message {
   id        String      @id @default(cuid())
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
-  role      MessageRole
+  role      ChatGPTRole
   content   String
   userId    String
   name      String

@@ -1,18 +1,13 @@
 import { ExpressContextFunctionArgument } from "@apollo/server/express4";
 import { ContextFunction } from "@apollo/server";
 import { prismadb } from "../config/index.js";
-import { User } from "@prisma/client";
-import { Request, Response } from "express";
-
-interface MiddlewareContext {
-  user?: User | null;
-  req: Request;
-  res: Response;
-}
+import { MiddlewareContext } from "@api/types";
 
 const devUser = await prismadb.user.findUnique({
   where: { email: "andrew.c.monson@gmail.com" },
 });
+
+console.log(devUser);
 
 export const middlewareContext: ContextFunction<
   [ExpressContextFunctionArgument],

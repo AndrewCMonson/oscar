@@ -1,14 +1,14 @@
-import { UserRole } from "@prisma/client";
+import { ChatGPTRole } from "@prisma/client";
 
-export const convertEnums = (role: UserRole) => {
+export const convertEnums = (role: ChatGPTRole) => {
   switch (role) {
-    case UserRole.USER:
+    case ChatGPTRole.USER:
       return "user";
-    case UserRole.ASSISTANT:
+    case ChatGPTRole.ASSISTANT:
       return "assistant";
-    case UserRole.SYSTEM:
+    case ChatGPTRole.SYSTEM:
       return "system";
-    case UserRole.FUNCTION:
+    case ChatGPTRole.FUNCTION:
       return "function";
     default:
       return "user";

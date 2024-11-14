@@ -1,11 +1,11 @@
 import express from "express";
 import {
-  getUserById,
-  updateUser,
-  getUserIntegrations,
   connectJira,
   connectMotion,
-} from "../controllers/userController";
+  getUserById,
+  getUserIntegrations,
+  updateUser,
+} from "../services/userServices";
 
 const router = express.Router();
 

@@ -1,5 +1,11 @@
-import { Request } from "express";
+import { Request, Response } from "express";
 import { User } from "@prisma/client";
+
+export interface MiddlewareContext {
+  user?: User | null;
+  req: Request;
+  res: Response;
+}
 
 export interface FormattedMessage {
   role: "user" | "function" | "assistant" | "system";

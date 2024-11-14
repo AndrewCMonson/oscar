@@ -3,9 +3,9 @@ type Chat {
   createdAt: DateTime!
   updatedAt: DateTime!
   messages: [Message]
-  userId: String!
+  userId: String
   user: User
-  projectId: String!
+  projectId: String
   project: Project
 }
 
@@ -15,6 +15,7 @@ type Query {
 }
 
 type Mutation {
+  handleChatMessage(message: String!): FormattedMessage
   createChat(projectId: String!): Chat
   updateChat(id: ID!, projectId: String!): Chat
   deleteChat(id: ID!): Chat

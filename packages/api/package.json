@@ -18,12 +18,13 @@
     "pg-hstore": "^2.3.4"
   },
   "scripts": {
-    "start": "tsx watch index.ts",
+    "start:dev": "tsx watch --include ./src index.ts",
+    "build": "tsc",
     "codegen": "graphql-codegen --config codegen.ts",
     "lint:fix": "cd ../.. && yarn lint --fix"
   },
   "prisma": {
-    "seed": "tsx ./config/seed.ts"
+    "seed": "tsx ./src/config/seed.ts"
   },
   "dependencies": {
     "@apollo/server": "^4.11.2",

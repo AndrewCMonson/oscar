@@ -1,7 +1,8 @@
 import { Chat, User } from "@prisma/client";
 import { OpenAI } from "openai";
-import { FormattedMessage } from "../../types.js";
+import { FormattedMessage } from "../../types/types.js";
 import { prismadb } from "../config/index.js";
+import { convertEnums } from "../utils/messageUtils.js";
 
 export const createNewMessage = async (
   message: string,
@@ -28,7 +29,7 @@ export const createNewMessage = async (
     }
 
     const formattedMessage: FormattedMessage = {
-      role: newMessage.role,
+      role: convertEnums(newMessage.role),
       content: newMessage.content,
       name: newMessage.name,
     };
@@ -53,7 +54,11 @@ export const getMessages = async (chat: Chat) => {
     }
 
     const formattedMessages: FormattedMessage[] = existingMessages.map(
-      ({ role, content, name }) => ({ role, content, name }),
+      ({ role, content, name }) => ({
+        role: convertEnums(role),
+        content,
+        name,
+      }),
     );
 
     return formattedMessages as OpenAI.ChatCompletionMessageParam[];

@@ -1,5 +1,5 @@
 import { prismadb } from "./db.js";
-import { UserRole } from "@prisma/client";
+import { ChatGPTRole } from "@prisma/client";
 
 export const seed = async () => {
   const user = await prismadb.user.create({
@@ -14,14 +14,14 @@ export const seed = async () => {
     data: {
       email: "test@test.com",
       username: "System",
-      role: UserRole.SYSTEM,
+      role: ChatGPTRole.SYSTEM,
     },
   });
   const assistantUser = await prismadb.user.create({
     data: {
       email: "assistant@test.com",
       username: "Assistant",
-      role: UserRole.ASSISTANT,
+      role: ChatGPTRole.ASSISTANT,
     },
   });
 
