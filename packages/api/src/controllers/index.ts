@@ -7,3 +7,6 @@ export * from "./userController.js";
 export const router = express.Router();
 
 router.use("/chat", chatRouter);
+router.use("/health", (req, res) => {
+  res.send("Server is running");
+});

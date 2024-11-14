@@ -1,6 +1,5 @@
-import OpenAI from "openai";
 import { Request } from "express";
-import { User, UserRole } from "@prisma/client";
+import { User } from "@prisma/client";
 
 export interface FormattedMessage {
   role: "user" | "function" | "assistant" | "system";

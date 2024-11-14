@@ -16,8 +16,13 @@ type Query {
   project(id: ID!): Project
 }
 
-type Mutation{
+type Mutation {
   createProject(name: String!, description: String, type: String!): Project
-  updateProject(id: ID!, name: String, description: String, type: String): Project
+  updateProject(
+    id: ID!
+    name: String
+    description: String
+    type: String
+  ): Project
   deleteProject(id: ID!): Project
 }

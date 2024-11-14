@@ -41,7 +41,7 @@ export const userResolvers = {
           id: id,
         },
       });
-      return user
+      return user;
     },
   },
 };

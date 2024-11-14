@@ -41,7 +41,7 @@ export const projectResolvers = {
           id: id,
         },
       });
-      return project
-  },
+      return project;
+    },
   },
 };

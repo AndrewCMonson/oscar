@@ -20,7 +20,7 @@ export const getUserByRole = async (role: UserRole) => {
   }
 };
 
-const getUserById = async (userId: string) => {
+export const getUserById = async (userId: string) => {
   try {
     const user = await prismadb.user.findFirst({
       where: {

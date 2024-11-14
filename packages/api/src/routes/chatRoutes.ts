@@ -5,7 +5,6 @@ import {
 } from "../controllers/chatController.js";
 import express from "express";
 import {
-  createNewChat,
   deleteChatById,
   getMessagesByChatId,
 } from "../controllers/chatController.js";

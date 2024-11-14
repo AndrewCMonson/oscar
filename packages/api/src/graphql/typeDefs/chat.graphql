@@ -14,7 +14,7 @@ type Query {
   chat(id: ID!): Chat
 }
 
-type Mutation{
+type Mutation {
   createChat(projectId: String!): Chat
   updateChat(id: ID!, projectId: String!): Chat
   deleteChat(id: ID!): Chat

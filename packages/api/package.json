@@ -6,19 +6,21 @@
   "license": "MIT",
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.3",
+    "@graphql-codegen/typescript": "4.1.1",
+    "@graphql-codegen/typescript-document-nodes": "4.0.11",
+    "@graphql-codegen/typescript-resolvers": "4.4.0",
     "@graphql-tools/load-files": "^7.0.0",
     "@graphql-tools/merge": "^9.0.9",
     "@graphql-tools/schema": "^10.0.8",
+    "@types/cors": "^2.8.17",
     "graphql-scalars": "^1.23.0",
     "pg": "^8.13.1",
-    "pg-hstore": "^2.3.4",
-    "@graphql-codegen/typescript-resolvers": "4.4.0",
-    "@graphql-codegen/typescript-document-nodes": "4.0.11",
-    "@graphql-codegen/typescript": "4.1.1"
+    "pg-hstore": "^2.3.4"
   },
   "scripts": {
     "start": "tsx watch index.ts",
-    "codegen": "graphql-codegen --config codegen.ts"
+    "codegen": "graphql-codegen --config codegen.ts",
+    "lint:fix": "cd ../.. && yarn lint --fix"
   },
   "prisma": {
     "seed": "tsx ./config/seed.ts"

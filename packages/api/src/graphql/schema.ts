@@ -10,16 +10,16 @@ import {
   projectResolvers,
   taskResolvers,
   userResolvers,
-} from './resolvers';
+} from "./resolvers";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const typeDefs = [
+export const typeDefs = [
   mergeTypeDefs(loadFilesSync(path.join(__dirname, "./typeDefs/*.graphql"))),
   ...scalarTypeDefs,
 ];
 
-const resolvers = mergeResolvers([
+export const resolvers = mergeResolvers([
   chatResolvers,
   messageResolvers,
   projectResolvers,
@@ -27,4 +27,4 @@ const resolvers = mergeResolvers([
   userResolvers,
 ]);
 
-export const schema = makeExecutableSchema({typeDefs, resolvers});
+export const schema = makeExecutableSchema({ typeDefs, resolvers });

@@ -6,7 +6,7 @@ export const chatResolvers = {
       const chats = await prismadb.chat.findMany();
       return chats;
     },
-    chat: async (_, { id }) =>{
+    chat: async (_, { id }) => {
       const chat = await prismadb.chat.findUnique({
         where: {
           id: id,
@@ -19,7 +19,7 @@ export const chatResolvers = {
     createChat: async (_, { data }) => {
       const chat = await prismadb.chat.create({
         data: {
-          ...data
+          ...data,
         },
       });
       return chat;
