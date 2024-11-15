@@ -11,6 +11,10 @@ export interface FormattedMessage {
   role: "user" | "function" | "assistant" | "system";
   content: string;
   name: string;
+  data?: {
+    action: string;
+    data: unknown;
+  };
 }
 
 export interface ChatRequest extends Request {

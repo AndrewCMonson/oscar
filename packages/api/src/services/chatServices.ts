@@ -1,97 +1,31 @@
-import { ChatGPTRole, User } from "@prisma/client";
+import { Chat, ChatGPTRole, User } from "@prisma/client";
 import { Request, Response } from "express";
 import { FormattedMessage } from "../../types/types.js";
 import { openAIClient, prismadb } from "../config/index.js";
 import { getAllChats } from "../queries/chatQueries.js";
-import { initialPrompt } from "../utils/initialPrompt.js";
+import { llmPrompt } from "../utils/initialPrompt.js";
 import { convertEnums } from "../utils/messageUtils.js";
 import { createNewMessage } from "./messageServices.js";
 import { getUserByRole } from "./userServices.js";
 
 export const handleChatMessage = async (message: string, user: User) => {
   try {
-    // Check if the user has an existing chat
-    let chat = await findUserChat(user.id);
+    if (!message || !user) {
+      throw new Error("Invalid input");
+    }
 
-    // If the user does not have an existing chat, create a new one
+    const { chat, chatMessages } = await findUserChat(user.id);
+
     if (!chat) {
-      chat = await createNewChat(user.id);
+      const { chat, chatMessages } = await createInitialChat(user.id);
+
+      return await chatWithAssistant(message, user, chat, chatMessages);
     }
 
-    // Check for existing messages in the chat
-    const existingMessages = await getMessagesByChatId(chat.id);
-
-    // If there are no existing messages, create context for the chat assistant using the system user
-    if (existingMessages.length === 0) {
-      // Get the system user
-      const systemUser = await getUserByRole(ChatGPTRole.SYSTEM);
-      // Create a system message to give the assistant context
-      const systemMessage = {
-        role: "system",
-        content: initialPrompt,
-        name: systemUser.username,
-      };
-      // Create and insert the first message into the DB
-      const insertedMessage = await createNewMessage(
-        systemMessage.content,
-        systemUser,
-        chat,
-      );
-      // Create and insert the user's message into the DB
-      const newMessage = await createNewMessage(message, user, chat);
-      // Generate a response from the assistant
-      const response = await openAIClient.chat.completions.create({
-        messages: [insertedMessage, newMessage],
-        model: "gpt-3.5-turbo",
-        max_tokens: 150,
-        temperature: 0.7,
-      });
-      // Get the assistant user
-      const assistantUser = await getUserByRole(ChatGPTRole.ASSISTANT);
-      // Format the assistant's response
-      const assistantMessage = {
-        role: "assistant",
-        content: response.choices[0].message.content ?? "No message returned",
-        name: assistantUser.username,
-      };
-
-      // Insert the assistant's response into the DB to be used later
-      const assistantMessageFormatted = await createNewMessage(
-        assistantMessage.content,
-        assistantUser,
-        chat,
-      );
-      // Return the assistant's response to the user
-      return assistantMessageFormatted;
-    }
-    // If there are existing messages, create a new message for the user based on their input and insert it into the DB
-    const newMessage = await createNewMessage(message, user, chat);
-    // Generate a response from the assistant based on the user's input
-    const response = await openAIClient.chat.completions.create({
-      messages: [...existingMessages, newMessage],
-      model: "gpt-3.5-turbo",
-      max_tokens: 150,
-      temperature: 0.7,
-    });
-    // Get the assistant user
-    const assistantUser = await getUserByRole(ChatGPTRole.ASSISTANT);
-    // Format the assistant's response and insert it into the DB
-    const assistantMessage = {
-      role: "assistant",
-      content: response.choices[0].message.content ?? "No message returned",
-      name: assistantUser.username,
-    };
-    // Insert the assistant's response into the DB to be used later
-    const assistantMessageFormatted = await createNewMessage(
-      assistantMessage.content,
-      assistantUser,
-      chat,
-    );
-
-    return assistantMessageFormatted;
+    return await chatWithAssistant(message, user, chat, chatMessages);
   } catch (error) {
     console.error(error);
-    return { error: "An error occurred" };
+    throw new Error("An error occurred handling the chat message");
   }
 };
 
@@ -122,22 +56,31 @@ export const handleGetChatById = async (req: Request, res: Response) => {
   }
 };
 
-export const createNewChat = async (userId: string) => {
+export const createInitialChat = async (userId: string) => {
   if (!userId) {
     throw new Error("User ID is required");
   }
 
   try {
+    const systemUser = await getUserByRole(ChatGPTRole.SYSTEM);
+
     const chat = await prismadb.chat.create({
       data: {
         messages: {
-          create: [],
+          create: [
+            {
+              userId: systemUser.id,
+              role: ChatGPTRole.SYSTEM,
+              content: llmPrompt,
+              name: "system",
+              data: {
+                action: "INITIAL_PROMPT",
+                data: {},
+              },
+            },
+          ],
         },
-        user: {
-          connect: {
-            id: userId,
-          },
-        },
+        userId,
       },
     });
 
@@ -145,7 +88,9 @@ export const createNewChat = async (userId: string) => {
       throw new Error("An error occurred creating the chat");
     }
 
-    return chat;
+    const chatMessages = await getMessagesByChatId(chat.id);
+
+    return { chat, chatMessages };
   } catch (error) {
     console.error(error);
     throw new Error("An error occurred creating the chat");
@@ -160,7 +105,13 @@ export const findUserChat = async (userId: string) => {
       },
     });
 
-    return chat;
+    if (!chat) {
+      throw new Error("An error occurred finding the chat");
+    }
+
+    const chatMessages = await getMessagesByChatId(chat.id);
+
+    return { chat, chatMessages };
   } catch (error) {
     console.error(error);
     throw new Error("An error occurred getting the chat");
@@ -206,4 +157,30 @@ export const deleteChatById = async (chatId: string) => {
     console.error(error);
     throw new Error("An error occurred deleting the chat");
   }
+};
+
+export const chatWithAssistant = async (
+  message: string,
+  user: User,
+  chat: Chat,
+  chatMessages: FormattedMessage[],
+) => {
+  const createdUserMessage = await createNewMessage(message, user, chat.id, {
+    action: "USER_MESSAGE",
+    data: {},
+  });
+
+  const response = await openAIClient.chat.completions.create({
+    messages: [...chatMessages, createdUserMessage],
+    model: "gpt-3.5-turbo",
+    max_tokens: 150,
+    temperature: 0.7,
+  });
+
+  const content = JSON.parse(
+    response.choices[0].message.content ??
+      "{ message: 'Error: No message returned' }",
+  ) as FormattedMessage;
+
+  return content;
 };

@@ -7,9 +7,11 @@ import { convertEnums } from "../utils/messageUtils.js";
 export const createNewMessage = async (
   message: string,
   user: User,
-  chat: Chat,
+  chatId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any,
 ) => {
-  if (!message || !user || !chat) {
+  if (!message || !user || !chatId) {
     throw new Error("Invalid input");
   }
 
@@ -17,10 +19,11 @@ export const createNewMessage = async (
     const newMessage = await prismadb.message.create({
       data: {
         content: message,
-        chatId: chat.id,
+        chatId,
         userId: user.id,
         name: user.firstName ?? user.username,
         role: user.role,
+        data: data,
       },
     });
 

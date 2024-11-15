@@ -76,6 +76,7 @@ model Message {
   content   String
   userId    String
   name      String
+  data      Json
   user      User        @relation(fields: [userId], references: [id])
   chatId    String?
   Chat      Chat?       @relation(fields: [chatId], references: [id])

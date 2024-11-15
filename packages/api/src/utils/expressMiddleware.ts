@@ -6,8 +6,10 @@ import { MiddlewareContext } from "@api/types";
 export const middlewareContext: ContextFunction<
   [ExpressContextFunctionArgument],
   MiddlewareContext
-> = async ({ req, res }: ExpressContextFunctionArgument): Promise<MiddlewareContext> => {
-
+> = async ({
+  req,
+  res,
+}: ExpressContextFunctionArgument): Promise<MiddlewareContext> => {
   try {
     const user = await prismadb.user.findUnique({
       where: { email: "andrew.c.monson@gmail.com" },

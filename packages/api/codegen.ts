@@ -13,7 +13,7 @@ const config: CodegenConfig = {
       config: {
         useIndexSignature: true,
         contextType: "@api/types/index#MiddlewareContext",
-      }
+      },
     },
   },
   config: {

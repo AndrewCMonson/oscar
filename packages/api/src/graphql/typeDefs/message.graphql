@@ -17,6 +17,12 @@ type FormattedMessage {
   role: String!
   content: String!
   name: String!
+  data: MessageSubData
+}
+
+type MessageSubData {
+  action: String!
+  data: JSON
 }
 
 type Query {

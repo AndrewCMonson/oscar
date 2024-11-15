@@ -32,7 +32,7 @@ export const projectResolvers: Resolvers = {
           throw new Error("An error occurred while fetching the project");
         }
       }
-    }
+    },
   },
   Mutation: {
     createProject: async (_, { name, description, type }, { user }) => {
@@ -70,7 +70,7 @@ export const projectResolvers: Resolvers = {
   },
   Project: {
     user: async (project) => {
-      try{
+      try {
         const user = await prismadb.user.findUnique({
           where: {
             id: project.userId,
@@ -90,5 +90,5 @@ export const projectResolvers: Resolvers = {
         }
       }
     },
-  }
+  },
 };

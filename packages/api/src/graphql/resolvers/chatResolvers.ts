@@ -1,7 +1,6 @@
 import { prismadb } from "@api/src/config/db.js";
 import { handleChatMessage } from "@api/src/services/chatServices.js";
 import { Resolvers } from "@api/types/";
-import { FormattedMessage } from "@api/types/";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
 
 export const chatResolvers: Resolvers = {
@@ -62,34 +61,38 @@ export const chatResolvers: Resolvers = {
       try {
         const chatMessage = await handleChatMessage(message, user);
 
-        return chatMessage as FormattedMessage;
+        if (!chatMessage) {
+          throw new Error("An error occurred talking with the assistant");
+        }
+
+        return chatMessage;
       } catch (e) {
         if (e instanceof PrismaClientKnownRequestError) {
           console.error(e.message);
         } else {
-          throw new Error("Error handling chat message");
+          console.log(e);
         }
       }
     },
-    createChat: async (_, { data }, { user }) => {
-      const chat = await prismadb.chat.create({
-        data: {
-          ...data,
-        },
-      });
-      return chat;
-    },
-    updateChat: async (_, { id, data }, { user }) => {
-      const chat = await prismadb.chat.update({
-        where: {
-          id: id,
-        },
-        data: {
-          ...data,
-        },
-      });
-      return chat;
-    },
+    // createChat: async (_, {  }, { user }) => {
+    //   const chat = await prismadb.chat.create({
+    //     data: {
+
+    //     },
+    //   });
+    //   return chat;
+    // },
+    // updateChat: async (_, { id, data }, { user }) => {
+    //   const chat = await prismadb.chat.update({
+    //     where: {
+    //       id: id,
+    //     },
+    //     data: {
+    //       ...data,
+    //     },
+    //   });
+    //   return chat;
+    // },
     deleteChat: async (_, { id }) => {
       const chat = await prismadb.chat.delete({
         where: {
