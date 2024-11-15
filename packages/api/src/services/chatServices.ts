@@ -56,14 +56,20 @@ export const chatWithAssistant = async (
 
     const formattedMessage = await formatMessageForOpenAI(createdUserMessage);
 
+    const formattedMessages = chatMessages.map((message) => ({
+      role: message.role,
+      content: message.content,
+      name: message.name,
+    }));
+
     const openAIResponse = await openAIClient.chat.completions.create({
-      messages: [...chatMessages, formattedMessage],
-      model: "gpt-3.5-turbo",
-      max_tokens: 150,
-      temperature: 0.8,
-      top_p: 0.9,
-      presence_penalty: 0.6,
-      frequency_penalty: 0.2,
+      messages: [...formattedMessages, formattedMessage],
+      model: "gpt-4o-mini",
+      max_tokens: 300,
+      temperature: 0.6,
+      top_p: 0.95,
+      presence_penalty: 0.3,
+      frequency_penalty: 0.1,
     });
 
     const assistantResponse = await parseAssistantResponse(openAIResponse);
@@ -155,7 +161,7 @@ export const findUserChat = async (userId: string) => {
     });
 
     if (!chat) {
-      throw new Error("An error occurred finding the chat");
+      return { chatId: null, chatMessages: null };
     }
 
     const formattedMessages: FormattedMessage[] = chat.messages.map(
