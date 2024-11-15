@@ -1,8 +1,6 @@
 import { Chat, ChatGPTRole, User } from "@prisma/client";
-import { Request, Response } from "express";
 import { FormattedMessage } from "../../types/types.js";
 import { openAIClient, prismadb } from "../config/index.js";
-import { getAllChats } from "../queries/chatQueries.js";
 import { llmPrompt } from "../utils/initialPrompt.js";
 import { convertEnums } from "../utils/messageUtils.js";
 import { createNewMessage } from "./messageServices.js";
@@ -24,30 +22,51 @@ export const handleChatMessage = async (message: string, user: User) => {
   return await chatWithAssistant(message, user, chat, chatMessages);
 };
 
-export const handleGetAllChats = async (res: Response) => {
-  try {
-    const chats = await getAllChats();
-    res.json({ chats });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "An error occurred" });
+export const chatWithAssistant = async (
+  message: string,
+  user: User,
+  chat: Chat,
+  chatMessages: FormattedMessage[],
+) => {
+  if (!message || !user || !chat || !chatMessages) {
+    throw new Error("Invalid input");
   }
-};
-
-export const handleGetChatById = async (req: Request, res: Response) => {
-  const { chatId } = req.params;
 
   try {
-    const chat = await prismadb.chat.findUnique({
-      where: {
-        id: chatId,
-      },
+    const createdUserMessage = await createNewMessage(message, user, chat.id, {
+      action: "USER_MESSAGE",
+      data: {},
     });
 
-    res.json({ chat });
+    const response = await openAIClient.chat.completions.create({
+      messages: [...chatMessages, createdUserMessage],
+      model: "gpt-3.5-turbo",
+      max_tokens: 150,
+      temperature: 0.8,
+      top_p: 0.9,
+      presence_penalty: 0.6,
+      frequency_penalty: 0.2,
+    });
+
+    const content = JSON.parse(
+      response.choices[0].message.content ??
+      "{ message: 'Error: No message returned' }",
+    ) as FormattedMessage;
+
+    await createNewMessage(
+      content.content,
+      user,
+      chat.id,
+      {
+        action: content.data?.action,
+        data: content.data?.data,
+      }
+    );
+
+    return content;
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "An error occurred" });
+    throw new Error("An error occurred chatting with the assistant");
   }
 };
 
@@ -139,65 +158,4 @@ export const getMessagesByChatId = async (chatId: string) => {
   }
 };
 
-export const deleteChatById = async (chatId: string) => {
-  try {
-    const chat = await prismadb.chat.delete({
-      where: {
-        id: chatId,
-      },
-    });
 
-    return chat;
-  } catch (error) {
-    console.error(error);
-    throw new Error("An error occurred deleting the chat");
-  }
-};
-
-export const chatWithAssistant = async (
-  message: string,
-  user: User,
-  chat: Chat,
-  chatMessages: FormattedMessage[],
-) => {
-  if (!message || !user || !chat || !chatMessages) {
-    throw new Error("Invalid input");
-  }
-
-  try {
-    const createdUserMessage = await createNewMessage(message, user, chat.id, {
-      action: "USER_MESSAGE",
-      data: {},
-    });
-
-    const response = await openAIClient.chat.completions.create({
-      messages: [...chatMessages, createdUserMessage],
-      model: "gpt-3.5-turbo",
-      max_tokens: 150,
-      temperature: 0.8,
-      top_p: 0.9,
-      presence_penalty: 0.6,
-      frequency_penalty: 0.2,
-    });
-
-    const content = JSON.parse(
-      response.choices[0].message.content ??
-      "{ message: 'Error: No message returned' }",
-    ) as FormattedMessage;
-
-    await createNewMessage(
-      content.content,
-      user,
-      chat.id,
-      {
-        action: content.data?.action,
-        data: content.data?.data,
-      }
-    );
-
-    return content;
-  } catch (error) {
-    console.error(error);
-    throw new Error("An error occurred chatting with the assistant");
-  }
-};
