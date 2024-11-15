@@ -13,7 +13,7 @@ export interface FormattedMessage {
   name: string;
   data?: {
     action: string;
-    data: unknown;
+    data: unknown; // this will change once we have a better understanding of the data structure needed by api calls
   };
 }
 

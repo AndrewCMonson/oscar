@@ -1,10 +1,10 @@
-import { Chat, User } from "@prisma/client";
+import { Chat, ChatGPTRole, Message, User } from "@prisma/client";
 import { OpenAI } from "openai";
 import { FormattedMessage } from "../../types/types.js";
 import { prismadb } from "../config/index.js";
 import { convertEnums } from "../utils/messageUtils.js";
 
-export const createNewMessage = async (
+export const createNewDBMessage = async (
   message: string,
   user: User,
   chatId: string,
@@ -44,6 +44,20 @@ export const createNewMessage = async (
   }
 };
 
+export const formatMessageForOpenAI = async (message: Message) => {
+  if (!message) {
+    throw new Error("Please provide a message");
+  }
+
+  const formattedMessage: OpenAI.ChatCompletionMessageParam = {
+    role: convertEnums(message.role),
+    content: message.content,
+    name: message.name,
+  };
+
+  return formattedMessage;
+}
+
 export const getMessages = async (chat: Chat) => {
   try {
     const existingMessages = await prismadb.message.findMany({
@@ -70,3 +84,40 @@ export const getMessages = async (chat: Chat) => {
     throw new Error("An error occurred getting the messages");
   }
 };
+
+// function to send user or assistant message to database
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const sendMessageToDB = async (message: string, user: User, chatId: string, data: any) => {
+  if(!message || !user) {
+    throw new Error("Invalid input");
+  }
+  // if it's a user message, the data is empty for now. 
+  const baseMessageData = {
+    content: message,
+    chatId,
+    userId: user.id,
+    name: user.firstName ?? user.username,
+    role: user.role,
+  }
+
+  const messageData =
+    user.role === ChatGPTRole.USER
+      ? { action: "USER_MESSAGE", data: {} }
+      : data;
+
+  const createdMessage = await prismadb.message.create({
+    data: {
+      ...baseMessageData,
+      data: messageData,
+    },
+  });
+
+  if (!createdMessage) {
+    throw new Error("An error occurred sending the message to the database");
+  }
+
+  return createdMessage;
+}
+
+// function to format messages for openai
+
