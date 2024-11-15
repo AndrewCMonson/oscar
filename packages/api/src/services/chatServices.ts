@@ -1,10 +1,9 @@
 import { ChatGPTRole, User } from "@prisma/client";
+import { ChatCompletion } from "openai/resources/index.js";
 import { FormattedMessage } from "../../types/types.js";
 import { openAIClient, prismadb } from "../config/index.js";
-import { llmPrompt } from "../utils/initialPrompt.js";
-import { convertEnums } from "../utils/messageUtils.js";
-import { getUserByRole, sendMessageToDB, formatMessageForOpenAI } from "./index.js";
-import { ChatCompletion } from "openai/resources/index.js";
+import { convertEnums, initialLLMPrompt } from "../utils/index.js";
+import { formatMessageForOpenAI, getUserByRole, sendMessageToDB } from "./index.js";
 
 
 /*
@@ -103,7 +102,7 @@ export const createInitialChat = async (userId: string) => {
             {
               userId: systemUser.id,
               role: ChatGPTRole.SYSTEM,
-              content: llmPrompt,
+              content: initialLLMPrompt,
               name: "system",
               data: {
                 action: "INITIAL_PROMPT",
