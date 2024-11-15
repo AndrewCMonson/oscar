@@ -3,17 +3,16 @@ import { FormattedMessage } from "../../types/types.js";
 import { openAIClient, prismadb } from "../config/index.js";
 import { llmPrompt } from "../utils/initialPrompt.js";
 import { convertEnums } from "../utils/messageUtils.js";
-import { createNewMessage } from "./messageServices.js";
-import { getUserByRole } from "./userServices.js";
+import { createNewMessage, getUserByRole } from "./index.js";
 
 export const handleChatMessage = async (message: string, user: User) => {
-  if(!message || !user) {
+  if (!message || !user) {
     throw new Error("Invalid input");
   }
 
   const { chat, chatMessages } = await findUserChat(user.id);
 
-  if(!chat) {
+  if (!chat) {
     const { chat, chatMessages } = await createInitialChat(user.id);
 
     return await chatWithAssistant(message, user, chat, chatMessages);
@@ -50,18 +49,13 @@ export const chatWithAssistant = async (
 
     const content = JSON.parse(
       response.choices[0].message.content ??
-      "{ message: 'Error: No message returned' }",
+        "{ message: 'Error: No message returned' }",
     ) as FormattedMessage;
 
-    await createNewMessage(
-      content.content,
-      user,
-      chat.id,
-      {
-        action: content.data?.action,
-        data: content.data?.data,
-      }
-    );
+    await createNewMessage(content.content, user, chat.id, {
+      action: content.data?.action,
+      data: content.data?.data,
+    });
 
     return content;
   } catch (error) {
@@ -157,5 +151,3 @@ export const getMessagesByChatId = async (chatId: string) => {
     throw new Error("An error occurred getting the messages");
   }
 };
-
-
