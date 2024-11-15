@@ -9,24 +9,19 @@ import { createNewMessage } from "./messageServices.js";
 import { getUserByRole } from "./userServices.js";
 
 export const handleChatMessage = async (message: string, user: User) => {
-  try {
-    if (!message || !user) {
-      throw new Error("Invalid input");
-    }
+  if(!message || !user) {
+    throw new Error("Invalid input");
+  }
 
-    const { chat, chatMessages } = await findUserChat(user.id);
+  const { chat, chatMessages } = await findUserChat(user.id);
 
-    if (!chat) {
-      const { chat, chatMessages } = await createInitialChat(user.id);
-
-      return await chatWithAssistant(message, user, chat, chatMessages);
-    }
+  if(!chat) {
+    const { chat, chatMessages } = await createInitialChat(user.id);
 
     return await chatWithAssistant(message, user, chat, chatMessages);
-  } catch (error) {
-    console.error(error);
-    throw new Error("An error occurred handling the chat message");
   }
+
+  return await chatWithAssistant(message, user, chat, chatMessages);
 };
 
 export const handleGetAllChats = async (res: Response) => {
@@ -165,22 +160,44 @@ export const chatWithAssistant = async (
   chat: Chat,
   chatMessages: FormattedMessage[],
 ) => {
-  const createdUserMessage = await createNewMessage(message, user, chat.id, {
-    action: "USER_MESSAGE",
-    data: {},
-  });
+  if (!message || !user || !chat || !chatMessages) {
+    throw new Error("Invalid input");
+  }
 
-  const response = await openAIClient.chat.completions.create({
-    messages: [...chatMessages, createdUserMessage],
-    model: "gpt-3.5-turbo",
-    max_tokens: 150,
-    temperature: 0.7,
-  });
+  try {
+    const createdUserMessage = await createNewMessage(message, user, chat.id, {
+      action: "USER_MESSAGE",
+      data: {},
+    });
 
-  const content = JSON.parse(
-    response.choices[0].message.content ??
+    const response = await openAIClient.chat.completions.create({
+      messages: [...chatMessages, createdUserMessage],
+      model: "gpt-3.5-turbo",
+      max_tokens: 150,
+      temperature: 0.8,
+      top_p: 0.9,
+      presence_penalty: 0.6,
+      frequency_penalty: 0.2,
+    });
+
+    const content = JSON.parse(
+      response.choices[0].message.content ??
       "{ message: 'Error: No message returned' }",
-  ) as FormattedMessage;
+    ) as FormattedMessage;
 
-  return content;
+    await createNewMessage(
+      content.content,
+      user,
+      chat.id,
+      {
+        action: content.data?.action,
+        data: content.data?.data,
+      }
+    );
+
+    return content;
+  } catch (error) {
+    console.error(error);
+    throw new Error("An error occurred chatting with the assistant");
+  }
 };
