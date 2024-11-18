@@ -41,20 +41,43 @@ enum ProjectType {
 }
 
 model User {
-  id                String    @id @default(cuid())
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  email             String    @unique
-  firstName         String?
-  lastName          String?
-  username          String
-  role              ChatGPTRole  @default(USER)
-  messages          Message[]
-  chats             Chat[]
-  jiraIntegration   Json?
-  motionIntegration Json?
-  projects          Project[]
-  tasks              Task[]
+  id              String           @id @default(cuid())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  email           String           @unique
+  firstName       String?
+  lastName        String?
+  username        String
+  role            ChatGPTRole      @default(USER)
+  userPreferences Json
+  userMemory      Json
+  messages        Message[]
+  chats           Chat[]
+  projects        Project[]
+  tasks           Task[]
+  preferencesId   String?
+  memoryId        String?
+  preferences     UserPreferences? @relation(fields: [preferencesId], references: [id])
+  memory          UserMemory?      @relation(fields: [memoryId], references: [id])
+}
+
+model UserPreferences {
+  id              String   @id @default(cuid())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  userId          String   @unique
+  preferencesData Json
+  User            User[]
+}
+
+model UserMemory {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  memoryData  Json
+  version     Int       @default(1)
+  lastSummary DateTime?
+  User        User[]
 }
 
 model Chat {
@@ -69,32 +92,34 @@ model Chat {
 }
 
 model Message {
-  id        String      @id @default(cuid())
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  role      ChatGPTRole
-  content   String
-  userId    String
-  name      String
-  data      Json
-  user      User        @relation(fields: [userId], references: [id])
-  chatId    String?
-  Chat      Chat?       @relation(fields: [chatId], references: [id])
-  taskId    String?
-  task      Task?       @relation(fields: [taskId], references: [id])
+  id              String      @id @default(cuid())
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  role            ChatGPTRole
+  content         String
+  userId          String
+  name            String
+  data            Json
+  user            User        @relation(fields: [userId], references: [id])
+  chatId          String?
+  Chat            Chat?       @relation(fields: [chatId], references: [id])
+  taskId          String?
+  task            Task?       @relation(fields: [taskId], references: [id])
+  isGlobalContext Boolean     @default(false)
 }
 
 model Project {
-  id          String      @id @default(cuid())
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  name        String
-  description String?
-  type        ProjectType @default(PERSONAL)
-  userId      String
-  user        User        @relation(fields: [userId], references: [id])
-  tasks       Task[]
-  chats       Chat[]
+  id             String      @id @default(cuid())
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  name           String
+  description    String?
+  type           ProjectType @default(PERSONAL)
+  userId         String
+  user           User        @relation(fields: [userId], references: [id])
+  projectContext Json?
+  tasks          Task[]
+  chats          Chat[]
 }
 
 model Task {
@@ -113,4 +138,13 @@ model Task {
   messages      Message[]
   jiraTaskId    String?
   motionEventId String?
+}
+
+model Assistant {
+  id            String      @id @default(cuid())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  role          ChatGPTRole @default(ASSISTANT)
+  model         String // e.g., "gpt-4"
+  globalContext Json // Stores shared knowledge and assistant base personality
 }

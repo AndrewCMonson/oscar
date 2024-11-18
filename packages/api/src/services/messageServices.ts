@@ -1,18 +1,19 @@
-import { Chat, ChatGPTRole, Message, User } from "@prisma/client";
+import { Chat, ChatGPTRole, User } from "@prisma/client";
 import { OpenAI } from "openai";
 import { FormattedMessage } from "../../types/types.js";
 import { prismadb } from "../config/index.js";
 import { convertEnums } from "../utils/messageUtils.js";
 
-export const formatMessageForOpenAI = async (message: Message) => {
-  if (!message) {
-    throw new Error("Please provide a message");
+// takes in a role, content and name and properly types it to be sent to the OpenAI API
+export const formatMessageForOpenAI = async ({ role, content, name}: {role: ChatGPTRole, content: string, name: string}) => {
+  if (!role || !content || !name) {
+    throw new Error("Please provide a role, content, and name for the message");
   }
 
   const formattedMessage: OpenAI.ChatCompletionMessageParam = {
-    role: convertEnums(message.role),
-    content: message.content,
-    name: message.name,
+    role: convertEnums(role),
+    content: content,
+    name: name,
   };
 
   return formattedMessage;

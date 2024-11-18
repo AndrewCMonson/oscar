@@ -49,7 +49,7 @@ export const chatResolvers: Resolvers = {
     },
   },
   Mutation: {
-    handleChatMessage: async (_, { message }, { user }) => {
+    handleChatMessage: async (_, { message, projectId }, { user }) => {
       if (!message) {
         throw new Error("Message is required");
       }
@@ -59,7 +59,7 @@ export const chatResolvers: Resolvers = {
       }
 
       try {
-        const chatMessage = await handleChatMessage(message, user);
+        const chatMessage = await handleChatMessage(message, user, projectId);
 
         if (!chatMessage) {
           throw new Error("An error occurred talking with the assistant");

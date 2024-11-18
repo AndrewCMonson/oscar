@@ -15,7 +15,7 @@ type Query {
 }
 
 type Mutation {
-  handleChatMessage(message: String!): FormattedMessage
+  handleChatMessage(message: String!, projectId: String!): FormattedMessage
   createChat(projectId: String!): Chat
   updateChat(id: ID!, projectId: String!): Chat
   deleteChat(id: ID!): Chat

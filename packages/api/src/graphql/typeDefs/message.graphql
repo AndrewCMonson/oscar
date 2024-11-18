@@ -25,6 +25,12 @@ type MessageSubData {
   data: JSON
 }
 
+input MessageInput {
+  role: String!
+  content: String!
+  name: String!
+}
+
 type Query {
   messages: [Message]
   message(id: ID!): Message

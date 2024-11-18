@@ -1,0 +1,20 @@
+type Assistant {
+  id: String   
+  createdAt: DateTime 
+  updatedAt: DateTime 
+  name: String
+  role: String 
+  context: [Message]
+}
+
+type Query {
+  getAssistant(role: ChatGPTRole): Assistant
+}
+
+type Mutation {
+  updateAssistant(
+    id: ID!
+    model: String
+    context: MessageInput
+  ): Assistant!
+}

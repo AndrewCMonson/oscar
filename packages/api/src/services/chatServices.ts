@@ -2,32 +2,29 @@ import { ChatGPTRole, User } from "@prisma/client";
 import { ChatCompletion } from "openai/resources/index.js";
 import { FormattedMessage } from "../../types/types.js";
 import { openAIClient, prismadb } from "../config/index.js";
-import { convertEnums, initialLLMPrompt } from "../utils/index.js";
-import { formatMessageForOpenAI, getUserByRole, sendMessageToDB } from "./index.js";
+import { convertEnums } from "../utils/index.js";
+import { getContext } from "./contextServices.js";
+import { formatMessageForOpenAI } from "./index.js";
 
 
 /*
-This function is the wrapper function for the chatWithAssistant function. 
-It takes in a message and a user object and returns the response from the assistant. 
-It first checks if the user has an existing chat, and if not, creates a new chat with the user. 
-It then calls the chatWithAssistant function to get a response from the assistant and returns it to the caller.
+This is the wrapper function for the assistant chat function.
+It takes in a message, user, and projectId as input.
+It calls the chatWithAssistant function with the input parameters.
+It returns the assistant's response to the caller.
 */
-export const handleChatMessage = async (message: string, user: User) => {
-  if (!message || !user) {
+export const handleChatMessage = async (message: string, user: User, projectId: string) => {
+  if (!message || !user || !projectId) {
     throw new Error("Invalid input");
   }
 
-  const { id: userId } = user;
+  // const { chatId, chatMessages } = await findUserChat(userId);
 
-  const { chatId, chatMessages } = await findUserChat(userId);
-
-  if (!chatId || !chatMessages) {
-    const { chatId, chatMessages } = await createInitialChat(userId);
-
-    return await chatWithAssistant(message, user, chatId, chatMessages);
+  if(!projectId) {
+    throw new Error("Project ID is required");
   }
 
-  return await chatWithAssistant(message, user, chatId, chatMessages);
+  return await chatWithAssistant(message, user, projectId);
 };
 
 /*
@@ -44,26 +41,33 @@ This function is the primary logic for the assistant.
 export const chatWithAssistant = async (
   message: string,
   user: User,
-  chatId: string,
-  chatMessages: FormattedMessage[],
+  projectId: string,
 ) => {
-  if (!message || !user || !chatId || !chatMessages) {
+  if (!message || !user || !projectId) {
     throw new Error("Invalid input");
   }
 
   try {
-    const createdUserMessage = await sendMessageToDB(message, user, chatId, { data: {} });
+    // const createdUserMessage = await sendMessageToDB(message, user, chatId, { data: {} });
 
-    const formattedMessage = await formatMessageForOpenAI(createdUserMessage);
+    const context = await getContext(user.id, projectId);
 
-    const formattedMessages = chatMessages.map((message) => ({
-      role: message.role,
-      content: message.content,
-      name: message.name,
-    }));
+    const formattedContext = await formatMessageForOpenAI(context);
+
+    const formattedMessage = await formatMessageForOpenAI({
+      role: ChatGPTRole.USER,
+      content: message,
+      name: user.firstName ?? user.username,
+    });
+
+    // const formattedMessages = chatMessages.map((message) => ({
+    //   role: message.role,
+    //   content: message.content,
+    //   name: message.name,
+    // }));
 
     const openAIResponse = await openAIClient.chat.completions.create({
-      messages: [...formattedMessages, formattedMessage],
+      messages: [formattedContext, formattedMessage],
       model: "gpt-4o-mini",
       max_tokens: 300,
       temperature: 0.6,
@@ -72,13 +76,16 @@ export const chatWithAssistant = async (
       frequency_penalty: 0.1,
     });
 
+    // console.log("OpenAI response: ", openAIResponse);
+
     const assistantResponse = await parseAssistantResponse(openAIResponse);
 
-    const { content, data } = assistantResponse;
 
-    const assistantUser = await getUserByRole(ChatGPTRole.ASSISTANT);
+    // const { content, data } = assistantResponse;
 
-    await sendMessageToDB(content, assistantUser, chatId, data);
+    // const assistantUser = await getUserByRole(ChatGPTRole.ASSISTANT);
+
+    // await sendMessageToDB(content, assistantUser, chatId, data);
 
     return assistantResponse;
   } catch (error) {
@@ -99,24 +106,10 @@ export const createInitialChat = async (userId: string) => {
   }
 
   try {
-    const systemUser = await getUserByRole(ChatGPTRole.SYSTEM);
+    // const systemUser = await getUserByRole(ChatGPTRole.SYSTEM);
 
     const chat = await prismadb.chat.create({
       data: {
-        messages: {
-          create: [
-            {
-              userId: systemUser.id,
-              role: ChatGPTRole.SYSTEM,
-              content: initialLLMPrompt,
-              name: "system",
-              data: {
-                action: "INITIAL_PROMPT",
-                data: {},
-              },
-            },
-          ],
-        },
         userId,
       },
       include: {
