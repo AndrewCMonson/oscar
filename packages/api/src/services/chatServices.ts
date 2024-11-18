@@ -6,21 +6,24 @@ import { convertEnums } from "../utils/index.js";
 import { getContext } from "./contextServices.js";
 import { formatMessageForOpenAI } from "./index.js";
 
-
 /*
 This is the wrapper function for the assistant chat function.
 It takes in a message, user, and projectId as input.
 It calls the chatWithAssistant function with the input parameters.
 It returns the assistant's response to the caller.
 */
-export const handleChatMessage = async (message: string, user: User, projectId: string) => {
+export const handleChatMessage = async (
+  message: string,
+  user: User,
+  projectId: string,
+) => {
   if (!message || !user || !projectId) {
     throw new Error("Invalid input");
   }
 
   // const { chatId, chatMessages } = await findUserChat(userId);
 
-  if(!projectId) {
+  if (!projectId) {
     throw new Error("Project ID is required");
   }
 
@@ -80,7 +83,6 @@ export const chatWithAssistant = async (
 
     const assistantResponse = await parseAssistantResponse(openAIResponse);
 
-
     // const { content, data } = assistantResponse;
 
     // const assistantUser = await getUserByRole(ChatGPTRole.ASSISTANT);
@@ -114,7 +116,7 @@ export const createInitialChat = async (userId: string) => {
       },
       include: {
         messages: true,
-      }
+      },
     });
 
     if (!chat) {
@@ -174,8 +176,6 @@ export const findUserChat = async (userId: string) => {
   }
 };
 
-
-
 export const getMessagesByChatId = async (chatId: string) => {
   try {
     const messages = await prismadb.message.findMany({
@@ -202,14 +202,14 @@ export const getMessagesByChatId = async (chatId: string) => {
   }
 };
 
-
-export const parseAssistantResponse = async (response: ChatCompletion): Promise<FormattedMessage> => {
+export const parseAssistantResponse = async (
+  response: ChatCompletion,
+): Promise<FormattedMessage> => {
   if (response === null) {
-    throw new Error("Error: No message returned from assistant")
+    throw new Error("Error: No message returned from assistant");
   }
 
   try {
-
     const { content } = response.choices[0].message;
 
     console.log("Assistant response: ", content);
@@ -229,4 +229,4 @@ export const parseAssistantResponse = async (response: ChatCompletion): Promise<
     console.error(error);
     throw new Error("An error occurred parsing the response");
   }
-}
+};

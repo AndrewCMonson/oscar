@@ -5,7 +5,15 @@ import { prismadb } from "../config/index.js";
 import { convertEnums } from "../utils/messageUtils.js";
 
 // takes in a role, content and name and properly types it to be sent to the OpenAI API
-export const formatMessageForOpenAI = async ({ role, content, name}: {role: ChatGPTRole, content: string, name: string}) => {
+export const formatMessageForOpenAI = async ({
+  role,
+  content,
+  name,
+}: {
+  role: ChatGPTRole;
+  content: string;
+  name: string;
+}) => {
   if (!role || !content || !name) {
     throw new Error("Please provide a role, content, and name for the message");
   }
@@ -17,7 +25,7 @@ export const formatMessageForOpenAI = async ({ role, content, name}: {role: Chat
   };
 
   return formattedMessage;
-}
+};
 
 export const getMessages = async (chat: Chat) => {
   try {
@@ -48,18 +56,23 @@ export const getMessages = async (chat: Chat) => {
 
 // function to send user or assistant message to database
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const sendMessageToDB = async (message: string, user: User, chatId: string, data: any) => {
-  if(!message || !user) {
+export const sendMessageToDB = async (
+  message: string,
+  user: User,
+  chatId: string,
+  data: any,
+) => {
+  if (!message || !user) {
     throw new Error("Invalid input");
   }
-  // if it's a user message, the data is empty for now. 
+  // if it's a user message, the data is empty for now.
   const baseMessageData = {
     content: message,
     chatId,
     userId: user.id,
     name: user.firstName ?? user.username,
     role: user.role,
-  }
+  };
 
   const messageData =
     user.role === ChatGPTRole.USER
@@ -78,7 +91,6 @@ export const sendMessageToDB = async (message: string, user: User, chatId: strin
   }
 
   return createdMessage;
-}
+};
 
 // function to format messages for openai
-

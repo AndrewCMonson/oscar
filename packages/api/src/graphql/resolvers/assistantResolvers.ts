@@ -49,7 +49,7 @@ export const assistantResolvers: Resolvers = {
         const updatedContext = {
           assistantContext,
           ...context,
-        }
+        };
 
         const assistant = await prismadb.assistant.update({
           where: {
@@ -66,6 +66,6 @@ export const assistantResolvers: Resolvers = {
         console.error(e);
         throw new Error("Error updating assistant context");
       }
-    }
+    },
   },
 };

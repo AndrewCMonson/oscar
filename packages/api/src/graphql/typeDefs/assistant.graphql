@@ -1,9 +1,9 @@
 type Assistant {
-  id: String   
-  createdAt: DateTime 
-  updatedAt: DateTime 
+  id: String
+  createdAt: DateTime
+  updatedAt: DateTime
   name: String
-  role: String 
+  role: String
   context: [Message]
 }
 
@@ -12,9 +12,5 @@ type Query {
 }
 
 type Mutation {
-  updateAssistant(
-    id: ID!
-    model: String
-    context: MessageInput
-  ): Assistant!
+  updateAssistant(id: ID!, model: String, context: MessageInput): Assistant!
 }

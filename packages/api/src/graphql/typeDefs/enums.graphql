@@ -4,3 +4,9 @@ enum ChatGPTRole {
   ASSISTANT
   FUNCTION
 }
+
+enum IntegrationType {
+  JIRA
+  MOTION
+  NOTION
+}

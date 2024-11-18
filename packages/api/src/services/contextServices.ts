@@ -1,41 +1,50 @@
-import { ChatGPTRole } from "@prisma/client"
-import { prismadb } from "../config/db.js"
+import { ChatGPTRole } from "@prisma/client";
+import { prismadb } from "../config/db.js";
 
 export const getContext = async (userId: string, projectId: string) => {
-
   const globalContext = await prismadb.assistant.findFirst({
     where: {
-      role: ChatGPTRole.ASSISTANT
-    }
+      role: ChatGPTRole.ASSISTANT,
+    },
   });
 
-  const projectContext = await prismadb.project.findFirst({
+  const projectContext = await prismadb.projectContext.findFirst({
     where: {
-      id: projectId
+      projectId: projectId,
     },
-    select: {
-      projectContext: true
+    include: {
+      metadata: true,
+      goals: true,
+      preferences: true,
     }
   });
 
   const userContext = await prismadb.user.findFirst({
     where: {
-      id: userId
+      id: userId,
     },
-    select: {
-      userPreferences: true,
-      userMemory: true,
-    },
+    include: {
+      memory: {
+        include: {
+          memories: true,
+          }
+        },
+      preferences: true,
+      notificationSettings: true,
+      }
   });
+
+  console.log("userContext", userContext);
+
+  const combinedContext = `
+    globalContext: ${JSON.stringify(globalContext)}, 
+    userMemory: ${JSON.stringify(userContext)}, 
+    projectContext: ${JSON.stringify(projectContext)}`
+  
 
   return {
     role: ChatGPTRole.ASSISTANT,
-    content: `
-    globalContext: ${JSON.stringify(globalContext?.globalContext)}, 
-    userMemory: ${JSON.stringify(userContext?.userMemory)}, 
-    userPreferences${JSON.stringify(userContext?.userPreferences)}, 
-    projectContext: ${JSON.stringify(projectContext?.projectContext)}`,
-    name: "assistant"
-  }
-  ;
-}
+    content: combinedContext,
+    name: "assistant",
+  };
+};

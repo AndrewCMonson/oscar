@@ -13,25 +13,36 @@ export const userResolvers: Resolvers = {
           id: id,
         },
       });
+
+      if (!user) {
+        throw new Error("An error occurred getting the user");
+      }
+
       return user;
     },
   },
   Mutation: {
-    createUser: async (_, { data }) => {
+    createUser: async (_, { email, username, role }) => {
       const user = await prismadb.user.create({
         data: {
-          ...data,
+          email,
+          username,
+          role,
         },
       });
       return user;
     },
-    updateUser: async (_, { id, data }) => {
+    updateUser: async (_, { id, email, username, firstName, lastName, role}) => {
       const user = await prismadb.user.update({
         where: {
           id: id,
         },
         data: {
-          ...data,
+          email,
+          username,
+          firstName,
+          lastName,
+          role,
         },
       });
       return user;
@@ -43,6 +54,56 @@ export const userResolvers: Resolvers = {
         },
       });
       return user;
+    },
+  },
+  User: {
+    notificationSettings: async (parent) => {
+      try{
+        const notificationSettings = await prismadb.notificationSettings.findUnique({
+          where: {
+            userId: parent.id,
+          },
+        });
+
+        if(!notificationSettings) {
+          throw new Error("An error occurred getting the notification settings");
+        }
+
+        return {
+          ...notificationSettings,
+          user: parent,
+        };
+      } catch (error) {
+        console.error(error);
+        throw new Error("An error occurred getting the notification settings");
+      }
+    },
+    preferences: async (parent) => {
+      const preferences = await prismadb.userPreferences.findUnique({
+        where: {
+          userId: parent.id,
+        },
+      });
+
+      if(!preferences) {
+        throw new Error("An error occurred getting the user preferences");
+      }
+      return preferences;
+    },
+    memory: async (parent) => {
+      const memory = await prismadb.userMemory.findUnique({
+        where: {
+          userId: parent.id,
+        },
+        include: {
+          memories: true,
+        }
+      });
+
+      if(!memory) {
+        throw new Error("An error occurred getting the user memory");
+      }
+      return memory;
     },
   },
 };
