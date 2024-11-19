@@ -178,9 +178,9 @@ model Message {
   id              String        @id @default(cuid())
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+  userId          String
   role            ChatGPTRole
   content         String
-  userId          String
   name            String
   data            Json
   user            User          @relation(fields: [userId], references: [id])

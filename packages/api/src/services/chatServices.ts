@@ -44,33 +44,25 @@ This function is the primary logic for the assistant.
 export const chatWithAssistant = async (
   message: string,
   user: User,
-  projectId: string,
 ) => {
-  if (!message || !user || !projectId) {
+  if (!message || !user) {
     throw new Error("Invalid input");
   }
 
   try {
     // const createdUserMessage = await sendMessageToDB(message, user, chatId, { data: {} });
 
-    const context = await getContext(user.id, projectId);
+    const context = await getContext(user.id);
 
-    const formattedContext = await formatMessageForOpenAI(context);
 
-    const formattedMessage = await formatMessageForOpenAI({
+    const formattedUserMessage = await formatMessageForOpenAI({
       role: ChatGPTRole.USER,
       content: message,
       name: user.firstName ?? user.username,
     });
 
-    // const formattedMessages = chatMessages.map((message) => ({
-    //   role: message.role,
-    //   content: message.content,
-    //   name: message.name,
-    // }));
-
     const openAIResponse = await openAIClient.chat.completions.create({
-      messages: [formattedContext, formattedMessage],
+      messages: [context, formattedUserMessage],
       model: "gpt-4o-mini",
       max_tokens: 300,
       temperature: 0.6,
@@ -111,112 +103,6 @@ export const chatWithAssistant = async (
   }
 };
 
-/* 
-This function instantiates a new chat for the user.
-It uses the "system" user to seed the chat's context via an initial message. 
-It then returns the chat object and the associated messages to the caller.
-The messages are needed for context when calling the OpenAI API.
-*/
-export const createInitialChat = async (userId: string) => {
-  if (!userId) {
-    throw new Error("User ID is required");
-  }
-
-  try {
-    // const systemUser = await getUserByRole(ChatGPTRole.SYSTEM);
-
-    const chat = await prismadb.chat.create({
-      data: {
-        userId,
-      },
-      include: {
-        messages: true,
-      },
-    });
-
-    if (!chat) {
-      throw new Error("An error occurred creating the chat");
-    }
-
-    // const chatMessages = await getMessagesByChatId(chat.id);
-    // format the chat message for enum conversion
-    const formattedMessages: FormattedMessage[] = chat.messages.map(
-      ({ role, content, name }) => ({
-        role: convertEnums(role),
-        content,
-        name,
-      }),
-    );
-
-    return { chatId: chat.id, chatMessages: formattedMessages };
-  } catch (error) {
-    console.error(error);
-    throw new Error("An error occurred creating the chat");
-  }
-};
-
-/*
-This function finds the chat associated with a user.
-It returns the chat object and the associated messages to the caller.
-*/
-export const findUserChat = async (userId: string) => {
-  try {
-    const chat = await prismadb.chat.findFirst({
-      where: {
-        userId: userId,
-      },
-      include: {
-        messages: true,
-      },
-    });
-
-    if (!chat) {
-      return { chatId: null, chatMessages: null };
-    }
-
-    const formattedMessages: FormattedMessage[] = chat.messages.map(
-      ({ role, content, name }) => ({
-        role: convertEnums(role),
-        content,
-        name,
-      }),
-    );
-
-    // const chatMessages = await getMessagesByChatId(chat.id);
-
-    return { chatId: chat.id, chatMessages: formattedMessages };
-  } catch (error) {
-    console.error(error);
-    throw new Error("An error occurred getting the chat");
-  }
-};
-
-export const getMessagesByChatId = async (chatId: string) => {
-  try {
-    const messages = await prismadb.message.findMany({
-      where: {
-        chatId: chatId,
-      },
-    });
-    if (!messages) {
-      throw new Error("An error occurred getting the messages");
-    }
-
-    const formattedMessages: FormattedMessage[] = messages.map(
-      ({ role, content, name }) => ({
-        role: convertEnums(role),
-        content,
-        name,
-      }),
-    );
-
-    return formattedMessages;
-  } catch (error) {
-    console.error(error);
-    throw new Error("An error occurred getting the messages");
-  }
-};
-
 export const parseAssistantResponse = async (
   response: ChatCompletion,
 ): Promise<FormattedMessage> => {
@@ -242,4 +128,25 @@ export const parseAssistantResponse = async (
     console.error(error);
     throw new Error("An error occurred parsing the response");
   }
+};
+
+const findConversation = async (userId: string) => {
+  const assistant = await prismadb.assistant.findFirst({
+    where: {
+      role: ChatGPTRole.ASSISTANT,
+    },
+  });
+
+  if (!assistant) {
+    throw new Error("Assistant not found");
+  }
+
+  const conversation = await prismadb.conversation.findFirst({
+    where: {
+      userId: userId,
+      assistantId: assistant.id,
+    }
+  });
+
+  return conversation;
 };
