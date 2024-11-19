@@ -96,8 +96,7 @@ model User {
   lastName             String?
   username             String
   role                 ChatGPTRole           @default(USER)
-  messages             Message[]
-  chats                Chat[]
+  conversations        Conversation[]
   projects             Project[]
   tasks                Task[]
   preferencesId        String?               @unique
@@ -105,6 +104,7 @@ model User {
   preferences          UserPreferences?
   memory               UserMemory?
   notificationSettings NotificationSettings?
+  Message              Message[]
 }
 
 model UserPreferences {
@@ -161,32 +161,34 @@ model Memory {
   userMemoryId String
 }
 
-model Chat {
-  id        String    @id @default(cuid())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  messages  Message[]
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
-  projectId String?
-  project   Project?  @relation(fields: [projectId], references: [id])
+model Conversation {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  assistantId String
+  assistant   Assistant @relation(fields: [assistantId], references: [id])
+  projectId   String?   @unique
+  project     Project?  @relation(fields: [projectId], references: [id])
+  messages    Message[]
 }
 
 model Message {
-  id              String      @id @default(cuid())
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id              String        @id @default(cuid())
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
   role            ChatGPTRole
   content         String
   userId          String
   name            String
   data            Json
-  user            User        @relation(fields: [userId], references: [id])
-  chatId          String?
-  Chat            Chat?       @relation(fields: [chatId], references: [id])
+  user            User          @relation(fields: [userId], references: [id])
+  conversationId  String
+  conversation    Conversation? @relation(fields: [conversationId], references: [id])
   taskId          String?
-  task            Task?       @relation(fields: [taskId], references: [id])
-  isGlobalContext Boolean     @default(false)
+  task            Task?         @relation(fields: [taskId], references: [id])
+  isGlobalContext Boolean       @default(false)
 }
 
 model AssistantResponse {
@@ -220,7 +222,8 @@ model Project {
   userId         String
   user           User            @relation(fields: [userId], references: [id])
   tasks          Task[]
-  chats          Chat[]
+  conversationId String?
+  conversation   Conversation?
   projectContext ProjectContext?
 }
 
@@ -297,10 +300,11 @@ model Task {
 }
 
 model Assistant {
-  id            String      @id @default(cuid())
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  role          ChatGPTRole @default(ASSISTANT)
+  id            String         @id @default(cuid())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  role          ChatGPTRole    @default(ASSISTANT)
   model         String // e.g., "gpt-4"
   globalContext Json // Stores shared knowledge and assistant base personality
+  conversations Conversation[]
 }
