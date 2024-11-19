@@ -7,6 +7,27 @@ type Assistant {
   context: [Message]
 }
 
+type AssistantResponse {
+  id: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  role: ChatGPTRole
+  content: String
+  contextData: AssistantResponseContextData
+  contextDataId: String
+}
+
+type AssistantResponseContextData {
+  id: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  action: AssistantAction
+  name: String
+  metadata: JSON
+  assistantResponseId: String
+  assistantResponse: AssistantResponse
+}
+
 type Query {
   getAssistant(role: ChatGPTRole): Assistant
 }

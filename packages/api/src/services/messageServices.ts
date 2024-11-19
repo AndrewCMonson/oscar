@@ -59,7 +59,7 @@ export const getMessages = async (chat: Chat) => {
 export const sendMessageToDB = async (
   message: string,
   user: User,
-  chatId: string,
+  projectId: string,
   data: any,
 ) => {
   if (!message || !user) {
@@ -68,7 +68,7 @@ export const sendMessageToDB = async (
   // if it's a user message, the data is empty for now.
   const baseMessageData = {
     content: message,
-    chatId,
+    projectId: projectId,
     userId: user.id,
     name: user.firstName ?? user.username,
     role: user.role,

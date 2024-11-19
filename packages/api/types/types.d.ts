@@ -11,8 +11,9 @@ export interface FormattedMessage {
   role: "user" | "function" | "assistant" | "system";
   content: string;
   name: string;
-  data?: {
+  contextData?: {
     action: string;
+    name: string;
     data: unknown; // this will change once we have a better understanding of the data structure needed by api calls
   };
 }

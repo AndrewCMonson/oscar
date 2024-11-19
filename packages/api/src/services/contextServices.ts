@@ -34,8 +34,6 @@ export const getContext = async (userId: string, projectId: string) => {
       }
   });
 
-  console.log("userContext", userContext);
-
   const combinedContext = `
     globalContext: ${JSON.stringify(globalContext)}, 
     userMemory: ${JSON.stringify(userContext)}, 

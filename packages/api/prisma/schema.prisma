@@ -79,6 +79,14 @@ enum ReportingFrequency {
   YEARLY
 }
 
+enum AssistantAction {
+  CREATE_PROJECT
+  CREATE_TASK
+  CREATE_DOCUMENTATION
+  CREATE_CALENDAR_EVENT
+  NONE
+}
+
 model User {
   id                   String                @id @default(cuid())
   createdAt            DateTime              @default(now())
@@ -94,8 +102,8 @@ model User {
   tasks                Task[]
   preferencesId        String?               @unique
   memoryId             String?               @unique
-  preferences          UserPreferences?      
-  memory               UserMemory?           
+  preferences          UserPreferences?
+  memory               UserMemory?
   notificationSettings NotificationSettings?
 }
 
@@ -109,7 +117,7 @@ model UserPreferences {
   preferredLanguage String            @default("en")
   timeZone          String            @default("America/New_York")
   integrations      UserIntegration[]
-  user              User?            @relation(fields: [userId], references: [id])
+  user              User?             @relation(fields: [userId], references: [id])
 }
 
 model UserIntegration {
@@ -141,7 +149,7 @@ model UserMemory {
   memories    Memory[]
   version     Int       @default(1)
   lastSummary DateTime?
-  user        User?    @relation(fields: [userId], references: [id])
+  user        User?     @relation(fields: [userId], references: [id])
 }
 
 model Memory {
@@ -181,6 +189,27 @@ model Message {
   isGlobalContext Boolean     @default(false)
 }
 
+model AssistantResponse {
+  id            String                        @id @default(cuid())
+  createdAt     DateTime                      @default(now())
+  updatedAt     DateTime                      @updatedAt
+  role          ChatGPTRole                   @default(SYSTEM)
+  content       String
+  contextData   AssistantResponseContextData?
+  contextDataId String                        @unique
+}
+
+model AssistantResponseContextData {
+  id                  String            @id @default(cuid())
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  action              AssistantAction
+  name                String
+  data                Json
+  assistantResponseId String            @unique
+  assistantResponse   AssistantResponse @relation(fields: [assistantResponseId], references: [id])
+}
+
 model Project {
   id             String          @id @default(cuid())
   createdAt      DateTime        @default(now())
@@ -208,17 +237,16 @@ model ProjectContext {
 }
 
 model ProjectMetadata {
-  id                String          @id @default(cuid())
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  description       String?
-  tags              String[]
-  startDate         DateTime?
-  endDate           DateTime?
-  status            ProjectStatus   @default(ACTIVE)
-  priority          ProjectPriority @default(MEDIUM)
-  projectContextId  String?        @unique
-  projectContext    ProjectContext? @relation(fields: [projectContextId], references: [id])
+  id               String          @id @default(cuid())
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  tags             String[]
+  startDate        DateTime?
+  endDate          DateTime?
+  status           ProjectStatus   @default(ACTIVE)
+  priority         ProjectPriority @default(MEDIUM)
+  projectContextId String?         @unique
+  projectContext   ProjectContext? @relation(fields: [projectContextId], references: [id])
 }
 
 model ProjectGoal {

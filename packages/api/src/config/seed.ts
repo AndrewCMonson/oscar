@@ -35,7 +35,6 @@ export const seed = async () => {
         create: {
           metadata: {
             create: {
-              description: "Full stack applicaiton for CRM/ATS system",
               status: ProjectStatus.ACTIVE,
               startDate: new Date("2024-01-28"),
               endDate: new Date("2024-12-28"),

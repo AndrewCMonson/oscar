@@ -83,6 +83,21 @@ export const chatWithAssistant = async (
 
     const assistantResponse = await parseAssistantResponse(openAIResponse);
 
+    if(assistantResponse.contextData?.action === "CREATE_PROJECT"){
+      const createdProject = await prismadb.project.create({
+        data: {
+          name: assistantResponse.contextData.name,
+          userId: user.id,
+        },
+      });
+
+      if (!createdProject) {
+        throw new Error("An error occurred creating the project");
+      }
+
+      console.log("Project created: ", createdProject);
+    }
+
     // const { content, data } = assistantResponse;
 
     // const assistantUser = await getUserByRole(ChatGPTRole.ASSISTANT);
@@ -211,8 +226,6 @@ export const parseAssistantResponse = async (
 
   try {
     const { content } = response.choices[0].message;
-
-    console.log("Assistant response: ", content);
 
     if (content === null) {
       throw new Error("Error: Message content is null");

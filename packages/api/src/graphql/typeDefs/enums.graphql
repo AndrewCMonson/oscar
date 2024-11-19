@@ -10,3 +10,11 @@ enum IntegrationType {
   MOTION
   NOTION
 }
+
+enum AssistantAction {
+  CREATE_PROJECT
+  CREATE_TASK
+  CREATE_DOCUMENTATION
+  CREATE_CALENDAR_EVENT
+  NONE
+}
