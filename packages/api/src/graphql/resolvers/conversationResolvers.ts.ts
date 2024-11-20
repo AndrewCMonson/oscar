@@ -1,55 +1,55 @@
 import { prismadb } from "@api/src/config/db.js";
-import { chatWithAssistant } from "@api/src/services/chatServices.js";
+import { chatWithAssistant } from "@api/src/services/index.js";
 import { ChatGPTMessage, Resolvers } from "@api/types/";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
 
-export const chatResolvers: Resolvers = {
+export const conversationResolvers: Resolvers = {
   Query: {
-    chats: async () => {
+    conversations: async () => {
       try {
-        const chats = await prismadb.chat.findMany();
+        const conversations = await prismadb.conversation.findMany();
 
-        if (!chats) {
-          throw new Error("Chats not found");
+        if (!conversations) {
+          throw new Error("conversations not found");
         }
 
-        return chats;
+        return conversations;
       } catch (e) {
         if (e instanceof PrismaClientKnownRequestError) {
           console.error(e.message);
         } else {
-          throw new Error("Error fetching chats");
+          throw new Error("Error fetching conversations");
         }
       }
     },
-    chat: async (_, { id }) => {
+    conversation: async (_, { id }) => {
       if (!id) {
         throw new Error("Id is required");
       }
 
       try {
-        const chat = await prismadb.chat.findUnique({
+        const conversation = await prismadb.conversation.findUnique({
           where: {
             id: id,
           },
         });
 
-        if (!chat) {
-          throw new Error("Chat not found");
+        if (!conversation) {
+          throw new Error("conversation not found");
         }
 
-        return chat;
+        return conversation;
       } catch (e) {
         if (e instanceof PrismaClientKnownRequestError) {
           console.error(e.message);
         } else {
-          throw new Error("Error fetching chats");
+          throw new Error("Error fetching conversations");
         }
       }
     },
   },
   Mutation: {
-    handleChatMessage: async (_, { message }, { user }) => {
+    handleConversationMessage: async (_, { message }, { user }) => {
       if(!message) {
         throw new Error("Message is required");
       }
@@ -64,20 +64,20 @@ export const chatResolvers: Resolvers = {
         name: user.firstName ?? user.username,
       };
 
-      const chatMessage = await chatWithAssistant(userMessage, user);
+      const conversationMessage = await chatWithAssistant(userMessage, user);
 
-      return chatMessage;
+      return conversationMessage;
     },
-    // createChat: async (_, {  }, { user }) => {
-    //   const chat = await prismadb.chat.create({
+    // createconversation: async (_, {  }, { user }) => {
+    //   const conversation = await prismadb.conversation.create({
     //     data: {
 
     //     },
     //   });
-    //   return chat;
+    //   return conversation;
     // },
-    // updateChat: async (_, { id, data }, { user }) => {
-    //   const chat = await prismadb.chat.update({
+    // updateconversation: async (_, { id, data }, { user }) => {
+    //   const conversation = await prismadb.conversation.update({
     //     where: {
     //       id: id,
     //     },
@@ -85,15 +85,15 @@ export const chatResolvers: Resolvers = {
     //       ...data,
     //     },
     //   });
-    //   return chat;
+    //   return conversation;
     // },
-    deleteChat: async (_, { id }) => {
-      const chat = await prismadb.chat.delete({
+    deleteConversation: async (_, { id }) => {
+      const conversation = await prismadb.conversation.delete({
         where: {
           id: id,
         },
       });
-      return chat;
+      return conversation;
     },
   },
 };

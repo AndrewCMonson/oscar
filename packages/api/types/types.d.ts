@@ -8,20 +8,9 @@ export interface MiddlewareContext {
 }
 
 export interface ChatGPTMessage {
-  role: "user" | "function" | "assistant" | "system";
+  role: "user" | "function" | "assistant" | "system" | "tool";
   content: string;
   name: string;
-}
-
-export interface FormattedMessage {
-  role: "user" | "function" | "assistant" | "system";
-  content: string;
-  name: string;
-  contextData?: {
-    action: string;
-    name: string;
-    data: unknown; // this will change once we have a better understanding of the data structure needed by api calls
-  };
 }
 
 export interface ChatRequest extends Request {
@@ -67,4 +56,21 @@ export interface UserMemoryData {
   notifications: boolean;
   timeZone: string;
   language: string;
+}
+
+export interface OpenAIChatResponse {
+  role: string;
+  name: string,
+  content: string;
+  contextData: {
+    action: string;
+    actionName: string;
+    metadata: {
+      status: string;
+      priority: string;
+      startDate: string;
+      endDate: string;
+      tags: string[];
+    };
+  };
 }

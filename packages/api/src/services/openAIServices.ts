@@ -1,11 +1,10 @@
-import { AssistantResponse, ChatGPTMessage } from "@api/types/index.js";
+import { ChatGPTMessage, OpenAIChatResponse } from "@api/types/index.js";
 import { User } from "@prisma/client";
 import { zodResponseFormat } from "openai/helpers/zod.js";
-import { ChatCompletion } from "openai/resources/index.js";
-import { z } from "zod";
 import { openAIClient, prismadb } from "../config/index.js";
 import { getContext } from "./contextServices.js";
 import { formatMessageForOpenAI } from "./index.js";
+import { openAIStructuredOutput } from "../utils/openAIUtils.js";
 /*
 This function is the primary logic for the assistant. 
 
@@ -17,28 +16,11 @@ This function is the primary logic for the assistant.
 - It creates a new message in the database with the assistant's response.
 - It returns the assistant's response to the caller.
 */
-const openAIChatResponse = z.object({
-  role: z.string(),
-  name: z.string(),
-  content: z.string(),
-  contextData: z.object({
-    action: z.string(),
-    actionName: z.string(),
-    description: z.string(),
-    metadata: z.object({
-      status: z.string(),
-      priority: z.string(),
-      startDate: z.string(),
-      endDate: z.string(),
-      tags: z.array(z.string()),
-    }),
-  }),
-})
 
 export const chatWithAssistant = async (
   message: ChatGPTMessage,
   user: User,
-) => {
+): Promise<OpenAIChatResponse> => {
   if (!message || !user) {
     throw new Error("Invalid input");
   }
@@ -67,7 +49,7 @@ export const chatWithAssistant = async (
       top_p: 0.95,
       presence_penalty: 0.3,
       frequency_penalty: 0.1,
-      response_format: zodResponseFormat(openAIChatResponse, "assistant"),
+      response_format: zodResponseFormat(openAIStructuredOutput, "assistant"),
     });
 
     // parse the response from the assistant - the assistant returns a structured JSON response, so we have to parse the content to be sent to the database and take actions based on the response
@@ -79,7 +61,13 @@ export const chatWithAssistant = async (
         action: "NONE",
         actionName: "none",
         description: "",
-        metadata: {},
+        metadata: {
+          status: "",
+          priority: "",
+          startDate: "",
+          endDate: "",
+          tags: [],
+        },
       }
     };
     // update the conversation history with the assistant's response
@@ -120,12 +108,6 @@ export const chatWithAssistant = async (
       console.log("Project created: ", createdProject);
     }
 
-    // const { content, data } = assistantResponse;
-
-    // const assistantUser = await getUserByRole(ChatGPTRole.ASSISTANT);
-
-    // await sendMessageToDB(content, assistantUser, chatId, data);
-
     return assistantResponse;
   } catch (error) {
     console.error(error);
@@ -133,57 +115,21 @@ export const chatWithAssistant = async (
   }
 };
 
-export const parseAssistantResponse = async (
-  response: ChatCompletion,
-): Promise<AssistantResponse> => {
-  if (response === null) {
-    throw new Error("Error: No message returned from assistant");
-  }
-
-  try {
-    const { content } = response.choices[0].message;
-
-    if (content === null) {
-      throw new Error("Error: Message content is null");
-    }
-
-    const parsedResponse = JSON.parse(content) as AssistantResponse;
-
-    if (!parsedResponse) {
-      throw new Error("Error: Unable to parse response");
-    }
-
-    return parsedResponse;
-  } catch (error) {
-    console.error(error);
-    throw new Error("An error occurred parsing the response");
-  }
-};
-
 const findConversation = async (userId: string, message: ChatGPTMessage) => {
-  const assistant = await prismadb.assistant.findFirst({
-    where: {
-      role: "assistant",
-    },
-  });
 
-  if (!assistant) {
-    throw new Error("Assistant not found");
-  }
+  try{
+    const assistant = await prismadb.assistant.findFirst({
+      where: {
+        role: "assistant",
+      },
+    });
 
-  let conversation = await prismadb.conversation.findFirst({
-    where: {
-      userId: userId,
-      assistantId: assistant.id,
-    },
-    include: {
-      messages: true,
+    if (!assistant) {
+      throw new Error("Assistant not found");
     }
-  });
 
-  if (!conversation) {
-    conversation = await prismadb.conversation.create({
-      data: {
+    let conversation = await prismadb.conversation.findFirst({
+      where: {
         userId: userId,
         assistantId: assistant.id,
       },
@@ -191,68 +137,89 @@ const findConversation = async (userId: string, message: ChatGPTMessage) => {
         messages: true,
       }
     });
-  }
 
-  const updatedConversation = await prismadb.conversation.update({
-    where: {
-      id: conversation.id,
-    },
-    data: {
-      messages: {
-        create: [{
+    if (!conversation) {
+      conversation = await prismadb.conversation.create({
+        data: {
           userId: userId,
-          role: message.role,
-          content: message.content,
-          name: message.name,
-          contextData: {},
-        }]
-      },
-    },
-    include: {
-      messages: true,
+          assistantId: assistant.id,
+        },
+        include: {
+          messages: true,
+        }
+      });
     }
-  });
 
-  if (!updatedConversation) {
-    throw new Error("An error occurred updating the conversation");
+    const updatedConversation = await prismadb.conversation.update({
+      where: {
+        id: conversation.id,
+      },
+      data: {
+        messages: {
+          create: [{
+            userId: userId,
+            role: message.role,
+            content: message.content,
+            name: message.name,
+            contextData: {},
+          }]
+        },
+      },
+      include: {
+        messages: true,
+      }
+    });
+
+    if (!updatedConversation) {
+      throw new Error("An error occurred updating the conversation");
+    }
+
+    return updatedConversation;
+  } catch (e) {
+    console.error(e);
+    throw new Error("An error occurred finding the conversation");
   }
-
-  return updatedConversation;
 };
 
 export const createConversation = async (userId: string, message: ChatGPTMessage) => {
-  const assistant = await prismadb.assistant.findFirst({
-    where: {
-      role: "assistant",
-    },
-  });
-
-  if (!assistant) {
-    throw new Error("Assistant not found");
-  }
-
-  const conversation = await prismadb.conversation.create({
-    data: {
-      userId: userId,
-      assistantId: assistant.id,
-      messages: {
-        create: [{
-          userId: userId,
-          role: message.role,
-          content: message.content,
-          name: message.name,
-          contextData: {},
-        }]
+  
+  try{
+    const assistant = await prismadb.assistant.findFirst({
+      where: {
+        role: "assistant",
       },
-    },
-    include: {
-      messages: true,
+    });
+  
+    if (!assistant) {
+      throw new Error("Assistant not found");
     }
-  });
-
-  if (!conversation) {
+  
+    const conversation = await prismadb.conversation.create({
+      data: {
+        userId: userId,
+        assistantId: assistant.id,
+        messages: {
+          create: [{
+            userId: userId,
+            role: message.role,
+            content: message.content,
+            name: message.name,
+            contextData: {},
+          }]
+        },
+      },
+      include: {
+        messages: true,
+      }
+    });
+  
+    if (!conversation) {
+      throw new Error("An error occurred creating the conversation");
+    }
+  
+    return conversation;
+  } catch (e) {
+    console.error(e);
     throw new Error("An error occurred creating the conversation");
   }
-
-  return conversation;
 }

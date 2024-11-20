@@ -8,7 +8,7 @@ type User {
   username: String!
   role: String
   messages: [Message]
-  chats: [Chat]
+  conversations: [Conversation]
   projects: [Project]
   tasks: [Task]
   preferenceId: String

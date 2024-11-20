@@ -2,21 +2,23 @@ type Conversation {
   id: ID!
   createdAt: DateTime!
   updatedAt: DateTime!
-  messages: [Message]
   userId: String
   user: User
+  assistantId: String
+  assistant: Assistant
   projectId: String
   project: Project
+  messages: [Message]
 }
 
 type Query {
-  chats: [Chat]
-  chat(id: ID!): Chat
+  conversations: [Conversation]
+  conversation(id: ID!): Conversation
 }
 
 type Mutation {
-  handleChatMessage(message: String!): AssistantResponse
-  createChat(projectId: String!): Chat
-  updateChat(id: ID!, projectId: String!): Chat
-  deleteChat(id: ID!): Chat
+  handleConversationMessage(message: String!): AssistantResponse
+  createConversation(projectId: String!): Conversation
+  updateConversation(id: ID!, projectId: String!): Conversation
+  deleteConversation(id: ID!): Conversation
 }

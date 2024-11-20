@@ -4,7 +4,7 @@ type Assistant {
   updatedAt: DateTime
   name: String
   role: String
-  context: [Message]
+  globalContext: [Message]
 }
 
 type AssistantResponse {

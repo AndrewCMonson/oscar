@@ -89,8 +89,8 @@ export type Scalars = {
 
 export type Assistant = {
   __typename?: 'Assistant';
-  context?: Maybe<Array<Maybe<Message>>>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
+  globalContext?: Maybe<Array<Maybe<Message>>>;
   id?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Scalars['String']['output']>;
@@ -129,8 +129,10 @@ export type AssistantResponseContextData = {
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
-export type Chat = {
-  __typename?: 'Chat';
+export type Conversation = {
+  __typename?: 'Conversation';
+  assistant?: Maybe<Assistant>;
+  assistantId?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   messages?: Maybe<Array<Maybe<Message>>>;
@@ -167,9 +169,9 @@ export type Memory = {
 
 export type Message = {
   __typename?: 'Message';
-  chat?: Maybe<Chat>;
-  chatId: Scalars['ID']['output'];
   content: Scalars['String']['output'];
+  conversation?: Maybe<Conversation>;
+  conversationId?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
@@ -195,19 +197,19 @@ export type MessageSubData = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createChat?: Maybe<Chat>;
+  createConversation?: Maybe<Conversation>;
   createMessage?: Maybe<Message>;
   createProject?: Maybe<Project>;
   createTask?: Maybe<Task>;
   createUser?: Maybe<User>;
-  deleteChat?: Maybe<Chat>;
+  deleteConversation?: Maybe<Conversation>;
   deleteMessage?: Maybe<Message>;
   deleteProject?: Maybe<Project>;
   deleteTask?: Maybe<Task>;
   deleteUser?: Maybe<User>;
-  handleChatMessage?: Maybe<AssistantResponse>;
+  handleConversationMessage?: Maybe<AssistantResponse>;
   updateAssistant: Assistant;
-  updateChat?: Maybe<Chat>;
+  updateConversation?: Maybe<Conversation>;
   updateMessage?: Maybe<Message>;
   updateProject?: Maybe<Project>;
   updateTask?: Maybe<Task>;
@@ -215,14 +217,14 @@ export type Mutation = {
 };
 
 
-export type MutationCreateChatArgs = {
+export type MutationCreateConversationArgs = {
   projectId: Scalars['String']['input'];
 };
 
 
 export type MutationCreateMessageArgs = {
-  chatId: Scalars['ID']['input'];
   content: Scalars['String']['input'];
+  conversationId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -250,7 +252,7 @@ export type MutationCreateUserArgs = {
 };
 
 
-export type MutationDeleteChatArgs = {
+export type MutationDeleteConversationArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -275,7 +277,7 @@ export type MutationDeleteUserArgs = {
 };
 
 
-export type MutationHandleChatMessageArgs = {
+export type MutationHandleConversationMessageArgs = {
   message: Scalars['String']['input'];
 };
 
@@ -287,7 +289,7 @@ export type MutationUpdateAssistantArgs = {
 };
 
 
-export type MutationUpdateChatArgs = {
+export type MutationUpdateConversationArgs = {
   id: Scalars['ID']['input'];
   projectId: Scalars['String']['input'];
 };
@@ -329,7 +331,7 @@ export type MutationUpdateUserArgs = {
 
 export type Project = {
   __typename?: 'Project';
-  chats?: Maybe<Array<Maybe<Chat>>>;
+  conversations?: Maybe<Array<Maybe<Conversation>>>;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
@@ -349,8 +351,8 @@ export enum ProjectType {
 
 export type Query = {
   __typename?: 'Query';
-  chat?: Maybe<Chat>;
-  chats?: Maybe<Array<Maybe<Chat>>>;
+  conversation?: Maybe<Conversation>;
+  conversations?: Maybe<Array<Maybe<Conversation>>>;
   getAssistant?: Maybe<Assistant>;
   message?: Maybe<Message>;
   messages?: Maybe<Array<Maybe<Message>>>;
@@ -363,7 +365,7 @@ export type Query = {
 };
 
 
-export type QueryChatArgs = {
+export type QueryConversationArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -427,7 +429,7 @@ export enum TaskStatus {
 
 export type User = {
   __typename?: 'User';
-  chats?: Maybe<Array<Maybe<Chat>>>;
+  conversations?: Maybe<Array<Maybe<Conversation>>>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   firstName?: Maybe<Scalars['String']['output']>;
@@ -569,14 +571,14 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   AccountNumber: ResolverTypeWrapper<Scalars['AccountNumber']['output']>;
-  Assistant: ResolverTypeWrapper<Omit<Assistant, 'context'> & { context?: Maybe<Array<Maybe<ResolversTypes['Message']>>> }>;
+  Assistant: ResolverTypeWrapper<Omit<Assistant, 'globalContext'> & { globalContext?: Maybe<Array<Maybe<ResolversTypes['Message']>>> }>;
   AssistantAction: AssistantAction;
   AssistantResponse: ResolverTypeWrapper<AssistantResponse>;
   AssistantResponseContextData: ResolverTypeWrapper<AssistantResponseContextData>;
   BigInt: ResolverTypeWrapper<Scalars['BigInt']['output']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Byte: ResolverTypeWrapper<Scalars['Byte']['output']>;
-  Chat: ResolverTypeWrapper<ChatModel>;
+  Conversation: ResolverTypeWrapper<Omit<Conversation, 'assistant' | 'messages' | 'project' | 'user'> & { assistant?: Maybe<ResolversTypes['Assistant']>, messages?: Maybe<Array<Maybe<ResolversTypes['Message']>>>, project?: Maybe<ResolversTypes['Project']>, user?: Maybe<ResolversTypes['User']> }>;
   CountryCode: ResolverTypeWrapper<Scalars['CountryCode']['output']>;
   Cuid: ResolverTypeWrapper<Scalars['Cuid']['output']>;
   Currency: ResolverTypeWrapper<Scalars['Currency']['output']>;
@@ -667,13 +669,13 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   AccountNumber: Scalars['AccountNumber']['output'];
-  Assistant: Omit<Assistant, 'context'> & { context?: Maybe<Array<Maybe<ResolversParentTypes['Message']>>> };
+  Assistant: Omit<Assistant, 'globalContext'> & { globalContext?: Maybe<Array<Maybe<ResolversParentTypes['Message']>>> };
   AssistantResponse: AssistantResponse;
   AssistantResponseContextData: AssistantResponseContextData;
   BigInt: Scalars['BigInt']['output'];
   Boolean: Scalars['Boolean']['output'];
   Byte: Scalars['Byte']['output'];
-  Chat: ChatModel;
+  Conversation: Omit<Conversation, 'assistant' | 'messages' | 'project' | 'user'> & { assistant?: Maybe<ResolversParentTypes['Assistant']>, messages?: Maybe<Array<Maybe<ResolversParentTypes['Message']>>>, project?: Maybe<ResolversParentTypes['Project']>, user?: Maybe<ResolversParentTypes['User']> };
   CountryCode: Scalars['CountryCode']['output'];
   Cuid: Scalars['Cuid']['output'];
   Currency: Scalars['Currency']['output'];
@@ -762,8 +764,8 @@ export interface AccountNumberScalarConfig extends GraphQLScalarTypeConfig<Resol
 }
 
 export type AssistantResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['Assistant'] = ResolversParentTypes['Assistant']> = ResolversObject<{
-  context?: Resolver<Maybe<Array<Maybe<ResolversTypes['Message']>>>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  globalContext?: Resolver<Maybe<Array<Maybe<ResolversTypes['Message']>>>, ParentType, ContextType>;
   id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   role?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -803,7 +805,9 @@ export interface ByteScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'Byte';
 }
 
-export type ChatResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['Chat'] = ResolversParentTypes['Chat']> = ResolversObject<{
+export type ConversationResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['Conversation'] = ResolversParentTypes['Conversation']> = ResolversObject<{
+  assistant?: Resolver<Maybe<ResolversTypes['Assistant']>, ParentType, ContextType>;
+  assistantId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   messages?: Resolver<Maybe<Array<Maybe<ResolversTypes['Message']>>>, ParentType, ContextType>;
@@ -974,9 +978,9 @@ export type MemoryResolvers<ContextType = MiddlewareContext, ParentType extends 
 }>;
 
 export type MessageResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['Message'] = ResolversParentTypes['Message']> = ResolversObject<{
-  chat?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType>;
-  chatId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  conversation?: Resolver<Maybe<ResolversTypes['Conversation']>, ParentType, ContextType>;
+  conversationId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -996,19 +1000,19 @@ export type MessageSubDataResolvers<ContextType = MiddlewareContext, ParentType 
 }>;
 
 export type MutationResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  createChat?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<MutationCreateChatArgs, 'projectId'>>;
-  createMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<MutationCreateMessageArgs, 'chatId' | 'content'>>;
+  createConversation?: Resolver<Maybe<ResolversTypes['Conversation']>, ParentType, ContextType, RequireFields<MutationCreateConversationArgs, 'projectId'>>;
+  createMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<MutationCreateMessageArgs, 'content'>>;
   createProject?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'name' | 'type'>>;
   createTask?: Resolver<Maybe<ResolversTypes['Task']>, ParentType, ContextType, RequireFields<MutationCreateTaskArgs, 'description' | 'priority' | 'projectId' | 'status' | 'title'>>;
   createUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'email' | 'username'>>;
-  deleteChat?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<MutationDeleteChatArgs, 'id'>>;
+  deleteConversation?: Resolver<Maybe<ResolversTypes['Conversation']>, ParentType, ContextType, RequireFields<MutationDeleteConversationArgs, 'id'>>;
   deleteMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<MutationDeleteMessageArgs, 'id'>>;
   deleteProject?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
   deleteTask?: Resolver<Maybe<ResolversTypes['Task']>, ParentType, ContextType, RequireFields<MutationDeleteTaskArgs, 'id'>>;
   deleteUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
-  handleChatMessage?: Resolver<Maybe<ResolversTypes['AssistantResponse']>, ParentType, ContextType, RequireFields<MutationHandleChatMessageArgs, 'message'>>;
+  handleConversationMessage?: Resolver<Maybe<ResolversTypes['AssistantResponse']>, ParentType, ContextType, RequireFields<MutationHandleConversationMessageArgs, 'message'>>;
   updateAssistant?: Resolver<ResolversTypes['Assistant'], ParentType, ContextType, RequireFields<MutationUpdateAssistantArgs, 'id'>>;
-  updateChat?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<MutationUpdateChatArgs, 'id' | 'projectId'>>;
+  updateConversation?: Resolver<Maybe<ResolversTypes['Conversation']>, ParentType, ContextType, RequireFields<MutationUpdateConversationArgs, 'id' | 'projectId'>>;
   updateMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<MutationUpdateMessageArgs, 'content' | 'id'>>;
   updateProject?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<MutationUpdateProjectArgs, 'id'>>;
   updateTask?: Resolver<Maybe<ResolversTypes['Task']>, ParentType, ContextType, RequireFields<MutationUpdateTaskArgs, 'id'>>;
@@ -1068,7 +1072,7 @@ export interface PostalCodeScalarConfig extends GraphQLScalarTypeConfig<Resolver
 }
 
 export type ProjectResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['Project'] = ResolversParentTypes['Project']> = ResolversObject<{
-  chats?: Resolver<Maybe<Array<Maybe<ResolversTypes['Chat']>>>, ParentType, ContextType>;
+  conversations?: Resolver<Maybe<Array<Maybe<ResolversTypes['Conversation']>>>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -1082,8 +1086,8 @@ export type ProjectResolvers<ContextType = MiddlewareContext, ParentType extends
 }>;
 
 export type QueryResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  chat?: Resolver<Maybe<ResolversTypes['Chat']>, ParentType, ContextType, RequireFields<QueryChatArgs, 'id'>>;
-  chats?: Resolver<Maybe<Array<Maybe<ResolversTypes['Chat']>>>, ParentType, ContextType>;
+  conversation?: Resolver<Maybe<ResolversTypes['Conversation']>, ParentType, ContextType, RequireFields<QueryConversationArgs, 'id'>>;
+  conversations?: Resolver<Maybe<Array<Maybe<ResolversTypes['Conversation']>>>, ParentType, ContextType>;
   getAssistant?: Resolver<Maybe<ResolversTypes['Assistant']>, ParentType, ContextType, Partial<QueryGetAssistantArgs>>;
   message?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryMessageArgs, 'id'>>;
   messages?: Resolver<Maybe<Array<Maybe<ResolversTypes['Message']>>>, ParentType, ContextType>;
@@ -1171,7 +1175,7 @@ export interface UnsignedIntScalarConfig extends GraphQLScalarTypeConfig<Resolve
 }
 
 export type UserResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
-  chats?: Resolver<Maybe<Array<Maybe<ResolversTypes['Chat']>>>, ParentType, ContextType>;
+  conversations?: Resolver<Maybe<Array<Maybe<ResolversTypes['Conversation']>>>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1256,7 +1260,7 @@ export type Resolvers<ContextType = MiddlewareContext> = ResolversObject<{
   AssistantResponseContextData?: AssistantResponseContextDataResolvers<ContextType>;
   BigInt?: GraphQLScalarType;
   Byte?: GraphQLScalarType;
-  Chat?: ChatResolvers<ContextType>;
+  Conversation?: ConversationResolvers<ContextType>;
   CountryCode?: GraphQLScalarType;
   Cuid?: GraphQLScalarType;
   Currency?: GraphQLScalarType;

@@ -7,8 +7,8 @@ type Message {
   userId: String
   name: String!
   user: User
-  chatId: ID!
-  chat: Chat
+  conversationId: String
+  conversation: Conversation
   taskId: String
   task: Task
 }
@@ -37,7 +37,7 @@ type Query {
 }
 
 type Mutation {
-  createMessage(chatId: ID!, content: String!): Message
+  createMessage(conversationId: String, content: String!): Message
   updateMessage(id: ID!, content: String!): Message
   deleteMessage(id: ID!): Message
 }

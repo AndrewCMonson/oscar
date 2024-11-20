@@ -5,7 +5,7 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import { fileURLToPath } from "url";
 import { typeDefs as scalarTypeDefs } from "graphql-scalars";
 import {
-  chatResolvers,
+  conversationResolvers,
   messageResolvers,
   projectResolvers,
   taskResolvers,
@@ -20,7 +20,7 @@ export const typeDefs = [
 ];
 
 export const resolvers = mergeResolvers([
-  chatResolvers,
+  conversationResolvers,
   messageResolvers,
   projectResolvers,
   taskResolvers,
