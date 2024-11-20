@@ -7,6 +7,12 @@ export interface MiddlewareContext {
   res: Response;
 }
 
+export interface ChatGPTMessage {
+  role: "user" | "function" | "assistant" | "system";
+  content: string;
+  name: string;
+}
+
 export interface FormattedMessage {
   role: "user" | "function" | "assistant" | "system";
   content: string;

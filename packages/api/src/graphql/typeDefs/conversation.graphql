@@ -1,4 +1,4 @@
-type Chat {
+type Conversation {
   id: ID!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -15,7 +15,7 @@ type Query {
 }
 
 type Mutation {
-  handleChatMessage(message: String!, projectId: String!): AssistantResponse
+  handleChatMessage(message: String!): AssistantResponse
   createChat(projectId: String!): Chat
   updateChat(id: ID!, projectId: String!): Chat
   deleteChat(id: ID!): Chat

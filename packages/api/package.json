@@ -15,7 +15,8 @@
     "@types/cors": "^2.8.17",
     "graphql-scalars": "^1.23.0",
     "pg": "^8.13.1",
-    "pg-hstore": "^2.3.4"
+    "pg-hstore": "^2.3.4",
+    "zod": "^3.23.8"
   },
   "scripts": {
     "start:dev": "tsx watch --include ./src index.ts",

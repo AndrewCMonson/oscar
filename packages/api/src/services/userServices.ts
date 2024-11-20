@@ -1,7 +1,6 @@
-import { ChatGPTRole } from "@prisma/client";
 import { prismadb } from "../config/index.js";
 
-export const getUserByRole = async (role: ChatGPTRole) => {
+export const getUserByRole = async (role: string) => {
   try {
     const user = await prismadb.user.findFirst({
       where: {

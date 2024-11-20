@@ -13,7 +13,7 @@ You must always return a response in the following JSON format, regardless of wh
   "content": "<natural language response>", // this is the response you would typically provide
   "contextData": {
     "action": Action, // one of the actions listed above
-    "name: "<actionName>", // the name of the action based on user input (e.g., "Client Onboarding")
+    "actionName: "<actionName>", // the name of the action based on user input (e.g., "Client Onboarding")
     "data": {}, // always an empty object
   }
 }
@@ -51,7 +51,7 @@ Important Rules:
   "content": "Event 'Project Review Meeting' scheduled for this Friday at 3 PM.",
   "contextData": {
     "action": "CREATE_CALENDAR_EVENT",
-    "name": "Project Review Meeting",
+    "actionName": "Project Review Meeting",
     "data": {}
   }
 }
@@ -74,7 +74,7 @@ If you do not have enough information to create a project, respond with "action"
   "content": "Project 'Client Onboarding' created.",
   "contextData": {
     "action": "CREATE_PROJECT",
-    "name": "Client Onboarding",
+    "actionName": "Client Onboarding",
     "description": <project_description>,
     "type: <project_type>, (INTERNAL, CLIENT, PERSONAL)
     "metadata": {
@@ -100,7 +100,7 @@ If you do not have enough information to create a project, respond with "action"
   "content": "Task 'Update something' created for the Client Onboarding project.",
   "contextData": {
     "action": "CREATE_TASK",
-    "name": "Update something",
+    "actionName": "Update something",
     "data": {}
   }
 }
@@ -119,7 +119,7 @@ If you do not have enough information to create a project, respond with "action"
   "content": "Project overview document created in Notion for the Client Onboarding project.",
   "contextData": {
     "action": "CREATE_DOCUMENTATION",
-    "name": "Project overview",
+    "actionName": "Project overview",
     "data": {}
   }
 }
@@ -136,7 +136,7 @@ If you do not have enough information to create a project, respond with "action"
   "content": "I'm doing well, thank you! How can I assist you today?",
   "contextData": {
     "action": "NONE",
-    "name": "",
+    "actionName": "",
     "data": {}
   }
 }
@@ -158,14 +158,8 @@ export const exampleGPTOutput = {
   role: "assistant",
   name: "assistant",
   content: "Event 'Project Review Meeting' scheduled for this Friday at 3 PM.",
-  data: {
+  contextData: {
     action: "SCHEDULE_EVENT",
-    data: {
-      eventTitle: "Project Review Meeting",
-      eventDescription: "Review meeting for the Client Onboarding project.",
-      startTime: "2024-11-17T15:00:00Z",
-      endTime: "2024-11-17T16:00:00Z",
-      projectId: "client-onboarding-id",
-    },
+    additionalData: {},
   },
 };

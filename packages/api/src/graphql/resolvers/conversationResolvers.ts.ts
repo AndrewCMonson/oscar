@@ -1,6 +1,6 @@
 import { prismadb } from "@api/src/config/db.js";
-import { handleChatMessage } from "@api/src/services/chatServices.js";
-import { Resolvers } from "@api/types/";
+import { chatWithAssistant } from "@api/src/services/chatServices.js";
+import { ChatGPTMessage, Resolvers } from "@api/types/";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
 
 export const chatResolvers: Resolvers = {
@@ -49,30 +49,24 @@ export const chatResolvers: Resolvers = {
     },
   },
   Mutation: {
-    handleChatMessage: async (_, { message, projectId }, { user }) => {
-      if (!message) {
+    handleChatMessage: async (_, { message }, { user }) => {
+      if(!message) {
         throw new Error("Message is required");
       }
 
-      if (!user) {
+      if(!user) {
         throw new Error("User is required");
       }
 
-      try {
-        const chatMessage = await handleChatMessage(message, user, projectId);
+      const userMessage: ChatGPTMessage = {
+        role: "user",
+        content: message,
+        name: user.firstName ?? user.username,
+      };
 
-        if (!chatMessage) {
-          throw new Error("An error occurred talking with the assistant");
-        }
+      const chatMessage = await chatWithAssistant(userMessage, user);
 
-        return chatMessage;
-      } catch (e) {
-        if (e instanceof PrismaClientKnownRequestError) {
-          console.error(e.message);
-        } else {
-          console.log(e);
-        }
-      }
+      return chatMessage;
     },
     // createChat: async (_, {  }, { user }) => {
     //   const chat = await prismadb.chat.create({

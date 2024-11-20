@@ -27,13 +27,6 @@ enum TaskPriority {
   URGENT
 }
 
-enum ChatGPTRole {
-  USER
-  SYSTEM
-  ASSISTANT
-  FUNCTION
-}
-
 enum ProjectType {
   INTERNAL
   CLIENT
@@ -95,7 +88,7 @@ model User {
   firstName            String?
   lastName             String?
   username             String
-  role                 ChatGPTRole           @default(USER)
+  role                 String                @default("user")
   conversations        Conversation[]
   projects             Project[]
   tasks                Task[]
@@ -179,10 +172,10 @@ model Message {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   userId          String
-  role            ChatGPTRole
+  role            String
   content         String
   name            String
-  data            Json
+  contextData     Json?
   user            User          @relation(fields: [userId], references: [id])
   conversationId  String
   conversation    Conversation? @relation(fields: [conversationId], references: [id])
@@ -195,7 +188,7 @@ model AssistantResponse {
   id            String                        @id @default(cuid())
   createdAt     DateTime                      @default(now())
   updatedAt     DateTime                      @updatedAt
-  role          ChatGPTRole                   @default(SYSTEM)
+  role          String                        @default("assistant")
   content       String
   contextData   AssistantResponseContextData?
   contextDataId String                        @unique
@@ -303,7 +296,7 @@ model Assistant {
   id            String         @id @default(cuid())
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
-  role          ChatGPTRole    @default(ASSISTANT)
+  role          String
   model         String // e.g., "gpt-4"
   globalContext Json // Stores shared knowledge and assistant base personality
   conversations Conversation[]

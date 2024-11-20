@@ -79,14 +79,14 @@ type Query {
 }
 
 type Mutation {
-  createUser(email: String!, username: String!, role: ChatGPTRole!): User
+  createUser(email: String!, username: String!, role: String): User
   updateUser(
     id: ID!
     email: String
     firstName: String
     lastName: String
     username: String
-    role: ChatGPTRole
+    role: String
   ): User
   deleteUser(id: ID!): User
 }

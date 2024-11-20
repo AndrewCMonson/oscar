@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 export const prismadb = new PrismaClient();
 
+
 export const connectDB = async (): Promise<void> => {
   try {
     await prismadb.$connect();

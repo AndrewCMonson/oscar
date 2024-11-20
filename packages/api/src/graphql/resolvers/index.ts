@@ -1,4 +1,4 @@
-export * from "./chatResolvers.js";
+export * from "./conversationResolvers.ts.js";
 export * from "./messageResolvers.js";
 export * from "./projectResolvers.js";
 export * from "./taskResolvers.js";

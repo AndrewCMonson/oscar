@@ -11,8 +11,9 @@ type AssistantResponse {
   id: String
   createdAt: DateTime
   updatedAt: DateTime
-  role: ChatGPTRole
+  role: String
   content: String
+  name: String
   contextData: AssistantResponseContextData
   contextDataId: String
 }
@@ -21,15 +22,15 @@ type AssistantResponseContextData {
   id: String
   createdAt: DateTime
   updatedAt: DateTime
-  action: AssistantAction
-  name: String
+  action: String
+  actionName: String
   metadata: JSON
   assistantResponseId: String
   assistantResponse: AssistantResponse
 }
 
 type Query {
-  getAssistant(role: ChatGPTRole): Assistant
+  getAssistant(role: String): Assistant
 }
 
 type Mutation {

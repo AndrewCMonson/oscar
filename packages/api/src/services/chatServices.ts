@@ -1,35 +1,11 @@
-import { ChatGPTRole, User } from "@prisma/client";
+import { AssistantResponse, ChatGPTMessage } from "@api/types/index.js";
+import { User } from "@prisma/client";
+import { zodResponseFormat } from "openai/helpers/zod.js";
 import { ChatCompletion } from "openai/resources/index.js";
-import { FormattedMessage } from "../../types/types.js";
+import { z } from "zod";
 import { openAIClient, prismadb } from "../config/index.js";
-import { convertEnums } from "../utils/index.js";
 import { getContext } from "./contextServices.js";
 import { formatMessageForOpenAI } from "./index.js";
-
-/*
-This is the wrapper function for the assistant chat function.
-It takes in a message, user, and projectId as input.
-It calls the chatWithAssistant function with the input parameters.
-It returns the assistant's response to the caller.
-*/
-export const handleChatMessage = async (
-  message: string,
-  user: User,
-  projectId: string,
-) => {
-  if (!message || !user || !projectId) {
-    throw new Error("Invalid input");
-  }
-
-  // const { chatId, chatMessages } = await findUserChat(userId);
-
-  if (!projectId) {
-    throw new Error("Project ID is required");
-  }
-
-  return await chatWithAssistant(message, user, projectId);
-};
-
 /*
 This function is the primary logic for the assistant. 
 
@@ -41,8 +17,26 @@ This function is the primary logic for the assistant.
 - It creates a new message in the database with the assistant's response.
 - It returns the assistant's response to the caller.
 */
+const openAIChatResponse = z.object({
+  role: z.string(),
+  name: z.string(),
+  content: z.string(),
+  contextData: z.object({
+    action: z.string(),
+    actionName: z.string(),
+    description: z.string(),
+    metadata: z.object({
+      status: z.string(),
+      priority: z.string(),
+      startDate: z.string(),
+      endDate: z.string(),
+      tags: z.array(z.string()),
+    }),
+  }),
+})
+
 export const chatWithAssistant = async (
-  message: string,
+  message: ChatGPTMessage,
   user: User,
 ) => {
   if (!message || !user) {
@@ -50,36 +44,72 @@ export const chatWithAssistant = async (
   }
 
   try {
-    // const createdUserMessage = await sendMessageToDB(message, user, chatId, { data: {} });
-
+    // get context from the assistant and the user
     const context = await getContext(user.id);
-
-
-    const formattedUserMessage = await formatMessageForOpenAI({
-      role: ChatGPTRole.USER,
-      content: message,
-      name: user.firstName ?? user.username,
-    });
-
-    const openAIResponse = await openAIClient.chat.completions.create({
-      messages: [context, formattedUserMessage],
+    // check if the user has conversation history with the assistant. If they do, it adds the new message to the conversation. If they don't, it creates one and adds the message to the conversation.
+    const conversationHistory = await findConversation(user.id, message);
+    // get the messages from the conversation to add to assistant API call
+    const { messages: conversationMessages } = conversationHistory;
+    // format the messages to be sent to the OpenAI API
+    const formattedMessages = await Promise.all(conversationMessages.map((message) => {
+      return formatMessageForOpenAI({
+        role: message.role,
+        content: message.content,
+        name: message.name,
+      });
+    }));
+    // send formatted messages and context to the API. This should return as an object that will be contain a JSON response for parsing.
+    const openAIResponse = await openAIClient.beta.chat.completions.parse({
+      messages: [context, ...formattedMessages],
       model: "gpt-4o-mini",
       max_tokens: 300,
       temperature: 0.6,
       top_p: 0.95,
       presence_penalty: 0.3,
       frequency_penalty: 0.1,
+      response_format: zodResponseFormat(openAIChatResponse, "assistant"),
     });
 
-    // console.log("OpenAI response: ", openAIResponse);
+    // parse the response from the assistant - the assistant returns a structured JSON response, so we have to parse the content to be sent to the database and take actions based on the response
+    const assistantResponse = openAIResponse.choices[0].message.parsed ?? {
+      role: "assistant",
+      name: "assistant",
+      content: "An error occurred with the assistant",
+      contextData: {
+        action: "NONE",
+        actionName: "none",
+        description: "",
+        metadata: {},
+      }
+    };
+    // update the conversation history with the assistant's response
+    await prismadb.conversation.update({
+      where: {
+        id: conversationHistory.id,
+      },
+      data: {
+        messages: {
+          create: [{
+            userId: user.id,
+            role: assistantResponse?.role ?? "assistant",
+            content: assistantResponse?.content ?? "No content available",
+            name: assistantResponse?.name ?? "assistant",
+            contextData: assistantResponse?.contextData ?? {},
+          }],
+        },
+      },
+      include: {
+        messages: true,
+      }
+    });
 
-    const assistantResponse = await parseAssistantResponse(openAIResponse);
-
-    if(assistantResponse.contextData?.action === "CREATE_PROJECT"){
+    if(assistantResponse?.contextData?.action === "CREATE_PROJECT"){
       const createdProject = await prismadb.project.create({
         data: {
-          name: assistantResponse.contextData.name,
+          name: assistantResponse.contextData.actionName ?? "",
           userId: user.id,
+          description: assistantResponse.contextData.description ?? "",
+          conversationId: conversationHistory.id,
         },
       });
 
@@ -105,7 +135,7 @@ export const chatWithAssistant = async (
 
 export const parseAssistantResponse = async (
   response: ChatCompletion,
-): Promise<FormattedMessage> => {
+): Promise<AssistantResponse> => {
   if (response === null) {
     throw new Error("Error: No message returned from assistant");
   }
@@ -117,7 +147,7 @@ export const parseAssistantResponse = async (
       throw new Error("Error: Message content is null");
     }
 
-    const parsedResponse = JSON.parse(content) as FormattedMessage;
+    const parsedResponse = JSON.parse(content) as AssistantResponse;
 
     if (!parsedResponse) {
       throw new Error("Error: Unable to parse response");
@@ -130,10 +160,10 @@ export const parseAssistantResponse = async (
   }
 };
 
-const findConversation = async (userId: string) => {
+const findConversation = async (userId: string, message: ChatGPTMessage) => {
   const assistant = await prismadb.assistant.findFirst({
     where: {
-      role: ChatGPTRole.ASSISTANT,
+      role: "assistant",
     },
   });
 
@@ -141,12 +171,88 @@ const findConversation = async (userId: string) => {
     throw new Error("Assistant not found");
   }
 
-  const conversation = await prismadb.conversation.findFirst({
+  let conversation = await prismadb.conversation.findFirst({
     where: {
       userId: userId,
       assistantId: assistant.id,
+    },
+    include: {
+      messages: true,
     }
   });
 
-  return conversation;
+  if (!conversation) {
+    conversation = await prismadb.conversation.create({
+      data: {
+        userId: userId,
+        assistantId: assistant.id,
+      },
+      include: {
+        messages: true,
+      }
+    });
+  }
+
+  const updatedConversation = await prismadb.conversation.update({
+    where: {
+      id: conversation.id,
+    },
+    data: {
+      messages: {
+        create: [{
+          userId: userId,
+          role: message.role,
+          content: message.content,
+          name: message.name,
+          contextData: {},
+        }]
+      },
+    },
+    include: {
+      messages: true,
+    }
+  });
+
+  if (!updatedConversation) {
+    throw new Error("An error occurred updating the conversation");
+  }
+
+  return updatedConversation;
 };
+
+export const createConversation = async (userId: string, message: ChatGPTMessage) => {
+  const assistant = await prismadb.assistant.findFirst({
+    where: {
+      role: "assistant",
+    },
+  });
+
+  if (!assistant) {
+    throw new Error("Assistant not found");
+  }
+
+  const conversation = await prismadb.conversation.create({
+    data: {
+      userId: userId,
+      assistantId: assistant.id,
+      messages: {
+        create: [{
+          userId: userId,
+          role: message.role,
+          content: message.content,
+          name: message.name,
+          contextData: {},
+        }]
+      },
+    },
+    include: {
+      messages: true,
+    }
+  });
+
+  if (!conversation) {
+    throw new Error("An error occurred creating the conversation");
+  }
+
+  return conversation;
+}

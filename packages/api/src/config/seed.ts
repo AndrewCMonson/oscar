@@ -1,6 +1,5 @@
 import { prismadb } from "./db.js";
 import {
-  ChatGPTRole,
   Tone,
   ResponseStyle,
   IntegrationType,
@@ -73,7 +72,7 @@ export const seed = async () => {
   });
   const assistant = await prismadb.assistant.create({
     data: {
-      role: ChatGPTRole.ASSISTANT,
+      role: "assistant",
       globalContext: initialLLMPrompt,
       model: "gpt-4",
     },

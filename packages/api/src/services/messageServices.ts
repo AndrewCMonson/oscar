@@ -1,8 +1,7 @@
-import { Chat, ChatGPTRole, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { OpenAI } from "openai";
-import { FormattedMessage } from "../../types/types.js";
+import { ChatGPTMessage, FormattedMessage } from "../../types/types.js";
 import { prismadb } from "../config/index.js";
-import { convertEnums } from "../utils/messageUtils.js";
 
 // takes in a role, content and name and properly types it to be sent to the OpenAI API
 export const formatMessageForOpenAI = async ({
@@ -10,7 +9,7 @@ export const formatMessageForOpenAI = async ({
   content,
   name,
 }: {
-  role: ChatGPTRole;
+  role: string;
   content: string;
   name: string;
 }) => {
@@ -19,13 +18,21 @@ export const formatMessageForOpenAI = async ({
   }
 
   const formattedMessage: OpenAI.ChatCompletionMessageParam = {
-    role: convertEnums(role),
+    role: role,
     content: content,
     name: name,
   };
 
   return formattedMessage;
 };
+
+export const createMessage = async (message: string, user: User) => {
+  return {
+    role: user.role,
+    content: message,
+    name: user.firstName ?? user.username,
+  } as ChatGPTMessage;
+}
 
 export const getMessages = async (chat: Chat) => {
   try {
@@ -75,7 +82,7 @@ export const sendMessageToDB = async (
   };
 
   const messageData =
-    user.role === ChatGPTRole.USER
+    user.role === "user"
       ? { action: "USER_MESSAGE", data: {} }
       : data;
 
