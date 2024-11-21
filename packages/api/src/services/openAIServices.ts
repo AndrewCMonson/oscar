@@ -2,20 +2,10 @@ import { ChatGPTMessage, OpenAIChatResponse } from "@api/types/index.js";
 import { User } from "@prisma/client";
 import { zodResponseFormat } from "openai/helpers/zod.js";
 import { openAIClient, prismadb } from "../config/index.js";
+import { handleToolCallFunction, openAIStructuredOutput, openAITools } from "../utils/openAIUtils.js";
 import { getContext } from "./contextServices.js";
 import { formatMessageForOpenAI } from "./index.js";
-import { openAIStructuredOutput } from "../utils/openAIUtils.js";
-/*
-This function is the primary logic for the assistant. 
 
-- It takes in a message, user, chat, and chatMessages as input.
-- It creates a new message in the database with the user's message.
-- It formats the user's message to be sent to the OpenAI API.
-- It calls the OpenAI API to get a response from the assistant, using the existing chatMessages as context and the new formatted user message as input.
-- It parses the string response from the assistant into a FormattedMessage object.
-- It creates a new message in the database with the assistant's response.
-- It returns the assistant's response to the caller.
-*/
 
 export const chatWithAssistant = async (
   message: ChatGPTMessage,
@@ -52,10 +42,47 @@ export const chatWithAssistant = async (
       presence_penalty: 0.3,
       frequency_penalty: 0.1,
       response_format: zodResponseFormat(openAIStructuredOutput, "assistant"),
+      tools: openAITools,
     });
+    
+    const toolCall = openAIResponse.choices[0].message.tool_calls[0];
+
+    let functionResponse;
+
+    if(toolCall){
+      const toolCallFunctionName = toolCall.function.name;
+      const toolCallFunctionArgs = toolCall.function.parsed_arguments as object;
+
+      const functionHandler = await handleToolCallFunction(toolCallFunctionName, toolCallFunctionArgs);
+
+      console.log("Created Project", functionHandler);
+
+      const functionCallResultMessage = await formatMessageForOpenAI({
+        name: "assistant",
+        role: "tool",
+        content: JSON.stringify(toolCall.function.parsed_arguments),
+        toolCallId: toolCall.id,
+      });
+  
+      functionResponse = await openAIClient.beta.chat.completions.parse({
+        model: "gpt-4o-mini",
+        messages: [context, ...formattedMessages, openAIResponse.choices[0].message, functionCallResultMessage ],
+        max_tokens: 300,
+        temperature: 0.6,
+        top_p: 0.95,
+        presence_penalty: 0.3,
+        frequency_penalty: 0.1,
+        response_format: zodResponseFormat(openAIStructuredOutput, "assistant"),
+        tools: openAITools,
+      })
+  
+      console.log(functionResponse);
+    }
+
+
 
     // parse the response from the assistant - the assistant returns a structured JSON response, so we have to parse the content to be sent to the database and take actions based on the response
-    const assistantResponse = openAIResponse.choices[0].message.parsed ?? {
+    const assistantResponse = (toolCall === undefined ? openAIResponse.choices[0].message.parsed : functionResponse?.choices[0].message.parsed) ?? {
       role: "assistant",
       name: "assistant",
       content: "An error occurred with the assistant",
@@ -95,22 +122,22 @@ export const chatWithAssistant = async (
       },
     });
 
-    if (assistantResponse?.contextData?.action === "CREATE_PROJECT") {
-      const createdProject = await prismadb.project.create({
-        data: {
-          name: assistantResponse.contextData.actionName ?? "",
-          userId: user.id,
-          description: assistantResponse.contextData.description ?? "",
-          conversationId: conversationHistory.id,
-        },
-      });
+    // if (assistantResponse?.contextData?.action === "CREATE_PROJECT") {
+    //   const createdProject = await prismadb.project.create({
+    //     data: {
+    //       name: assistantResponse.contextData.actionName ?? "",
+    //       userId: user.id,
+    //       description: assistantResponse.contextData.description ?? "",
+    //       conversationId: conversationHistory.id,
+    //     },
+    //   });
 
-      if (!createdProject) {
-        throw new Error("An error occurred creating the project");
-      }
+    //   if (!createdProject) {
+    //     throw new Error("An error occurred creating the project");
+    //   }
 
-      console.log("Project created: ", createdProject);
-    }
+    //   console.log("Project created: ", createdProject);
+    // }
 
     return assistantResponse;
   } catch (error) {

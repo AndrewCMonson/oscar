@@ -5,10 +5,12 @@ export const formatMessageForOpenAI = async ({
   role,
   content,
   name,
+  toolCallId,
 }: {
   role: string;
   content: string;
   name: string;
+  toolCallId?: string;
 }) => {
   if (!role || !content || !name) {
     throw new Error("Please provide a role, content, and name for the message");
@@ -18,6 +20,7 @@ export const formatMessageForOpenAI = async ({
     role: role,
     content: content,
     name: name,
+    tool_call_id: toolCallId
   };
 
   return formattedMessage;
