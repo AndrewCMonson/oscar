@@ -18,7 +18,7 @@ export const conversationResolvers: Resolvers = {
           return {
             ...conversation,
             projectId: conversation.projectId ?? "",
-          }
+          };
         });
       } catch (e) {
         if (e instanceof PrismaClientKnownRequestError) {
@@ -59,42 +59,90 @@ export const conversationResolvers: Resolvers = {
   },
   Mutation: {
     handleConversationMessage: async (_, { message }, { user }) => {
-      if(!message) {
-        throw new Error("Message is required");
+      try {
+        if (!message) {
+          throw new Error("Message is required");
+        }
+
+        if (!user) {
+          throw new Error("User is required");
+        }
+
+        const userMessage: ChatGPTMessage = {
+          role: "user",
+          content: message,
+          name: user.firstName ?? user.username,
+        };
+
+        const conversationMessage = await chatWithAssistant(userMessage, user);
+
+        return conversationMessage;
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          console.error(e.message);
+        } else {
+          throw new Error("Error handling conversation message");
+        }
       }
+    },
+    createConversation: async (_, __, { user }) => {
+      try {
+        if (!user) {
+          throw new Error("User is required");
+        }
 
-      if(!user) {
-        throw new Error("User is required");
+        const assistant = await prismadb.assistant.findFirst({
+          where: {
+            role: "assistant",
+          },
+        });
+
+        const conversation = await prismadb.conversation.create({
+          data: {
+            assistantId: assistant?.id ?? "",
+            userId: user.id,
+          },
+        });
+
+        if (!conversation) {
+          throw new Error("Conversation not created");
+        }
+
+        return {
+          ...conversation,
+          projectId: conversation.projectId ?? "",
+        };
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          console.error(e.message);
+        } else {
+          throw new Error("Error creating conversation");
+        }
       }
-
-      const userMessage: ChatGPTMessage = {
-        role: "user",
-        content: message,
-        name: user.firstName ?? user.username,
-      };
-
-      const conversationMessage = await chatWithAssistant(userMessage, user);
-
-      return conversationMessage;
     },
-    createconversation: async (_, {  }, { user }) => {
-      const conversation = await prismadb.conversation.create({
-        data: {
+    updateConversation: async (_, { id, projectId }, { user }) => {
+      try {
+        const conversation = await prismadb.conversation.update({
+          where: {
+            id: id,
+            userId: user.id,
+          },
+          data: {
+            projectId,
+          },
+        });
 
-        },
-      });
-      return conversation;
-    },
-    updateconversation: async (_, { id, data }, { user }) => {
-      const conversation = await prismadb.conversation.update({
-        where: {
-          id: id,
-        },
-        data: {
-          ...data,
-        },
-      });
-      return conversation;
+        return {
+          ...conversation,
+          projectId: conversation.projectId ?? "",
+        };
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          console.error(e);
+        } else {
+          throw new Error("Error updating conversation");
+        }
+      }
     },
     deleteConversation: async (_, { id }) => {
       try {

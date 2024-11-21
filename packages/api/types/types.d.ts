@@ -60,7 +60,7 @@ export interface UserMemoryData {
 
 export interface OpenAIChatResponse {
   role: string;
-  name: string,
+  name: string;
   content: string;
   contextData: {
     action: string;

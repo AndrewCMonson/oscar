@@ -106,7 +106,7 @@ export const seed = async () => {
               note: "I have a meeting with the team on Monday to discuss the project timeline",
             },
           ],
-        }
+        },
       },
     },
   });

@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from "zod";
 
 export const openAIStructuredOutput = z.object({
   role: z.string(),
@@ -16,7 +16,7 @@ export const openAIStructuredOutput = z.object({
       tags: z.array(z.string()),
     }),
   }),
-})
+});
 
 // const openAIFunctions = [{
 //   type: "function",

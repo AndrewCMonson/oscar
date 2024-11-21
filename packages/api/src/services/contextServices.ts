@@ -8,7 +8,6 @@ export const getContext = async (userId: string) => {
     },
   });
 
-
   const userContext = await prismadb.user.findFirst({
     where: {
       id: userId,
@@ -17,11 +16,11 @@ export const getContext = async (userId: string) => {
       memory: {
         include: {
           memories: true,
-          }
         },
+      },
       preferences: true,
       notificationSettings: true,
-      }
+    },
   });
 
   const combinedContext = {
@@ -33,7 +32,7 @@ export const getContext = async (userId: string) => {
     role: "assistant",
     content: JSON.stringify(combinedContext),
     name: "assistant",
-  })
+  });
 
   return formattedContext;
 };

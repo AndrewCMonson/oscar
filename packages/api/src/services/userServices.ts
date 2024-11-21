@@ -38,7 +38,6 @@ export const getUserById = async (userId: string) => {
   }
 };
 
-
 // export const updateUserPreferences = async (
 //   userId: string,
 //   preferences: UserPreferences,
@@ -65,10 +64,8 @@ export const getUserById = async (userId: string) => {
 //         ...updatedPreferences,
 //       },
 //     });
-      
 
 //     console.log("ExistingPreferences", existingUserPreferences);
-
 
 //     // console.log("UpdatedPreferences", updatedPreferences?.integrations);
 //   } catch (error) {

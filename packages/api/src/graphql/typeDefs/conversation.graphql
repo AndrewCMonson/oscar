@@ -18,7 +18,7 @@ type Query {
 
 type Mutation {
   handleConversationMessage(message: String!): AssistantResponse
-  createConversation(projectId: String!): Conversation
+  createConversation: Conversation
   updateConversation(id: ID!, projectId: String!): Conversation
   deleteConversation(id: ID!): String
 }

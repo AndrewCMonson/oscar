@@ -32,7 +32,10 @@ export const userResolvers: Resolvers = {
       });
       return user;
     },
-    updateUser: async (_, { id, email, username, firstName, lastName, role}) => {
+    updateUser: async (
+      _,
+      { id, email, username, firstName, lastName, role },
+    ) => {
       const user = await prismadb.user.update({
         where: {
           id: id,
@@ -58,15 +61,18 @@ export const userResolvers: Resolvers = {
   },
   User: {
     notificationSettings: async (parent) => {
-      try{
-        const notificationSettings = await prismadb.notificationSettings.findUnique({
-          where: {
-            userId: parent.id,
-          },
-        });
+      try {
+        const notificationSettings =
+          await prismadb.notificationSettings.findUnique({
+            where: {
+              userId: parent.id,
+            },
+          });
 
-        if(!notificationSettings) {
-          throw new Error("An error occurred getting the notification settings");
+        if (!notificationSettings) {
+          throw new Error(
+            "An error occurred getting the notification settings",
+          );
         }
 
         return {
@@ -85,7 +91,7 @@ export const userResolvers: Resolvers = {
         },
       });
 
-      if(!preferences) {
+      if (!preferences) {
         throw new Error("An error occurred getting the user preferences");
       }
       return preferences;
@@ -97,10 +103,10 @@ export const userResolvers: Resolvers = {
         },
         include: {
           memories: true,
-        }
+        },
       });
 
-      if(!memory) {
+      if (!memory) {
         throw new Error("An error occurred getting the user memory");
       }
       return memory;
