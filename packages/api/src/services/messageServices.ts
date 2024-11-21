@@ -20,7 +20,7 @@ export const formatMessageForOpenAI = async ({
     role: role,
     content: content,
     name: name,
-    tool_call_id: toolCallId
+    tool_call_id: toolCallId,
   };
 
   return formattedMessage;

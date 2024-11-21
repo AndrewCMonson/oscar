@@ -2,10 +2,15 @@ import { ChatGPTMessage, OpenAIChatResponse } from "@api/types/index.js";
 import { User } from "@prisma/client";
 import { zodResponseFormat } from "openai/helpers/zod.js";
 import { openAIClient, prismadb } from "../config/index.js";
-import { handleToolCallFunction, openAIStructuredOutput, openAITools } from "../utils/openAIUtils.js";
+import {
+  assistantFailureResponse,
+  handleToolCallFunction,
+  openAIStructuredOutput,
+  openAITools,
+  ToolCallFunctionArgs,
+} from "../utils/openAIUtils.js";
 import { getContext } from "./contextServices.js";
 import { formatMessageForOpenAI } from "./index.js";
-
 
 export const chatWithAssistant = async (
   message: ChatGPTMessage,
@@ -44,45 +49,78 @@ export const chatWithAssistant = async (
       response_format: zodResponseFormat(openAIStructuredOutput, "assistant"),
       tools: openAITools,
     });
-    
+
     const toolCall = openAIResponse.choices[0].message.tool_calls[0];
 
-    let functionResponse;
+    if (!toolCall) {
+      console.log("NO TOOL CALL MADE")
+      const assistantResponse = openAIResponse.choices[0].message.parsed ?? assistantFailureResponse;
 
-    if(toolCall){
-      const toolCallFunctionName = toolCall.function.name;
-      const toolCallFunctionArgs = toolCall.function.parsed_arguments as object;
-
-      const functionHandler = await handleToolCallFunction(toolCallFunctionName, toolCallFunctionArgs);
-
-      console.log("Created Project", functionHandler);
-
-      const functionCallResultMessage = await formatMessageForOpenAI({
-        name: "assistant",
-        role: "tool",
-        content: JSON.stringify(toolCall.function.parsed_arguments),
-        toolCallId: toolCall.id,
+      await prismadb.conversation.update({
+        where: {
+          id: conversationHistory.id,
+        },
+        data: {
+          messages: {
+            create: [
+              {
+                userId: user.id,
+                role: assistantResponse?.role ?? "assistant",
+                content: assistantResponse?.content ?? "No content available",
+                name: assistantResponse?.name ?? "assistant",
+                contextData: assistantResponse?.contextData ?? {},
+              },
+            ],
+          },
+        },
+        include: {
+          messages: true,
+        },
       });
-  
-      functionResponse = await openAIClient.beta.chat.completions.parse({
-        model: "gpt-4o-mini",
-        messages: [context, ...formattedMessages, openAIResponse.choices[0].message, functionCallResultMessage ],
-        max_tokens: 300,
-        temperature: 0.6,
-        top_p: 0.95,
-        presence_penalty: 0.3,
-        frequency_penalty: 0.1,
-        response_format: zodResponseFormat(openAIStructuredOutput, "assistant"),
-        tools: openAITools,
-      })
-  
-      console.log(functionResponse);
+
+      return assistantResponse;
     }
 
+    const toolCallFunctionName = toolCall.function.name;
+    const toolCallFunctionArgs = toolCall.function
+      .parsed_arguments as ToolCallFunctionArgs;
 
+    const functionHandler = await handleToolCallFunction(
+      toolCallFunctionName,
+      toolCallFunctionArgs,
+    );
 
-    // parse the response from the assistant - the assistant returns a structured JSON response, so we have to parse the content to be sent to the database and take actions based on the response
-    const assistantResponse = (toolCall === undefined ? openAIResponse.choices[0].message.parsed : functionResponse?.choices[0].message.parsed) ?? {
+    console.log("Created Project", functionHandler);
+
+    const functionCallResultMessage = await formatMessageForOpenAI({
+      name: "assistant",
+      role: "tool",
+      content: JSON.stringify(toolCall.function.parsed_arguments),
+      toolCallId: toolCall.id,
+    });
+
+    const functionResponse = await openAIClient.beta.chat.completions.parse({
+      model: "gpt-4o-mini",
+      messages: [
+        context,
+        ...formattedMessages,
+        openAIResponse.choices[0].message,
+        functionCallResultMessage,
+      ],
+      max_tokens: 300,
+      temperature: 0.6,
+      top_p: 0.95,
+      presence_penalty: 0.3,
+      frequency_penalty: 0.1,
+      response_format: zodResponseFormat(openAIStructuredOutput, "assistant"),
+      tools: openAITools,
+    });
+
+    console.log(functionResponse);
+
+    const assistantResponse = (toolCall === undefined
+      ? openAIResponse.choices[0].message.parsed
+      : functionResponse?.choices[0].message.parsed) ?? {
       role: "assistant",
       name: "assistant",
       content: "An error occurred with the assistant",
@@ -121,23 +159,6 @@ export const chatWithAssistant = async (
         messages: true,
       },
     });
-
-    // if (assistantResponse?.contextData?.action === "CREATE_PROJECT") {
-    //   const createdProject = await prismadb.project.create({
-    //     data: {
-    //       name: assistantResponse.contextData.actionName ?? "",
-    //       userId: user.id,
-    //       description: assistantResponse.contextData.description ?? "",
-    //       conversationId: conversationHistory.id,
-    //     },
-    //   });
-
-    //   if (!createdProject) {
-    //     throw new Error("An error occurred creating the project");
-    //   }
-
-    //   console.log("Project created: ", createdProject);
-    // }
 
     return assistantResponse;
   } catch (error) {
