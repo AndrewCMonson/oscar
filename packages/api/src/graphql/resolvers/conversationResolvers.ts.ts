@@ -13,7 +13,13 @@ export const conversationResolvers: Resolvers = {
           throw new Error("conversations not found");
         }
 
-        return conversations;
+        //map over conversations and update the projectids if they are null
+        return conversations.map((conversation) => {
+          return {
+            ...conversation,
+            projectId: conversation.projectId ?? "",
+          }
+        });
       } catch (e) {
         if (e instanceof PrismaClientKnownRequestError) {
           console.error(e.message);
@@ -38,7 +44,10 @@ export const conversationResolvers: Resolvers = {
           throw new Error("conversation not found");
         }
 
-        return conversation;
+        return {
+          ...conversation,
+          projectId: conversation.projectId ?? "",
+        };
       } catch (e) {
         if (e instanceof PrismaClientKnownRequestError) {
           console.error(e.message);
@@ -68,32 +77,40 @@ export const conversationResolvers: Resolvers = {
 
       return conversationMessage;
     },
-    // createconversation: async (_, {  }, { user }) => {
-    //   const conversation = await prismadb.conversation.create({
-    //     data: {
+    createconversation: async (_, {  }, { user }) => {
+      const conversation = await prismadb.conversation.create({
+        data: {
 
-    //     },
-    //   });
-    //   return conversation;
-    // },
-    // updateconversation: async (_, { id, data }, { user }) => {
-    //   const conversation = await prismadb.conversation.update({
-    //     where: {
-    //       id: id,
-    //     },
-    //     data: {
-    //       ...data,
-    //     },
-    //   });
-    //   return conversation;
-    // },
-    deleteConversation: async (_, { id }) => {
-      const conversation = await prismadb.conversation.delete({
-        where: {
-          id: id,
         },
       });
       return conversation;
+    },
+    updateconversation: async (_, { id, data }, { user }) => {
+      const conversation = await prismadb.conversation.update({
+        where: {
+          id: id,
+        },
+        data: {
+          ...data,
+        },
+      });
+      return conversation;
+    },
+    deleteConversation: async (_, { id }) => {
+      try {
+        await prismadb.conversation.delete({
+          where: {
+            id: id,
+          },
+        });
+        return "Conversation Deleted";
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          console.error(e.message);
+        } else {
+          throw new Error("Error deleting conversation");
+        }
+      }
     },
   },
 };

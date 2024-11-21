@@ -18,3 +18,18 @@ export const openAIStructuredOutput = z.object({
   }),
 })
 
+// const openAIFunctions = [{
+//   type: "function",
+//   function: {
+//     name: "determineAction",
+//     description: "Determines the action to be taken baeed on the user input",
+//     parameters: {
+//       type: "object",
+//       properties: {
+//         actionType: {
+
+//         }
+//       }
+//     }
+//   }
+// }]

@@ -202,7 +202,7 @@ export type Mutation = {
   createProject?: Maybe<Project>;
   createTask?: Maybe<Task>;
   createUser?: Maybe<User>;
-  deleteConversation?: Maybe<Conversation>;
+  deleteConversation?: Maybe<Scalars['String']['output']>;
   deleteMessage?: Maybe<Message>;
   deleteProject?: Maybe<Project>;
   deleteTask?: Maybe<Task>;
@@ -1005,7 +1005,7 @@ export type MutationResolvers<ContextType = MiddlewareContext, ParentType extend
   createProject?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'name' | 'type'>>;
   createTask?: Resolver<Maybe<ResolversTypes['Task']>, ParentType, ContextType, RequireFields<MutationCreateTaskArgs, 'description' | 'priority' | 'projectId' | 'status' | 'title'>>;
   createUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'email' | 'username'>>;
-  deleteConversation?: Resolver<Maybe<ResolversTypes['Conversation']>, ParentType, ContextType, RequireFields<MutationDeleteConversationArgs, 'id'>>;
+  deleteConversation?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationDeleteConversationArgs, 'id'>>;
   deleteMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<MutationDeleteMessageArgs, 'id'>>;
   deleteProject?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
   deleteTask?: Resolver<Maybe<ResolversTypes['Task']>, ParentType, ContextType, RequireFields<MutationDeleteTaskArgs, 'id'>>;
