@@ -1,22 +1,19 @@
+import { openAIClient } from "@api/src/config";
+import {
+  addMessageToConversation,
+  assistantFailureResponse,
+  findConversation,
+  formatMessageForOpenAI,
+  getContext,
+  handleToolCallFunction,
+  openAIApiOptions
+} from "@api/src/services/";
 import {
   ChatGPTMessage,
   OpenAIChatResponse,
   ToolCallFunctionArgs,
 } from "@api/types/index.js";
 import { User } from "@prisma/client";
-import { zodResponseFormat } from "openai/helpers/zod.js";
-import { openAIClient } from "@api/src/config";
-import {
-  getContext,
-  assistantFailureResponse,
-  formatMessageForOpenAI,
-  handleToolCallFunction,
-  openAIStructuredOutput,
-  openAITools,
-  openAIApiOptions,
-  addMessageToConversation,
-  findConversation,
-} from "@api/src/services/";
 
 export const chatWithAssistant = async (
   message: ChatGPTMessage,
@@ -86,20 +83,13 @@ export const chatWithAssistant = async (
     });
     // call the API with the context, previous messages, message that resulted in the tool call and the result of the tool call.
     const functionResponse = await openAIClient.beta.chat.completions.parse({
-      model: "gpt-4o-mini",
       messages: [
         context,
         ...formattedMessages,
         openAIResponse.choices[0].message,
         functionCallResultMessage,
       ],
-      max_tokens: 300,
-      temperature: 0.6,
-      top_p: 0.95,
-      presence_penalty: 0.3,
-      frequency_penalty: 0.1,
-      response_format: zodResponseFormat(openAIStructuredOutput, "assistant"),
-      tools: openAITools,
+      ...openAIApiOptions
     });
     // get final response, add it to the db and return it to the user.
     const assistantResponse =
