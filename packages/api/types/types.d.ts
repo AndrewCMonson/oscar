@@ -3,12 +3,12 @@ import { Prisma, User } from "@prisma/client";
 import { z } from "zod";
 import {
   createProjectParameters,
-  userPreferenceParams,
   createTaskParams,
+  updateUserPreferenceParams,
 } from "@api/src/services/OpenAI/";
 
 type CreateProjectParameters = z.infer<typeof createProjectParameters>;
-type UpdateUserPreferenceParams = z.infer<typeof userPreferenceParams>;
+type UpdateUserPreferenceParams = z.infer<typeof updateUserPreferenceParams>;
 type CreateTaskParams = z.infer<typeof createTaskParams>;
 
 export interface MiddlewareContext {

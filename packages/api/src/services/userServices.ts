@@ -1,4 +1,7 @@
+import { UpdateUserPreferenceParams } from "@api/types/types.js";
 import { prismadb } from "../config/index.js";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
+import { UserPreferences } from "@prisma/client";
 
 export const getUserByRole = async (role: string) => {
   try {
@@ -38,49 +41,39 @@ export const getUserById = async (userId: string) => {
   }
 };
 
-// export const updateUserPreferences = async (
-//   userId: string,
-//   preferences: UserPreferences,
-// ) => {
-//   try {
-//     const existingUserPreferences = await prismadb.userPreferences.findFirst({
-//       where: {
-//         userId: userId,
-//       },
-//     });
+export const updateUserPreferences = async (
+  preferences: UpdateUserPreferenceParams,
+): Promise<UserPreferences> => {
+  if (!preferences) {
+    throw new Error("No preferences provided to update user preferences");
+  }
 
-//     // take the existing preferences and update them with the new preferences
-//     const updatedPreferences = {
-//       ...existingUserPreferences,
-//       ...preferences,
-//     }
+  const { tone, responseStyle, preferredLanguage, timeZone, userId } =
+    preferences;
 
-//     // update the user preferences
-//     const updatedUserPreferences = await prismadb.userPreferences.update({
-//       where: {
-//         id: existingUserPreferences?.id,
-//       },
-//       data: {
-//         ...updatedPreferences,
-//       },
-//     });
+  try {
+    const updatedPreferences = await prismadb.userPreferences.update({
+      where: {
+        userId,
+      },
+      data: {
+        tone: tone,
+        responseStyle: responseStyle,
+        preferredLanguage: preferredLanguage,
+        timeZone: timeZone,
+      },
+    });
 
-//     console.log("ExistingPreferences", existingUserPreferences);
+    if (!updatedPreferences) {
+      throw new Error("Error updating user preferences");
+    }
 
-//     // console.log("UpdatedPreferences", updatedPreferences?.integrations);
-//   } catch (error) {
-//     console.error(error);
-//     throw new Error("An error occurred updating the user preferences");
-//   }
-// };
-
-// // updateUserPreferences("cm3necffw000011v7goo5ooab", {
-// //   tone: Tone.CONCISE,
-// //   id: "",
-// //   createdAt: undefined,
-// //   updatedAt: undefined,
-// //   userId: "",
-// //   responseStyle: "CONVERSATIONAL",
-// //   preferredLanguage: "",
-// //   timeZone: ""
-// // });
+    return updatedPreferences;
+  } catch (e) {
+    if (e instanceof PrismaClientKnownRequestError) {
+      throw new Error("Error with primsa database request");
+    } else {
+      throw new Error("Error updating user preferences");
+    }
+  }
+};

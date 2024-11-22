@@ -6,7 +6,7 @@ import {
   formatMessageForOpenAI,
   getContext,
   handleToolCallFunction,
-  openAIApiOptions
+  openAIApiOptions,
 } from "@api/src/services/";
 import {
   ChatGPTMessage,
@@ -73,7 +73,7 @@ export const chatWithAssistant = async (
       toolCallFunctionArgs,
     );
 
-    console.log(" -----> Created Project <-----", functionHandler);
+    console.log(" -----> Handled Function <-----", functionHandler);
     // format the result of the function call to be added to the messages array for next API call
     const functionCallResultMessage = await formatMessageForOpenAI({
       name: "assistant",
@@ -89,7 +89,7 @@ export const chatWithAssistant = async (
         openAIResponse.choices[0].message,
         functionCallResultMessage,
       ],
-      ...openAIApiOptions
+      ...openAIApiOptions,
     });
     // get final response, add it to the db and return it to the user.
     const assistantResponse =
