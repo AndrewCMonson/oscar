@@ -1,11 +1,43 @@
 import { Request, Response } from "express";
-import { User } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
+import { z } from "zod";
+import {
+  createProjectParameters,
+  userPreferenceParams,
+  createTaskParams,
+} from "@api/src/services/OpenAI/";
+
+type CreateProjectParameters = z.infer<typeof createProjectParameters>;
+type UpdateUserPreferenceParams = z.infer<typeof userPreferenceParams>;
+type CreateTaskParams = z.infer<typeof createTaskParams>;
 
 export interface MiddlewareContext {
   user: User;
   req: Request;
   res: Response;
 }
+
+export type ConversationWithMessages = Prisma.ConversationGetPayload<{
+  include: {
+    messages: true;
+  };
+}>;
+
+export interface ChatGPTRole {
+  role: "function" | "user" | "assistant" | "system" | "tool";
+}
+
+export interface FormattedMessage {
+  role: ChatGPTRole;
+  content: string;
+  name: string;
+  tool_call_id: string | undefined;
+}
+
+export type ToolCallFunctionArgs =
+  | CreateProjectParameters
+  | UpdateUserPreferenceParams
+  | CreateTaskParams;
 
 export interface ChatGPTMessage {
   role: "user" | "function" | "assistant" | "system" | "tool";
