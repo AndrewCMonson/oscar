@@ -1,5 +1,5 @@
 import { prismadb } from "../config/db.js";
-import { formatMessageForOpenAI } from "./messageServices.js";
+import { formatMessageForOpenAI } from "@api/src/services";
 
 export const getContext = async (userId: string) => {
   const assistant = await prismadb.assistant.findFirst({

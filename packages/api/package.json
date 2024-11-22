@@ -22,7 +22,8 @@
     "start:dev": "tsx watch --include ./src index.ts",
     "build": "tsc",
     "codegen": "graphql-codegen --config codegen.ts",
-    "lint:fix": "cd ../.. && yarn lint --fix"
+    "lint:fix": "cd ../.. && yarn lint --fix",
+    "db:reset": "prisma db push --force-reset && prisma db seed"
   },
   "prisma": {
     "seed": "tsx ./src/config/seed.ts"

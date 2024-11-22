@@ -1,6 +1,6 @@
 import { prismadb } from "@api/src/config/index.js";
+import { ConversationWithMessages } from "@api/types/types.js";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
-import { ChatGPTMessage, ConversationWithMessages } from "@api/types/types.js";
 
 export const addMessageToConversation = async (
   conversationId: string,
@@ -8,7 +8,7 @@ export const addMessageToConversation = async (
   role: string,
   content: string,
   name: string,
-): Promise<void> => {
+): Promise<ConversationWithMessages> => {
   if (!conversationId || !userId || !role || !content) {
     throw new Error("Invalid inputs to add message to conversation");
   }
@@ -38,9 +38,12 @@ export const addMessageToConversation = async (
     if (!updatedConversation) {
       throw new Error("Error adding message to conversation");
     }
+
+    return updatedConversation
   } catch (e) {
     if (e instanceof PrismaClientKnownRequestError) {
       console.error(e);
+      throw new Error("Error with prisma db")
     } else {
       throw new Error("Error creating message");
     }
@@ -49,7 +52,6 @@ export const addMessageToConversation = async (
 
 export const createConversation = async (
   userId: string,
-  message: ChatGPTMessage,
 ): Promise<ConversationWithMessages> => {
   try {
     const assistant = await prismadb.assistant.findFirst({
@@ -66,17 +68,6 @@ export const createConversation = async (
       data: {
         userId: userId,
         assistantId: assistant.id,
-        messages: {
-          create: [
-            {
-              userId: userId,
-              role: message.role,
-              content: message.content,
-              name: message.name,
-              contextData: {},
-            },
-          ],
-        },
       },
       include: {
         messages: true,
@@ -96,7 +87,6 @@ export const createConversation = async (
 
 export const findConversation = async (
   userId: string,
-  message: ChatGPTMessage,
 ): Promise<ConversationWithMessages> => {
   try {
     const assistant = await prismadb.assistant.findFirst({
@@ -131,33 +121,7 @@ export const findConversation = async (
       });
     }
 
-    const updatedConversation = await prismadb.conversation.update({
-      where: {
-        id: conversation.id,
-      },
-      data: {
-        messages: {
-          create: [
-            {
-              userId: userId,
-              role: message.role,
-              content: message.content,
-              name: message.name,
-              contextData: {},
-            },
-          ],
-        },
-      },
-      include: {
-        messages: true,
-      },
-    });
-
-    if (!updatedConversation) {
-      throw new Error("An error occurred updating the conversation");
-    }
-
-    return updatedConversation;
+    return conversation;
   } catch (e) {
     console.error(e);
     throw new Error("An error occurred finding the conversation");

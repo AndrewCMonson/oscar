@@ -17,6 +17,10 @@ export const createProjectParameters = z.object({
   userId: z.string().describe("The user's id"),
 });
 
+export const getProjectsParameters = z.object({
+  userId: z.string().describe("The user's id used to retrieve their projects"),
+});
+
 export const updateUserPreferenceParams = z.object({
   id: z.string().describe("The id of the user preferences model"),
   tone: z
@@ -62,4 +66,5 @@ export const openAITools = [
     parameters: updateUserPreferenceParams,
   }),
   zodFunction({ name: "createTask", parameters: createTaskParams }),
+  zodFunction({ name: "getProjects", parameters: getProjectsParameters }),
 ];

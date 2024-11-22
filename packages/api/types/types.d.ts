@@ -4,12 +4,14 @@ import { z } from "zod";
 import {
   createProjectParameters,
   createTaskParams,
+  getProjectsParameters,
   updateUserPreferenceParams,
 } from "@api/src/services/OpenAI/";
 
 type CreateProjectParameters = z.infer<typeof createProjectParameters>;
 type UpdateUserPreferenceParams = z.infer<typeof updateUserPreferenceParams>;
 type CreateTaskParams = z.infer<typeof createTaskParams>;
+type GetProjectsParams = z.infer<typeof getProjectsParameters>;
 
 export interface MiddlewareContext {
   user: User;
@@ -37,7 +39,8 @@ export interface FormattedMessage {
 export type ToolCallFunctionArgs =
   | CreateProjectParameters
   | UpdateUserPreferenceParams
-  | CreateTaskParams;
+  | CreateTaskParams
+  | GetProjectsParams;
 
 export interface ChatGPTMessage {
   role: "user" | "function" | "assistant" | "system" | "tool";

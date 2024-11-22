@@ -1,7 +1,7 @@
-import { ChatGPTRole, FormattedMessage } from "@api/types/types.js";
+import { openAITools } from "@api/src/services/OpenAI/index.js";
+import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod.js";
 import { z } from "zod";
-import { openAITools } from "@api/src/services/OpenAI";
 
 export const openAIStructuredOutput = z.object({
   role: z.string(),
@@ -50,7 +50,9 @@ export const assistantFailureResponse = {
   },
 };
 
-export const openAIRoleCheck = (role: string): ChatGPTRole => {
+export const openAIRoleCheck = (
+  role: string,
+): "function" | "user" | "assistant" | "tool" | "system" => {
   if (
     role !== "function" &&
     role !== "user" &&
@@ -61,7 +63,7 @@ export const openAIRoleCheck = (role: string): ChatGPTRole => {
     throw new Error("Invalid role");
   }
 
-  return role as unknown as ChatGPTRole;
+  return role;
 };
 
 export const formatMessageForOpenAI = ({
@@ -74,7 +76,7 @@ export const formatMessageForOpenAI = ({
   content: string;
   name: string;
   toolCallId?: string;
-}): FormattedMessage => {
+}): OpenAI.ChatCompletionMessageParam => {
   if (!role || !content || !name) {
     throw new Error("Please provide a role, content, and name for the message");
   }
@@ -84,7 +86,7 @@ export const formatMessageForOpenAI = ({
     content: content,
     name: name,
     tool_call_id: toolCallId,
-  };
+  } as OpenAI.ChatCompletionMessageParam;
 
   return formattedMessage;
 };
