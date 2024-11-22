@@ -49,7 +49,7 @@ export const chatWithAssistant = async (
     const toolCall = openAIResponse.choices[0].message.tool_calls[0];
     // if no tool was called, update the response variable, add the response to the DB and return it to the user
     if (!toolCall) {
-      console.log("NO TOOL CALL MADE");
+      console.log(" -------> NO TOOL CALL MADE <-------");
       const assistantResponse =
         openAIResponse.choices[0].message.parsed ?? assistantFailureResponse;
 
@@ -73,7 +73,7 @@ export const chatWithAssistant = async (
       toolCallFunctionArgs,
     );
 
-    console.log("Created Project", functionHandler);
+    console.log(" -----> Created Project <-----", functionHandler);
     // format the result of the function call to be added to the messages array for next API call
     const functionCallResultMessage = await formatMessageForOpenAI({
       name: "assistant",
