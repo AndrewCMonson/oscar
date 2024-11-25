@@ -95,6 +95,13 @@ export const updateProject = async (
               }
             }
           }
+        },
+      },
+      include: {
+        projectContext: {
+          include: {
+            metadata: true,
+          }
         }
       }
     })
