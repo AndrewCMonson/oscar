@@ -1,9 +1,9 @@
-import { useState, ChangeEvent, MouseEvent } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import { HandleConversationMessage } from './utils/graphql/mutations.ts'
-import './App.css'
 import { useMutation } from '@apollo/client'
+import { ChangeEvent, MouseEvent, useState } from 'react'
+import './App.css'
+import { Button } from './components/ui/button.tsx'
+import { Input } from './components/ui/input.tsx'
+import { HandleConversationMessage } from './utils/graphql/mutations.ts'
 
 function App() {
   const [messages, setMessages] = useState<string[]>([])
@@ -26,7 +26,8 @@ function App() {
   const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     console.log("clicked")
-    updateMessages(userMessage)
+    updateMessages(userMessage);
+    setUserMessage("");
     const chatResult = await chat({
       variables: {message: userMessage}
     })
@@ -37,22 +38,14 @@ function App() {
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <div>
+      <div className='w-full flex flex-col items-center'>
         <div>
           {messages.map((message, i) => (
-            <div key={i}>{message}</div>
+            <div className='border-2 rounded-sm mb-2 w-96' key={i}>{message}</div>
           ))}
         </div>
-        <input value={userMessage} onChange={handleInputChange}></input>
-        <button onClick={handleSubmit}>Chat</button>
+        <Input className='w-96' value={userMessage} onChange={handleInputChange}></Input>
+        <Button className="mt-2 w-sm" onClick={handleSubmit}>Chat</Button>
       </div>
      
     </>
