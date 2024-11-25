@@ -3,6 +3,7 @@ import { prismadb } from "@api/src/config/index.js";
 import {
   CreateProjectParameters,
   GetProjectsParams,
+  UpdateProjectDataParams,
 } from "@api/types/types.js";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
 
@@ -66,3 +67,49 @@ export const getProjects = async (
     }
   }
 };
+
+export const updateProject = async (
+  updateProjectParams: UpdateProjectDataParams,
+): Promise<Project> => {
+  if(!updateProjectParams) {
+    throw new Error("Invalid parameters for updating a project")
+  }
+
+  try {
+    const { status, tags, startDate, endDate, priority, id } = updateProjectParams;
+  
+    const updatedProject = await prismadb.project.update({
+      where: {
+        id,
+      },
+      data: {
+        projectContext: {
+          update: {
+            metadata: {
+              update: {
+                startDate,
+                endDate,
+                status,
+                priority,
+                tags,
+              }
+            }
+          }
+        }
+      }
+    })
+  
+    if(!updatedProject){
+      throw new Error("Error updating project metadata")
+    }
+  
+    return updatedProject;
+  } catch (e) {
+    if(e instanceof PrismaClientKnownRequestError){
+      throw new Error("Error with prisma DB updating project data")
+    } else {
+      throw new Error("Error updating project metadata")
+    }
+  }
+
+}

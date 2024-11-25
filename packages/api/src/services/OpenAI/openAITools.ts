@@ -1,4 +1,6 @@
 import {
+  ProjectPriority,
+  ProjectStatus,
   ProjectType,
   ResponseStyle,
   TaskPriority,
@@ -57,6 +59,24 @@ export const createTaskParams = z.object({
   dueDate: z.string().describe("The date the project is due"),
   projectId: z.string().describe("The project the task is assigned to"),
   userId: z.string().describe("The userId of the project owner"),
+});
+
+export const updateProjectParams = z.object({
+  id: z.string().describe("The id of the project"),
+  startDate: z.string().describe("The date the project starts"),
+  endDate: z.string().describe("The date the project is due to end"),
+  status: z.enum([
+    ProjectStatus.ACTIVE,
+    ProjectStatus.ARCHIVED,
+    ProjectStatus.INACTIVE,
+  ]).describe("The status of the project"),
+  priority: z.enum([
+    ProjectPriority.HIGH,
+    ProjectPriority.LOW,
+    ProjectPriority.MEDIUM,
+    ProjectPriority.URGENT,
+  ]).describe("The priority of the project"),
+  tags: z.array(z.string()).describe("An array of tags that describe the project")
 });
 
 export const openAITools = [

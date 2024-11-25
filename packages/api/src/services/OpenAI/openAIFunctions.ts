@@ -1,5 +1,5 @@
 import { ToolCallFunctionReturn, ToolCallFunctions } from "@api/types/types.js";
-import { createProject, getProjects } from "../projectServices.js";
+import { createProject, getProjects, updateProject } from "../projectServices.js";
 import { createTask } from "../taskServices.js";
 import { updateUserPreferences } from "../userServices.js";
 
@@ -42,6 +42,15 @@ export const handleToolCallFunction = async <T extends keyof ToolCallFunctions>(
       const projects = await getProjects(toolCallFunctionArgs);
 
       return projects;
+    }
+    case "updateProjectData": {
+      if(!("priority" in toolCallFunctionArgs) || !("id" in toolCallFunctionArgs) || !("startDate" in toolCallFunctionArgs) || !("endDate" in toolCallFunctionArgs) || !("tags" in toolCallFunctionArgs)) {
+        throw new Error("Invalid arguments for updateProjectData");
+      }
+
+      const updatedProject = await updateProject(toolCallFunctionArgs);
+
+      return updatedProject;
     }
     default:
       return;

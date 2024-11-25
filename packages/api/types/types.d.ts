@@ -5,6 +5,7 @@ import {
   createProjectParameters,
   createTaskParams,
   getProjectsParameters,
+  updateProjectParams,
   updateUserPreferenceParams,
 } from "@api/src/services/OpenAI/";
 
@@ -12,12 +13,14 @@ type CreateProjectParameters = z.infer<typeof createProjectParameters>;
 type UpdateUserPreferenceParams = z.infer<typeof updateUserPreferenceParams>;
 type CreateTaskParams = z.infer<typeof createTaskParams>;
 type GetProjectsParams = z.infer<typeof getProjectsParameters>;
+type UpdateProjectDataParams = z.infer<typeof updateProjectParams>;
 
 export type ToolCallFunctions = {
   createProject: CreateProjectParameters;
   updateUserPreferences: UpdateUserPreferenceParams;
   createTask: CreateTaskParams;
   getProjects: GetProjectsParams;
+  updateProjectData: UpdateProjectDataParams;
 }
 
 export type ToolCallFunctionReturn = 
@@ -54,7 +57,8 @@ export type ToolCallFunctionArgs =
   | CreateProjectParameters
   | UpdateUserPreferenceParams
   | CreateTaskParams
-  | GetProjectsParams;
+  | GetProjectsParams
+  | UpdateProjectDataParams
 
 export interface ChatGPTMessage {
   role: "user" | "function" | "assistant" | "system" | "tool";

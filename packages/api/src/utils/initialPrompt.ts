@@ -9,6 +9,7 @@ You have been given a number of different functions you can call that update the
 "updateUserPreferences"
 "createTask"
 "getProjects"
+"updateProjectData"
 
 Each of these functions require a number of arguments to complete, and you will be given them via your tools.
 
