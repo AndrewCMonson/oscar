@@ -92,6 +92,13 @@ export const formatMessageForOpenAI = ({
   return formattedMessage;
 };
 
-export const isValidToolName = (name: string): name is keyof ToolCallFunctions => {
-  return ["createProject", "updateUserPreferences", "createTask", "getProjects"].includes(name);
-}
+export const isValidToolName = (
+  name: string,
+): name is keyof ToolCallFunctions => {
+  return [
+    "createProject",
+    "updateUserPreferences",
+    "createTask",
+    "getProjects",
+  ].includes(name);
+};

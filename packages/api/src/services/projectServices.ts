@@ -71,13 +71,14 @@ export const getProjects = async (
 export const updateProject = async (
   updateProjectParams: UpdateProjectDataParams,
 ): Promise<Project> => {
-  if(!updateProjectParams) {
-    throw new Error("Invalid parameters for updating a project")
+  if (!updateProjectParams) {
+    throw new Error("Invalid parameters for updating a project");
   }
 
   try {
-    const { status, tags, startDate, endDate, priority, id } = updateProjectParams;
-  
+    const { status, tags, startDate, endDate, priority, id } =
+      updateProjectParams;
+
     const updatedProject = await prismadb.project.update({
       where: {
         id,
@@ -92,31 +93,30 @@ export const updateProject = async (
                 status,
                 priority,
                 tags,
-              }
-            }
-          }
+              },
+            },
+          },
         },
       },
       include: {
         projectContext: {
           include: {
             metadata: true,
-          }
-        }
-      }
-    })
-  
-    if(!updatedProject){
-      throw new Error("Error updating project metadata")
+          },
+        },
+      },
+    });
+
+    if (!updatedProject) {
+      throw new Error("Error updating project metadata");
     }
-  
+
     return updatedProject;
   } catch (e) {
-    if(e instanceof PrismaClientKnownRequestError){
-      throw new Error("Error with prisma DB updating project data")
+    if (e instanceof PrismaClientKnownRequestError) {
+      throw new Error("Error with prisma DB updating project data");
     } else {
-      throw new Error("Error updating project metadata")
+      throw new Error("Error updating project metadata");
     }
   }
-
-}
+};

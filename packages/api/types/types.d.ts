@@ -21,14 +21,14 @@ export type ToolCallFunctions = {
   createTask: CreateTaskParams;
   getProjects: GetProjectsParams;
   updateProjectData: UpdateProjectDataParams;
-}
+};
 
-export type ToolCallFunctionReturn = 
+export type ToolCallFunctionReturn =
   | Project
   | UserPreferences
   | Task
   | Project[]
-  | undefined
+  | undefined;
 
 export interface MiddlewareContext {
   user: User;
@@ -58,7 +58,7 @@ export type ToolCallFunctionArgs =
   | UpdateUserPreferenceParams
   | CreateTaskParams
   | GetProjectsParams
-  | UpdateProjectDataParams
+  | UpdateProjectDataParams;
 
 export interface ChatGPTMessage {
   role: "user" | "function" | "assistant" | "system" | "tool";

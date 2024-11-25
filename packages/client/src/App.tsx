@@ -1,55 +1,106 @@
-import { useMutation } from '@apollo/client'
-import { ChangeEvent, MouseEvent, useState } from 'react'
-import './App.css'
-import { Button } from './components/ui/button.tsx'
-import { Input } from './components/ui/input.tsx'
-import { HandleConversationMessage } from './utils/graphql/mutations.ts'
+import { useMutation } from "@apollo/client";
+import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from "react";
+import "./App.css";
+import { Button } from "./components/ui/button.tsx";
+import {
+  ChatBubble,
+  ChatBubbleAvatar,
+  ChatBubbleMessage,
+} from "./components/ui/chat/chat-bubble.tsx";
+import { ChatMessageList } from "./components/ui/chat/chat-message-list.tsx";
+import { Input } from "./components/ui/input.tsx";
+import { HandleConversationMessage } from "./utils/graphql/mutations.ts";
 
-function App() {
-  const [messages, setMessages] = useState<string[]>([])
-  const [userMessage, setUserMessage] = useState<string>("")
+interface ChatMessage {
+  content: string;
+  role: string;
+}
 
-  const updateMessages = (message: string) => {
-    setMessages(prevMessages => [...prevMessages, message])
-  }
+export const App = () => {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [userMessage, setUserMessage] = useState<ChatMessage>({
+    content: "",
+    role: "",
+  });
+  const chatListRef = useRef<HTMLDivElement>(null);
 
-  const [chat] = useMutation(HandleConversationMessage, {
-    variables: {message: userMessage},
-    onCompleted: (data) => updateMessages(data.handleConversationMessage.content),
-    onError: (error) => console.log(error)
-  })
+  useEffect(() => {
+    if (chatListRef.current) {
+      chatListRef.current.scrollTop = chatListRef.current.scrollHeight;
+    }
+  }, [messages]);
 
-  // console.log(data.handleConversationMessage)
+  const updateMessages = (message: ChatMessage) => {
+    setMessages((prevMessages) => [...prevMessages, message]);
+  };
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => setUserMessage(event.target.value)
+  const [chat, { loading }] = useMutation(HandleConversationMessage, {
+    onCompleted: (data) => {
+      updateMessages({
+        content: data.handleConversationMessage.content,
+        role: "assistant",
+      });
+    },
+    onError: (error) => console.log(error),
+  });
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) =>
+    setUserMessage({
+      content: event.target.value,
+      role: "user",
+    });
 
   const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log("clicked")
     updateMessages(userMessage);
-    setUserMessage("");
-    const chatResult = await chat({
-      variables: {message: userMessage}
-    })
-
-    console.log(chatResult)
-    console.log(messages)
-  }
+    setUserMessage({
+      content: "",
+      role: "",
+    });
+    await chat({
+      variables: { message: userMessage.content },
+    });
+  };
 
   return (
     <>
-      <div className='w-full flex flex-col items-center'>
-        <div>
-          {messages.map((message, i) => (
-            <div className='border-2 rounded-sm mb-2 w-96' key={i}>{message}</div>
-          ))}
+      <div className="flex flex-row justify-center h-full w-full items-center">
+        <div className="flex h-3/4 w-1/2 flex-col items-center justify-center">
+          <ChatMessageList
+            className="w-full h-96 flex-col overflow-y-auto border rounded"
+            ref={chatListRef}
+          >
+            {messages.map((message, i) =>
+              message.role === "user" ? (
+                <ChatBubble key={i} variant="sent" layout="default">
+                  <ChatBubbleAvatar></ChatBubbleAvatar>
+                  <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
+                </ChatBubble>
+              ) : (
+                <ChatBubble key={i} variant="received">
+                  <ChatBubbleAvatar></ChatBubbleAvatar>
+                  <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
+                </ChatBubble>
+              ),
+            )}
+            {loading && (
+              <ChatBubble variant="received">
+                <ChatBubbleAvatar></ChatBubbleAvatar>
+                <ChatBubbleMessage isLoading></ChatBubbleMessage>
+              </ChatBubble>
+            )}
+          </ChatMessageList>
+          <Input
+            className="w-96 mt-2"
+            value={userMessage.content}
+            onChange={handleInputChange}
+            placeholder="Enter your text here"
+          ></Input>
+          <Button className="mt-2 rounded" size="lg" onClick={handleSubmit}>
+            Chat
+          </Button>
         </div>
-        <Input className='w-96' value={userMessage} onChange={handleInputChange}></Input>
-        <Button className="mt-2 w-sm" onClick={handleSubmit}>Chat</Button>
       </div>
-     
     </>
-  )
-}
-
-export default App
+  );
+};

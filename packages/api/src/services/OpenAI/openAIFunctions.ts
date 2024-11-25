@@ -1,12 +1,16 @@
 import { ToolCallFunctionReturn, ToolCallFunctions } from "@api/types/types.js";
-import { createProject, getProjects, updateProject } from "../projectServices.js";
+import {
+  createProject,
+  getProjects,
+  updateProject,
+} from "../projectServices.js";
 import { createTask } from "../taskServices.js";
 import { updateUserPreferences } from "../userServices.js";
 
 export const handleToolCallFunction = async <T extends keyof ToolCallFunctions>(
   toolCallFunctionName: T,
   toolCallFunctionArgs: ToolCallFunctions[T],
-): Promise<ToolCallFunctionReturn>=> {
+): Promise<ToolCallFunctionReturn> => {
   switch (toolCallFunctionName) {
     case "createProject": {
       if (!("name" in toolCallFunctionArgs)) {
@@ -14,16 +18,17 @@ export const handleToolCallFunction = async <T extends keyof ToolCallFunctions>(
       }
       const createdProject = await createProject(toolCallFunctionArgs);
 
-      return createdProject
+      return createdProject;
     }
     case "updateUserPreferences": {
       if (!("tone" in toolCallFunctionArgs)) {
         throw new Error("Invalid arguments for updateUserPreferences");
       }
 
-      const updatedUserPreferences = await updateUserPreferences(toolCallFunctionArgs);
+      const updatedUserPreferences =
+        await updateUserPreferences(toolCallFunctionArgs);
 
-      return updatedUserPreferences
+      return updatedUserPreferences;
     }
     case "createTask": {
       if (!("title" in toolCallFunctionArgs)) {
@@ -44,7 +49,13 @@ export const handleToolCallFunction = async <T extends keyof ToolCallFunctions>(
       return projects;
     }
     case "updateProjectData": {
-      if(!("priority" in toolCallFunctionArgs) || !("id" in toolCallFunctionArgs) || !("startDate" in toolCallFunctionArgs) || !("endDate" in toolCallFunctionArgs) || !("tags" in toolCallFunctionArgs)) {
+      if (
+        !("priority" in toolCallFunctionArgs) ||
+        !("id" in toolCallFunctionArgs) ||
+        !("startDate" in toolCallFunctionArgs) ||
+        !("endDate" in toolCallFunctionArgs) ||
+        !("tags" in toolCallFunctionArgs)
+      ) {
         throw new Error("Invalid arguments for updateProjectData");
       }
 

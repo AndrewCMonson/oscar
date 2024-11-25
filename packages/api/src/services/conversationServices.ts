@@ -39,11 +39,11 @@ export const addMessageToConversation = async (
       throw new Error("Error adding message to conversation");
     }
 
-    return updatedConversation
+    return updatedConversation;
   } catch (e) {
     if (e instanceof PrismaClientKnownRequestError) {
       console.error(e);
-      throw new Error("Error with prisma db")
+      throw new Error("Error with prisma db");
     } else {
       throw new Error("Error creating message");
     }

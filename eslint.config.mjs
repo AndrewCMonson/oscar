@@ -26,6 +26,8 @@ export default [
       "**/tsconfig.json",
       "**/generated/*",
       "**/prisma/*",
+      "**/src/components/**",
+      "**/tailwind.config.js",
     ],
   },
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
