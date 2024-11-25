@@ -6,6 +6,7 @@ import {
   formatMessageForOpenAI,
   getContext,
   handleToolCallFunction,
+  isValidToolName,
   openAIApiOptions,
 } from "@api/src/services/";
 import {
@@ -26,9 +27,9 @@ export const chatWithAssistant = async (
   try {
     // get context from the assistant and the user
     const context = await getContext(user.id);
-    // check if the user has conversation history with the assistant. If they do, it adds the new message to the conversation. If they don't, it creates one and adds the message to the conversation.
+    // check if the user has conversation history with the assistant. If they don't, it creates a conversation.
     const conversationHistory = await findConversation(user.id);
-
+    // The new message is added to the conversation
     const updatedConversation = await addMessageToConversation(conversationHistory.id, user.id, message.role, message.content, message.name);
     // get the messages from the conversation to add to assistant API call
     const { messages: conversationMessages } = updatedConversation;
@@ -48,21 +49,13 @@ export const chatWithAssistant = async (
       messages: [context, ...formattedMessages],
       ...openAIApiOptions,
     });
-    // determines if a tool was called and stores it in a variable
+    // gets any tool calls that were made and stores in array
     const toolCalls = openAIResponse.choices[0].message.tool_calls;
     // if no tool was called, update the response variable, add the response to the DB and return it to the user
     if (toolCalls.length === 0) {
       console.log(" -------> NO TOOL CALL MADE <-------");
       const assistantResponse =
         openAIResponse.choices[0].message.parsed ?? assistantFailureResponse;
-
-      await addMessageToConversation(
-        conversationHistory.id,
-        user.id,
-        message.role,
-        message.content,
-        message.name,
-      )
 
       await addMessageToConversation(
         conversationHistory.id,
@@ -74,32 +67,37 @@ export const chatWithAssistant = async (
 
       return assistantResponse;
     }
-    // if tool was called, get the name and arguments of the tool called and pass them to utility function that completes the required action i.e.(creates a project or updates preferences)
+    // if tools were called, we map over the tools that were called, checking if they were valid tool calls. if they are, we pass them to a helper function that handles them on a case by case basis. The results of the tool calls are stored in an array for use later as context to the chatbot again.
     console.log("Tool calls", toolCalls)
     const functionsHandled = await Promise.all(toolCalls.map(async (toolCall) => {
-      const handledFunction = await handleToolCallFunction(toolCall.function.name, toolCall.function.parsed_arguments as ToolCallFunctionArgs)
-
-      return {
-        handledFunction,
-        id: toolCall.id,
-        name: toolCall.function.name,
+      const { function: toolCallFunction, id: toolCallID } = toolCall;
+      const { name: toolCallName } = toolCallFunction;
+      if(isValidToolName(toolCallName)){
+        const handledFunction = await handleToolCallFunction(toolCallName, toolCall.function.parsed_arguments as ToolCallFunctionArgs)
+        
+        return {
+          handledFunction,
+          id: toolCallID,
+          name: toolCallName,
+        }
       }
+
     }));
-
     console.log(functionsHandled);
-
+    // we map over the newly handled tool calls to create formatted messages to send to the assistant for additional context. The api requires us to respond to tool calls with a message containing tool call ids. this is that response.
     const functionCallResultMessages = functionsHandled.map(functionhandled => {
       return formatMessageForOpenAI({
-        name: functionhandled.name,
+        name: functionhandled?.name ?? "",
         role: "tool",
         content: JSON.stringify(functionhandled),
-        toolCallId: functionhandled.id
+        toolCallId: functionhandled?.id
       })
     })
 
+
     console.log("Function call result messages", functionCallResultMessages)
 
-    // call the API with the context, previous messages, message that resulted in the tool call and the result of the tool call.
+    // call the api with the updated tool call information again. This will be the end of the loop and the final response by the assistant. Since tools were called it will be an update to the user on what actions were taken by the assistant.
     const functionResponse = await openAIClient.beta.chat.completions.parse({
       messages: [
         context,

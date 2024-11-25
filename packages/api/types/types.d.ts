@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Prisma, User } from "@prisma/client";
+import { Prisma, Project, Task, User, UserPreferences } from "@prisma/client";
 import { z } from "zod";
 import {
   createProjectParameters,
@@ -12,6 +12,20 @@ type CreateProjectParameters = z.infer<typeof createProjectParameters>;
 type UpdateUserPreferenceParams = z.infer<typeof updateUserPreferenceParams>;
 type CreateTaskParams = z.infer<typeof createTaskParams>;
 type GetProjectsParams = z.infer<typeof getProjectsParameters>;
+
+export type ToolCallFunctions = {
+  createProject: CreateProjectParameters;
+  updateUserPreferences: UpdateUserPreferenceParams;
+  createTask: CreateTaskParams;
+  getProjects: GetProjectsParams;
+}
+
+export type ToolCallFunctionReturn = 
+  | Project
+  | UserPreferences
+  | Task
+  | Project[]
+  | undefined
 
 export interface MiddlewareContext {
   user: User;
@@ -46,13 +60,6 @@ export interface ChatGPTMessage {
   role: "user" | "function" | "assistant" | "system" | "tool";
   content: string;
   name: string;
-}
-
-export interface ChatRequest extends Request {
-  body: {
-    user: User;
-    message: string;
-  };
 }
 
 export interface UserPreferencesData {

@@ -1,12 +1,12 @@
-import { ToolCallFunctionArgs } from "@api/types/types.js";
+import { ToolCallFunctionReturn, ToolCallFunctions } from "@api/types/types.js";
 import { createProject, getProjects } from "../projectServices.js";
 import { createTask } from "../taskServices.js";
 import { updateUserPreferences } from "../userServices.js";
 
-export const handleToolCallFunction = async (
-  toolCallFunctionName: string,
-  toolCallFunctionArgs: ToolCallFunctionArgs,
-) => {
+export const handleToolCallFunction = async <T extends keyof ToolCallFunctions>(
+  toolCallFunctionName: T,
+  toolCallFunctionArgs: ToolCallFunctions[T],
+): Promise<ToolCallFunctionReturn>=> {
   switch (toolCallFunctionName) {
     case "createProject": {
       if (!("name" in toolCallFunctionArgs)) {

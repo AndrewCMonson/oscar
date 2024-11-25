@@ -1,4 +1,5 @@
 import { openAITools } from "@api/src/services/OpenAI/index.js";
+import { ToolCallFunctions } from "@api/types/types.js";
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod.js";
 import { z } from "zod";
@@ -90,3 +91,7 @@ export const formatMessageForOpenAI = ({
 
   return formattedMessage;
 };
+
+export const isValidToolName = (name: string): name is keyof ToolCallFunctions => {
+  return ["createProject", "updateUserPreferences", "createTask", "getProjects"].includes(name);
+}
