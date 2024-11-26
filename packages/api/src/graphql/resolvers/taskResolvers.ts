@@ -8,8 +8,8 @@ export const taskResolvers: Resolvers = {
       try {
         const tasks = await prismadb.task.findMany();
 
-        if(!tasks){
-          return []
+        if (!tasks) {
+          return [];
         }
         return tasks;
       } catch (e) {
@@ -42,16 +42,22 @@ export const taskResolvers: Resolvers = {
     },
   },
   Mutation: {
-    createTask: async (_, { title, description, status, priority, dueDate, projectId }, { user }) => {
-      if(!title || !description || !status || !priority || !projectId){
-        throw new Error("Invalid task parameters. Please include a title, description, status, priority and projectId")
+    createTask: async (
+      _,
+      { title, description, status, priority, dueDate, projectId },
+      { user },
+    ) => {
+      if (!title || !description || !status || !priority || !projectId) {
+        throw new Error(
+          "Invalid task parameters. Please include a title, description, status, priority and projectId",
+        );
       }
 
-      if(!user){
-        throw new Error("User required")
+      if (!user) {
+        throw new Error("User required");
       }
 
-      try{
+      try {
         const task = await prismadb.task.create({
           data: {
             title,
@@ -60,25 +66,28 @@ export const taskResolvers: Resolvers = {
             priority,
             dueDate,
             projectId,
-            userId: user.id
+            userId: user.id,
           },
         });
 
-        if(!task){
-          throw new Error("Error creating task")
+        if (!task) {
+          throw new Error("Error creating task");
         }
 
         return task;
-      } catch(e){
-        if(e instanceof PrismaClientKnownRequestError){
-          throw new Error("Prisma ORM error creating task")
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          throw new Error("Prisma ORM error creating task");
         } else {
-          throw new Error("Error creating task")
+          throw new Error("Error creating task");
         }
       }
-      
     },
-    updateTask: async (_, { id, title, description, status, priority, dueDate, projectId }, {user}) => {
+    updateTask: async (
+      _,
+      { id, title, description, status, priority, dueDate, projectId },
+      { user },
+    ) => {
       const task = await prismadb.task.update({
         where: {
           id: id,

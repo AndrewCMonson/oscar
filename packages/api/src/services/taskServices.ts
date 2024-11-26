@@ -1,10 +1,10 @@
-import { CreateTaskParams } from "@api/types/types.js";
+import { prismadb } from "@api/src/config/index.js";
+import { CreateTaskParameters } from "@api/types/types.js";
 import { Task } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
-import { prismadb } from "@api/src/config/index.js";
 
 export const createTask = async (
-  taskParams: CreateTaskParams,
+  taskParams: CreateTaskParameters,
 ): Promise<Task> => {
   if (!taskParams) {
     throw new Error("No task parameters provided");

@@ -1,8 +1,16 @@
 import { prismadb } from "@api/src/config/index.js";
 import { formatMessageForOpenAI } from "@api/src/services/index.js";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
+import { ChatCompletionMessageParam } from "openai/resources/index.js";
 
-export const getContext = async (userId: string) => {
+// function used to get global context from the assistant and user context from the user to pass to the api call
+export const getContext = async (
+  userId: string,
+): Promise<ChatCompletionMessageParam> => {
+  if (!userId) {
+    throw new Error("User id needed to get context");
+  }
+
   try {
     const assistant = await prismadb.assistant.findFirst({
       where: {

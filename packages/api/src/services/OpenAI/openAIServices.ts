@@ -1,4 +1,4 @@
-import { openAIClient } from "@api/src/config";
+import { openAIClient } from "@api/src/config/index.js";
 import {
   addMessageToConversation,
   assistantFailureResponse,
@@ -49,7 +49,7 @@ export const chatWithAssistant = async (
       messages: [context, ...formattedMessages],
       ...openAIApiOptions,
     });
-
+    // finish reason will be one of the following: "length" | "stop" | "tool_calls" | "content_filter" | "function_call"
     const finishReason = openAIResponse.choices[0].finish_reason;
     // if the API finished it's call due to needing to call a tool (function), we pass the response to "handleResonseToolCalls" for the tool calls to be resolved.
     if (finishReason === "tool_calls") {
@@ -64,7 +64,6 @@ export const chatWithAssistant = async (
     }
     // if the finish reason is "stop", we add the response to the conversation history and return it to the user.
     if (finishReason === "stop") {
-      // console.log(" -------> NO TOOL CALL MADE <-------");
       const assistantResponse =
         openAIResponse.choices[0].message.parsed ?? assistantFailureResponse;
 

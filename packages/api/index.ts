@@ -5,7 +5,7 @@ import express, { Response } from "express";
 import { connectDB } from "./src/config/db.js";
 // import { router } from "./src/controllers/index.js";
 import { schema } from "./src/graphql/schema.js";
-import { middlewareContext } from "./src/utils/index.js"
+import { middlewareContext } from "./src/utils/index.js";
 
 const PORT = process.env.PORT || 3005;
 

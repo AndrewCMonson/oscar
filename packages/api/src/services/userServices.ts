@@ -1,9 +1,13 @@
 import { prismadb } from "@api/src/config/index.js";
-import { UpdateUserPreferenceParams } from "@api/types/types.js";
+import { UpdateUserPreferenceParameters } from "@api/types/types.js";
 import { UserPreferences } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
 
 export const getUserByRole = async (role: string) => {
+  if(!role){
+    throw new Error("No role provided")
+  }
+
   try {
     const user = await prismadb.user.findFirst({
       where: {
@@ -16,13 +20,19 @@ export const getUserByRole = async (role: string) => {
     }
 
     return user;
-  } catch (error) {
-    console.error(error);
-    throw new Error("An error occurred getting the user");
+  } catch (e) {
+    if(e instanceof PrismaClientKnownRequestError){
+      throw new Error("Prisma error when retrieving user")
+    } else {
+      throw new Error("Error retrieving user")
+    }
   }
 };
 
 export const getUserById = async (userId: string) => {
+  if(!userId){
+    throw new Error("No userId provided")
+  }
   try {
     const user = await prismadb.user.findFirst({
       where: {
@@ -35,14 +45,17 @@ export const getUserById = async (userId: string) => {
     }
 
     return user;
-  } catch (error) {
-    console.error(error);
-    throw new Error("An error occurred getting the user");
+  } catch (e) {
+    if(e instanceof PrismaClientKnownRequestError){
+      throw new Error("Prisma error when retrieving user");
+    } else {
+      throw new Error("Error retrieving user")
+    }
   }
 };
 
 export const updateUserPreferences = async (
-  preferences: UpdateUserPreferenceParams,
+  preferences: UpdateUserPreferenceParameters,
 ): Promise<UserPreferences> => {
   if (!preferences) {
     throw new Error("No preferences provided to update user preferences");

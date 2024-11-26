@@ -10,6 +10,26 @@ import {
 import { zodFunction } from "openai/helpers/zod.js";
 import { z } from "zod";
 
+/* 
+  This is the structured output that we are forcing the api to return on each call
+  Currently, this is very similar to the stock response, but we want to control it.
+*/
+export const openAIStructuredOutput = z.object({
+  role: z.string(),
+  name: z.string(),
+  content: z.string(),
+});
+
+/*
+  Each of the below parameters objects follow OpenAI's suggested method for
+  function calling with structured outputs found here: https://platform.openai.com/docs/guides/function-calling 
+
+  It uses Zod: https://zod.dev/?id=introduction for schema declaration to ensure
+  the correct parameters are returned by the api for function calling
+
+  These parameters define the expected return params from the api when calling a function we define.
+  Typically, they will match the needed parameters for a prisma ORM action (CRUD)
+*/
 export const createProjectParameters = z.object({
   name: z.string().describe("The project's name"),
   description: z.string().describe("A brief description of the project"),
@@ -23,7 +43,7 @@ export const getProjectsParameters = z.object({
   userId: z.string().describe("The user's id used to retrieve their projects"),
 });
 
-export const updateUserPreferenceParams = z.object({
+export const updateUserPreferenceParameters = z.object({
   id: z.string().describe("The id of the user preferences model"),
   tone: z
     .enum([Tone.CONCISE, Tone.FRIENDLY, Tone.PROFESSIONAL])
@@ -38,7 +58,7 @@ export const updateUserPreferenceParams = z.object({
   userId: z.string().describe("The user's id"),
 });
 
-export const createTaskParams = z.object({
+export const createTaskParameters = z.object({
   title: z.string().describe("The name of the project"),
   status: z
     .enum([
@@ -61,7 +81,7 @@ export const createTaskParams = z.object({
   userId: z.string().describe("The userId of the project owner"),
 });
 
-export const updateProjectParams = z.object({
+export const updateProjectParameters = z.object({
   id: z.string().describe("The id of the project"),
   startDate: z.string().describe("The date the project starts"),
   endDate: z.string().describe("The date the project is due to end"),
@@ -85,6 +105,11 @@ export const updateProjectParams = z.object({
     .describe("An array of tags that describe the project"),
 });
 
+/*
+  The below array contains the tools that the OpenAI api is able to use.
+  It is passed during the api call via the "tools" argument.
+  * If a tool is not defined here, it cannot be called by the api.
+*/
 export const openAITools = [
   zodFunction({
     name: "createProject",
@@ -93,12 +118,12 @@ export const openAITools = [
   }),
   zodFunction({
     name: "updateUserPreferences",
-    parameters: updateUserPreferenceParams,
+    parameters: updateUserPreferenceParameters,
     description: "this function is used to update a user's preferences",
   }),
   zodFunction({
     name: "createTask",
-    parameters: createTaskParams,
+    parameters: createTaskParameters,
     description: "Used to create a new task",
   }),
   zodFunction({
@@ -108,7 +133,7 @@ export const openAITools = [
   }),
   zodFunction({
     name: "updateProjectData",
-    parameters: updateProjectParams,
+    parameters: updateProjectParameters,
     description: "used to update metadata of a project",
   }),
 ];

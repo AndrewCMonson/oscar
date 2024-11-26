@@ -1,8 +1,8 @@
 import { prismadb } from "@api/src/config/index.js";
 import {
   CreateProjectParameters,
-  GetProjectsParams,
-  UpdateProjectDataParams,
+  GetProjectsParameters,
+  UpdateProjectDataParameters,
 } from "@api/types/types.js";
 import { Prisma, Project, ProjectMetadata } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
@@ -39,7 +39,7 @@ export const createProject = async (
 };
 
 export const getProjects = async (
-  getProjectParams: GetProjectsParams,
+  getProjectParams: GetProjectsParameters,
 ): Promise<Project[]> => {
   if (!getProjectParams) {
     throw new Error("No params provided to get projects");
@@ -69,7 +69,7 @@ export const getProjects = async (
 };
 
 export const updateProject = async (
-  updateProjectParams: UpdateProjectDataParams,
+  updateProjectParams: UpdateProjectDataParameters,
 ): Promise<ProjectMetadata> => {
   if (!updateProjectParams) {
     throw new Error("Invalid parameters for updating a project");
