@@ -1,7 +1,7 @@
+import { prismadb } from "@api/src/config/index.js";
 import { UpdateUserPreferenceParams } from "@api/types/types.js";
-import { prismadb } from "../config/index.js";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
 import { UserPreferences } from "@prisma/client";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
 
 export const getUserByRole = async (role: string) => {
   try {

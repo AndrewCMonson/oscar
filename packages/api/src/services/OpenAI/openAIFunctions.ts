@@ -1,11 +1,11 @@
-import { ToolCallFunctionReturn, ToolCallFunctions } from "@api/types/types.js";
 import {
   createProject,
+  createTask,
   getProjects,
   updateProject,
-} from "../projectServices.js";
-import { createTask } from "../taskServices.js";
-import { updateUserPreferences } from "../userServices.js";
+  updateUserPreferences
+} from "@api/src/services/index.js";
+import { ToolCallFunctionReturn, ToolCallFunctions } from "@api/types/types.js";
 
 export const handleToolCallFunction = async <T extends keyof ToolCallFunctions>(
   toolCallFunctionName: T,

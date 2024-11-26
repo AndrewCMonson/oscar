@@ -1,13 +1,3 @@
-import { Request, Response } from "express";
-import {
-  Prisma,
-  Project,
-  ProjectMetadata,
-  Task,
-  User,
-  UserPreferences,
-} from "@prisma/client";
-import { z } from "zod";
 import {
   createProjectParameters,
   createTaskParams,
@@ -16,6 +6,16 @@ import {
   updateProjectParams,
   updateUserPreferenceParams,
 } from "@api/src/services/OpenAI/";
+import {
+  Prisma,
+  Project,
+  ProjectMetadata,
+  Task,
+  User,
+  UserPreferences,
+} from "@prisma/client";
+import { Request, Response } from "express";
+import { z } from "zod";
 
 type CreateProjectParameters = z.infer<typeof createProjectParameters>;
 type UpdateUserPreferenceParams = z.infer<typeof updateUserPreferenceParams>;

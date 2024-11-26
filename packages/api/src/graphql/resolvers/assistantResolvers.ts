@@ -1,5 +1,6 @@
 import { prismadb } from "@api/src/config/db.js";
 import { Resolvers } from "@api/types/index.js";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
 
 export const assistantResolvers: Resolvers = {
   Query: {
@@ -61,10 +62,17 @@ export const assistantResolvers: Resolvers = {
           },
         });
 
+        if(!assistant){
+          throw new Error("Error updating assistant")
+        }
+
         return assistant;
       } catch (e) {
-        console.error(e);
-        throw new Error("Error updating assistant context");
+        if(e instanceof PrismaClientKnownRequestError){
+          throw new Error("Error updating assistant context with Prisma ORM")
+        } else {
+          throw new Error("Error updating assistant context");
+        }
       }
     },
   },

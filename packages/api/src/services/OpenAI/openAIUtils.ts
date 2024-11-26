@@ -2,8 +2,8 @@ import { openAIClient } from "@api/src/config/openai.js";
 import {
   addMessageToConversation,
   handleToolCallFunction,
+  openAITools
 } from "@api/src/services/index.js";
-import { openAITools } from "@api/src/services/OpenAI/index.js";
 import {
   OpenAIStructuredOutput,
   ToolCallFunctionArgs,
@@ -124,10 +124,8 @@ export const handleResponseToolCalls = async (
   formattedMessages: ChatCompletionMessageParam[],
 ): Promise<OpenAIStructuredOutput> => {
   const toolCalls = openAIResponse.choices[0].message.tool_calls;
-  console.log(
-    "<----- Simultaneous TOOL CALLS ----->",
-    toolCalls.map((toolCall) => toolCall.function),
-  );
+
+  // map over all of the tool calls, passing them to a function that handles them based on their name if their name is valid. If not, error is thrown.
   const toolCallResults = await Promise.all(
     toolCalls.map(async (toolCall) => {
       const { function: toolCallFunction, id: toolCallID } = toolCall;
@@ -148,10 +146,6 @@ export const handleResponseToolCalls = async (
       }
     }),
   );
-  console.log(
-    "<------ TOOL CALL RESULTS ------>",
-    toolCallResults.map((functionHandled) => functionHandled?.handledFunction),
-  );
   // we map over the newly handled tool calls to create formatted messages to send to the assistant for additional context. The api requires us to respond to tool calls with a message containing tool call ids. this is that response.
   const functionCallResultMessages = toolCallResults.map((functionhandled) => {
     return formatMessageForOpenAI({
@@ -161,11 +155,6 @@ export const handleResponseToolCalls = async (
       toolCallId: functionhandled?.id,
     });
   });
-
-  console.log(
-    "<------Function call result messages ------>",
-    functionCallResultMessages,
-  );
 
   // call the api with the updated tool call information again. This will be the end of the loop and the final response by the assistant. Since tools were called it will be an update to the user on what actions were taken by the assistant.
   const functionResponse = await openAIClient.beta.chat.completions.parse({
@@ -177,8 +166,6 @@ export const handleResponseToolCalls = async (
     ],
     ...openAIApiOptions,
   });
-  // get final response, add it to the db and return it to the user.
-  console.log("RESPONSE AFTER FUNCTION RESOLUTION", functionResponse);
 
   if (functionResponse.choices[0].finish_reason === "tool_calls") {
     return handleResponseToolCalls(
@@ -192,7 +179,6 @@ export const handleResponseToolCalls = async (
   const assistantResponse =
     functionResponse?.choices[0].message.parsed ?? assistantFailureResponse;
 
-  console.log("<------ ASSISTANT RESPONSE ------>", assistantResponse);
   // update the conversation history with the assistant's response
   await addMessageToConversation(
     conversationHistory.id,
