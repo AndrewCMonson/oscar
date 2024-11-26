@@ -86,11 +86,29 @@ export const updateProjectParams = z.object({
 });
 
 export const openAITools = [
-  zodFunction({ name: "createProject", parameters: createProjectParameters }),
+  zodFunction({
+    name: "createProject",
+    parameters: createProjectParameters,
+    description: "This function is used to create new projects",
+  }),
   zodFunction({
     name: "updateUserPreferences",
     parameters: updateUserPreferenceParams,
+    description: "this function is used to update a user's preferences",
   }),
-  zodFunction({ name: "createTask", parameters: createTaskParams }),
-  zodFunction({ name: "getProjects", parameters: getProjectsParameters }),
+  zodFunction({
+    name: "createTask",
+    parameters: createTaskParams,
+    description: "Used to create a new task",
+  }),
+  zodFunction({
+    name: "getProjects",
+    parameters: getProjectsParameters,
+    description: "used to get all projects of a user",
+  }),
+  zodFunction({
+    name: "updateProjectData",
+    parameters: updateProjectParams,
+    description: "used to update metadata of a project",
+  }),
 ];

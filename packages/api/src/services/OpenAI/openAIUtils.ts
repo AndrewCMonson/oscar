@@ -1,7 +1,19 @@
+import { openAIClient } from "@api/src/config/openai.js";
+import {
+  addMessageToConversation,
+  handleToolCallFunction,
+} from "@api/src/services/index.js";
 import { openAITools } from "@api/src/services/OpenAI/index.js";
-import { ToolCallFunctions } from "@api/types/types.js";
+import {
+  OpenAIStructuredOutput,
+  ToolCallFunctionArgs,
+  ToolCallFunctions,
+} from "@api/types/types.js";
+import { Conversation, User } from "@prisma/client";
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod.js";
+import { ParsedChatCompletion } from "openai/resources/beta/chat/completions.js";
+import { ChatCompletionMessageParam } from "openai/resources/index.js";
 import { z } from "zod";
 
 export const openAIStructuredOutput = z.object({
@@ -24,8 +36,8 @@ export const openAIStructuredOutput = z.object({
 
 export const openAIApiOptions = {
   model: "gpt-4o-mini",
-  max_tokens: 300,
-  temperature: 0.6,
+  max_tokens: 1000,
+  temperature: 0.5,
   top_p: 0.95,
   presence_penalty: 0.3,
   frequency_penalty: 0.1,
@@ -100,5 +112,95 @@ export const isValidToolName = (
     "updateUserPreferences",
     "createTask",
     "getProjects",
+    "updateProjectData",
   ].includes(name);
+};
+
+export const handleResponseToolCalls = async (
+  openAIResponse: ParsedChatCompletion<OpenAIStructuredOutput>,
+  conversationHistory: Conversation,
+  user: User,
+  context: ChatCompletionMessageParam,
+  formattedMessages: ChatCompletionMessageParam[],
+): Promise<OpenAIStructuredOutput> => {
+  const toolCalls = openAIResponse.choices[0].message.tool_calls;
+  console.log(
+    "<----- Simultaneous TOOL CALLS ----->",
+    toolCalls.map((toolCall) => toolCall.function),
+  );
+  const toolCallResults = await Promise.all(
+    toolCalls.map(async (toolCall) => {
+      const { function: toolCallFunction, id: toolCallID } = toolCall;
+      const { name: toolCallName } = toolCallFunction;
+      if (isValidToolName(toolCallName)) {
+        const handledFunction = await handleToolCallFunction(
+          toolCallName,
+          toolCall.function.parsed_arguments as ToolCallFunctionArgs,
+        );
+
+        return {
+          handledFunction,
+          id: toolCallID,
+          name: toolCallName,
+        };
+      } else {
+        throw new Error("Not a valid tool name");
+      }
+    }),
+  );
+  console.log(
+    "<------ TOOL CALL RESULTS ------>",
+    toolCallResults.map((functionHandled) => functionHandled?.handledFunction),
+  );
+  // we map over the newly handled tool calls to create formatted messages to send to the assistant for additional context. The api requires us to respond to tool calls with a message containing tool call ids. this is that response.
+  const functionCallResultMessages = toolCallResults.map((functionhandled) => {
+    return formatMessageForOpenAI({
+      name: functionhandled?.name ?? "",
+      role: "tool",
+      content: JSON.stringify(functionhandled),
+      toolCallId: functionhandled?.id,
+    });
+  });
+
+  console.log(
+    "<------Function call result messages ------>",
+    functionCallResultMessages,
+  );
+
+  // call the api with the updated tool call information again. This will be the end of the loop and the final response by the assistant. Since tools were called it will be an update to the user on what actions were taken by the assistant.
+  const functionResponse = await openAIClient.beta.chat.completions.parse({
+    messages: [
+      context,
+      ...formattedMessages,
+      openAIResponse.choices[0].message,
+      ...functionCallResultMessages,
+    ],
+    ...openAIApiOptions,
+  });
+  // get final response, add it to the db and return it to the user.
+  console.log("RESPONSE AFTER FUNCTION RESOLUTION", functionResponse);
+
+  if (functionResponse.choices[0].finish_reason === "tool_calls") {
+    return handleResponseToolCalls(
+      functionResponse,
+      conversationHistory,
+      user,
+      context,
+      formattedMessages,
+    );
+  }
+  const assistantResponse =
+    functionResponse?.choices[0].message.parsed ?? assistantFailureResponse;
+
+  console.log("<------ ASSISTANT RESPONSE ------>", assistantResponse);
+  // update the conversation history with the assistant's response
+  await addMessageToConversation(
+    conversationHistory.id,
+    user.id,
+    assistantResponse?.role,
+    assistantResponse.content,
+    assistantResponse?.name,
+  );
+
+  return assistantResponse;
 };

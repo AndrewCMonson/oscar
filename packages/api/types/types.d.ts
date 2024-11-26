@@ -1,10 +1,18 @@
 import { Request, Response } from "express";
-import { Prisma, Project, Task, User, UserPreferences } from "@prisma/client";
+import {
+  Prisma,
+  Project,
+  ProjectMetadata,
+  Task,
+  User,
+  UserPreferences,
+} from "@prisma/client";
 import { z } from "zod";
 import {
   createProjectParameters,
   createTaskParams,
   getProjectsParameters,
+  openAIStructuredOutput,
   updateProjectParams,
   updateUserPreferenceParams,
 } from "@api/src/services/OpenAI/";
@@ -14,6 +22,7 @@ type UpdateUserPreferenceParams = z.infer<typeof updateUserPreferenceParams>;
 type CreateTaskParams = z.infer<typeof createTaskParams>;
 type GetProjectsParams = z.infer<typeof getProjectsParameters>;
 type UpdateProjectDataParams = z.infer<typeof updateProjectParams>;
+type OpenAIStructuredOutput = z.infer<typeof openAIStructuredOutput>;
 
 export type ToolCallFunctions = {
   createProject: CreateProjectParameters;
@@ -28,6 +37,7 @@ export type ToolCallFunctionReturn =
   | UserPreferences
   | Task
   | Project[]
+  | ProjectMetadata
   | undefined;
 
 export interface MiddlewareContext {

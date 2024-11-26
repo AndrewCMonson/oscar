@@ -1,4 +1,4 @@
-import { Prisma, Project } from "@prisma/client";
+import { Prisma, Project, ProjectMetadata } from "@prisma/client";
 import { prismadb } from "@api/src/config/index.js";
 import {
   CreateProjectParameters,
@@ -70,48 +70,55 @@ export const getProjects = async (
 
 export const updateProject = async (
   updateProjectParams: UpdateProjectDataParams,
-): Promise<Project> => {
+): Promise<ProjectMetadata> => {
   if (!updateProjectParams) {
     throw new Error("Invalid parameters for updating a project");
   }
 
-  try {
-    const { status, tags, startDate, endDate, priority, id } =
-      updateProjectParams;
+  const { status, tags, startDate, endDate, priority, id } =
+    updateProjectParams;
 
-    const updatedProject = await prismadb.project.update({
+  const newStartDate = new Date(startDate);
+
+  try {
+    const projectContext = await prismadb.projectContext.findFirst({
       where: {
-        id,
-      },
-      data: {
-        projectContext: {
-          update: {
-            metadata: {
-              update: {
-                startDate,
-                endDate,
-                status,
-                priority,
-                tags,
-              },
-            },
-          },
-        },
+        projectId: id,
       },
       include: {
-        projectContext: {
-          include: {
-            metadata: true,
-          },
-        },
+        metadata: true,
       },
     });
 
-    if (!updatedProject) {
-      throw new Error("Error updating project metadata");
+    if (!projectContext) {
+      throw new Error("Unable to find project context during project update");
     }
 
-    return updatedProject;
+    const projectMetaData = await prismadb.projectMetadata.findUnique({
+      where: {
+        id: projectContext?.metadata?.id,
+      },
+    });
+
+    const updatedProjectMetaData = await prismadb.projectMetadata.update({
+      where: {
+        id: projectMetaData?.id,
+      },
+      data: {
+        startDate: newStartDate,
+        endDate:
+          endDate === ""
+            ? new Date(
+                new Date(newStartDate).setMonth(newStartDate.getMonth()) + 6,
+              )
+            : new Date(endDate),
+        status,
+        priority,
+        tags,
+      },
+    });
+
+    return updatedProjectMetaData;
   } catch (e) {
     if (e instanceof PrismaClientKnownRequestError) {
       throw new Error("Error with prisma DB updating project data");
