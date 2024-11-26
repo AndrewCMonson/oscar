@@ -4,8 +4,8 @@ import { UserPreferences } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
 
 export const getUserByRole = async (role: string) => {
-  if(!role){
-    throw new Error("No role provided")
+  if (!role) {
+    throw new Error("No role provided");
   }
 
   try {
@@ -21,17 +21,17 @@ export const getUserByRole = async (role: string) => {
 
     return user;
   } catch (e) {
-    if(e instanceof PrismaClientKnownRequestError){
-      throw new Error("Prisma error when retrieving user")
+    if (e instanceof PrismaClientKnownRequestError) {
+      throw new Error("Prisma error when retrieving user");
     } else {
-      throw new Error("Error retrieving user")
+      throw new Error("Error retrieving user");
     }
   }
 };
 
 export const getUserById = async (userId: string) => {
-  if(!userId){
-    throw new Error("No userId provided")
+  if (!userId) {
+    throw new Error("No userId provided");
   }
   try {
     const user = await prismadb.user.findFirst({
@@ -46,10 +46,10 @@ export const getUserById = async (userId: string) => {
 
     return user;
   } catch (e) {
-    if(e instanceof PrismaClientKnownRequestError){
+    if (e instanceof PrismaClientKnownRequestError) {
       throw new Error("Prisma error when retrieving user");
     } else {
-      throw new Error("Error retrieving user")
+      throw new Error("Error retrieving user");
     }
   }
 };
