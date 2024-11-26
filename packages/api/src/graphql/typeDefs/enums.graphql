@@ -1,0 +1,27 @@
+enum IntegrationType {
+  JIRA
+  MOTION
+  NOTION
+}
+
+enum AssistantAction {
+  CREATE_PROJECT
+  CREATE_TASK
+  CREATE_DOCUMENTATION
+  CREATE_CALENDAR_EVENT
+  NONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  BLOCKED
+}

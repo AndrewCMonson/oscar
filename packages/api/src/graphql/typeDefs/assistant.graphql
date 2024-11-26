@@ -1,0 +1,51 @@
+type Assistant {
+  id: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  name: String
+  role: String
+  globalContext: GlobalContext
+}
+
+type GlobalContext {
+  id: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  contextData: [GlobalContextMessage]
+  assistantId: String
+  assistant: Assistant
+}
+
+type GlobalContextMessage {
+  id: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  role: String
+  content: String
+  name: String
+  globalContextId: String
+  globalContext: GlobalContext
+}
+
+input GlobalContextMessageInput {
+  role: String!
+  content: String!
+  name: String!
+}
+
+type AssistantResponse {
+  id: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  role: String
+  content: String
+  name: String
+}
+
+type Query {
+  getAssistant(role: String): Assistant
+}
+
+type Mutation {
+  updateAssistant(id: ID!, model: String): Assistant!
+}

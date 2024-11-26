@@ -1,0 +1,323 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  BLOCKED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ProjectType {
+  INTERNAL
+  CLIENT
+  PERSONAL
+}
+
+enum ProjectStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum ProjectPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum Tone {
+  FRIENDLY
+  CONCISE
+  PROFESSIONAL
+}
+
+enum ResponseStyle {
+  CONVERSATIONAL
+  DIRECT
+}
+
+enum IntegrationType {
+  JIRA
+  MOTION
+  NOTION
+}
+
+enum ReportingFrequency {
+  DAILY
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
+}
+
+enum AssistantAction {
+  CREATE_PROJECT
+  CREATE_TASK
+  CREATE_DOCUMENTATION
+  CREATE_CALENDAR_EVENT
+  NONE
+}
+
+model User {
+  id                   String                @id @default(cuid())
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  email                String                @unique
+  firstName            String?
+  lastName             String?
+  username             String
+  role                 String                @default("user")
+  conversations        Conversation[]
+  projects             Project[]
+  tasks                Task[]
+  preferencesId        String?               @unique
+  memoryId             String?               @unique
+  preferences          UserPreferences?
+  memory               UserMemory?
+  notificationSettings NotificationSettings?
+  Message              Message[]
+}
+
+model UserPreferences {
+  id                String            @id @default(cuid())
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  userId            String            @unique
+  tone              Tone              @default(FRIENDLY)
+  responseStyle     ResponseStyle     @default(CONVERSATIONAL)
+  preferredLanguage String            @default("en")
+  timeZone          String            @default("America/New_York")
+  integrations      UserIntegration[]
+  user              User?             @relation(fields: [userId], references: [id])
+}
+
+model UserIntegration {
+  id        String          @id @default(cuid())
+  type      IntegrationType
+  enabled   Boolean         @default(false)
+  apiToken  String?
+  baseUrl   String?
+  workspace String?
+
+  UserPreferences   UserPreferences? @relation(fields: [userPreferencesId], references: [id])
+  userPreferencesId String?
+}
+
+model NotificationSettings {
+  id     String  @id @default(cuid())
+  email  Boolean @default(true)
+  sms    Boolean @default(false)
+  inApp  Boolean @default(true)
+  user   User    @relation(fields: [userId], references: [id])
+  userId String  @unique
+}
+
+model UserMemory {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  userId      String    @unique
+  memories    Memory[]
+  version     Int       @default(1)
+  lastSummary DateTime?
+  user        User?     @relation(fields: [userId], references: [id])
+}
+
+model Memory {
+  id           String     @id @default(cuid())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  note         String
+  userMemory   UserMemory @relation(fields: [userMemoryId], references: [id])
+  userMemoryId String
+}
+
+model Conversation {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  assistantId String
+  assistant   Assistant @relation(fields: [assistantId], references: [id])
+  projectId   String?   @unique
+  project     Project?  @relation(fields: [projectId], references: [id])
+  messages    Message[]
+}
+
+model Message {
+  id              String        @id @default(cuid())
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  userId          String
+  role            String
+  content         String
+  name            String
+  contextData     Json?
+  user            User          @relation(fields: [userId], references: [id])
+  conversationId  String
+  conversation    Conversation? @relation(fields: [conversationId], references: [id])
+  taskId          String?
+  task            Task?         @relation(fields: [taskId], references: [id])
+  isGlobalContext Boolean       @default(false)
+}
+
+model AssistantResponse {
+  id            String                        @id @default(cuid())
+  createdAt     DateTime                      @default(now())
+  updatedAt     DateTime                      @updatedAt
+  role          String                        @default("assistant")
+  content       String
+  contextData   AssistantResponseContextData?
+  contextDataId String                        @unique
+}
+
+model AssistantResponseContextData {
+  id                  String            @id @default(cuid())
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  action              AssistantAction
+  name                String
+  data                Json
+  assistantResponseId String            @unique
+  assistantResponse   AssistantResponse @relation(fields: [assistantResponseId], references: [id])
+}
+
+model Project {
+  id             String          @id @default(cuid())
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  name           String
+  description    String?
+  type           ProjectType     @default(PERSONAL)
+  userId         String
+  user           User            @relation(fields: [userId], references: [id])
+  tasks          Task[]
+  conversationId String?
+  conversation   Conversation?
+  projectContext ProjectContext?
+}
+
+model ProjectContext {
+  id          String              @id @default(cuid())
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  projectId   String              @unique
+  project     Project             @relation(fields: [projectId], references: [id])
+  metadata    ProjectMetadata?
+  goals       ProjectGoal[]
+  preferences ProjectPreferences?
+  updates     ProjectUpdate[]
+}
+
+model ProjectMetadata {
+  id               String          @id @default(cuid())
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  tags             String[]
+  startDate        DateTime?
+  endDate          DateTime?
+  status           ProjectStatus   @default(ACTIVE)
+  priority         ProjectPriority @default(MEDIUM)
+  projectContextId String?         @unique
+  projectContext   ProjectContext? @relation(fields: [projectContextId], references: [id])
+}
+
+model ProjectGoal {
+  id               String          @id @default(cuid())
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  goal             String
+  projectContextId String?
+  projectContext   ProjectContext? @relation(fields: [projectContextId], references: [id])
+}
+
+model ProjectUpdate {
+  id               String          @id @default(cuid())
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  content          String
+  projectContextId String?
+  projectContext   ProjectContext? @relation(fields: [projectContextId], references: [id])
+}
+
+model ProjectPreferences {
+  id                 String             @id @default(cuid())
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  tone               Tone               @default(FRIENDLY)
+  responseStyle      ResponseStyle      @default(CONVERSATIONAL)
+  reportingFrequency ReportingFrequency @default(MONTHLY)
+  projectContextId   String?            @unique
+  projectContext     ProjectContext?    @relation(fields: [projectContextId], references: [id])
+}
+
+model Task {
+  id            String       @id @default(cuid())
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  title         String
+  description   String?
+  status        TaskStatus   @default(TODO)
+  priority      TaskPriority @default(MEDIUM)
+  dueDate       DateTime?
+  projectId     String?
+  project       Project?     @relation(fields: [projectId], references: [id])
+  userId        String
+  user          User         @relation(fields: [userId], references: [id])
+  messages      Message[]
+  jiraTaskId    String?
+  motionEventId String?
+}
+
+model Assistant {
+  id            String         @id @default(cuid())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  role          String
+  model         String // e.g., "gpt-4"
+  globalContext GlobalContext?
+  conversations Conversation[]
+}
+
+model GlobalContext {
+  id            String         @id @default(cuid())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  contextData   GlobalContextMessage[]
+  assistantId   String       @unique
+  assistant     Assistant      @relation(fields: [assistantId], references: [id])
+}
+
+model GlobalContextMessage {
+  id              String         @id @default(cuid())
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  role            String
+  content         String
+  name            String
+  globalContextId String
+  globalContext   GlobalContext @relation(fields: [globalContextId], references: [id])
+}
