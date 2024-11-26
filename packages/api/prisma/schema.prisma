@@ -298,6 +298,26 @@ model Assistant {
   updatedAt     DateTime       @updatedAt
   role          String
   model         String // e.g., "gpt-4"
-  globalContext Json // Stores shared knowledge and assistant base personality
+  globalContext GlobalContext?
   conversations Conversation[]
+}
+
+model GlobalContext {
+  id            String         @id @default(cuid())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  contextData   GlobalContextMessage[]
+  assistantId   String       @unique
+  assistant     Assistant      @relation(fields: [assistantId], references: [id])
+}
+
+model GlobalContextMessage {
+  id              String         @id @default(cuid())
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  role            String
+  content         String
+  name            String
+  globalContextId String
+  globalContext   GlobalContext @relation(fields: [globalContextId], references: [id])
 }

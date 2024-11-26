@@ -28,38 +28,19 @@ export const assistantResolvers: Resolvers = {
     },
   },
   Mutation: {
-    updateAssistant: async (_, { id, model, context }) => {
+    updateAssistant: async (_, { id, model }) => {
       if (!id) {
         throw new Error("Id is required");
       }
 
-      if (!context) {
-        throw new Error("Context is required");
-      }
-
       try {
-        const assistantContext = await prismadb.assistant.findFirst({
-          where: {
-            id: id,
-          },
-          select: {
-            globalContext: true,
-          },
-        });
-
-        const updatedContext = {
-          assistantContext,
-          ...context,
-        };
-
         const assistant = await prismadb.assistant.update({
           where: {
             id: id,
           },
           data: {
-            globalContext: JSON.stringify(updatedContext),
-            model: model,
-          },
+            model,
+          }
         });
 
         if(!assistant){

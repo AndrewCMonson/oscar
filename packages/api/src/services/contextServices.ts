@@ -8,7 +8,16 @@ export const getContext = async (userId: string) => {
       where: {
         role: "assistant",
       },
+      include: {
+        globalContext: {
+          include: {
+            contextData: true,
+          }
+        }
+      }
     });
+
+    const assistantContext = assistant?.globalContext?.contextData
   
     const userContext = await prismadb.user.findFirst({
       where: {
@@ -26,7 +35,7 @@ export const getContext = async (userId: string) => {
     });
   
     const combinedContext = {
-      globalContext: assistant?.globalContext,
+      globalContext: assistantContext,
       userContext: userContext,
     };
   

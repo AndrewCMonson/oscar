@@ -4,7 +4,33 @@ type Assistant {
   updatedAt: DateTime
   name: String
   role: String
-  globalContext: [Message]
+  globalContext: GlobalContext
+}
+
+type GlobalContext {
+  id: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  contextData: [GlobalContextMessage]
+  assistantId: String
+  assistant: Assistant
+}
+
+type GlobalContextMessage {
+  id: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  role: String
+  content: String
+  name: String
+  globalContextId: String
+  globalContext: GlobalContext
+}
+
+input GlobalContextMessageInput {
+  role: String!
+  content: String!
+  name: String!
 }
 
 type AssistantResponse {
@@ -14,19 +40,6 @@ type AssistantResponse {
   role: String
   content: String
   name: String
-  contextData: AssistantResponseContextData
-  contextDataId: String
-}
-
-type AssistantResponseContextData {
-  id: String
-  createdAt: DateTime
-  updatedAt: DateTime
-  action: String
-  actionName: String
-  metadata: JSON
-  assistantResponseId: String
-  assistantResponse: AssistantResponse
 }
 
 type Query {
@@ -34,5 +47,5 @@ type Query {
 }
 
 type Mutation {
-  updateAssistant(id: ID!, model: String, context: MessageInput): Assistant!
+  updateAssistant(id: ID!, model: String): Assistant!
 }

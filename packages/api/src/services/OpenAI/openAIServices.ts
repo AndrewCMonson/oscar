@@ -8,13 +8,13 @@ import {
   handleResponseToolCalls,
   openAIApiOptions,
 } from "@api/src/services/";
-import { ChatGPTMessage, OpenAIChatResponse } from "@api/types/index.js";
+import { ChatGPTMessage, OpenAIStructuredOutput } from "@api/types/index.js";
 import { User } from "@prisma/client";
 
 export const chatWithAssistant = async (
   message: ChatGPTMessage,
   user: User,
-): Promise<OpenAIChatResponse> => {
+): Promise<OpenAIStructuredOutput> => {
   if (!message || !user) {
     throw new Error("Invalid input");
   }

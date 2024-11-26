@@ -113,20 +113,3 @@ export interface UserMemoryData {
   timeZone: string;
   language: string;
 }
-
-export interface OpenAIChatResponse {
-  role: string;
-  name: string;
-  content: string;
-  contextData: {
-    action: string;
-    actionName: string;
-    metadata: {
-      status: string;
-      priority: string;
-      startDate: string;
-      endDate: string;
-      tags: string[];
-    };
-  };
-}

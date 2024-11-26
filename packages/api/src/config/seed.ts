@@ -73,8 +73,18 @@ export const seed = async () => {
   const assistant = await prismadb.assistant.create({
     data: {
       role: "assistant",
-      globalContext: initialLLMPrompt,
       model: "gpt-4",
+      globalContext: {
+        create: {
+          contextData: {
+            create: {
+              name: "system",
+              content: initialLLMPrompt,
+              role: "system",
+            }
+          }
+        }
+      }
     },
   });
   const userPreferences = await prismadb.userPreferences.create({
