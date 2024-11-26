@@ -247,9 +247,9 @@ export type MutationCreateProjectArgs = {
 export type MutationCreateTaskArgs = {
   description: Scalars['String']['input'];
   dueDate?: InputMaybe<Scalars['DateTime']['input']>;
-  priority: Scalars['String']['input'];
+  priority: TaskPriority;
   projectId: Scalars['String']['input'];
-  status: Scalars['String']['input'];
+  status: TaskStatus;
   title: Scalars['String']['input'];
 };
 
@@ -321,9 +321,9 @@ export type MutationUpdateTaskArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
   dueDate?: InputMaybe<Scalars['DateTime']['input']>;
   id: Scalars['ID']['input'];
-  priority?: InputMaybe<Scalars['String']['input']>;
+  priority?: InputMaybe<TaskPriority>;
   projectId?: InputMaybe<Scalars['String']['input']>;
-  status?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<TaskStatus>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
 

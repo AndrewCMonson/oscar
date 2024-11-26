@@ -2,7 +2,7 @@ import { openAIClient } from "@api/src/config/openai.js";
 import {
   addMessageToConversation,
   handleToolCallFunction,
-  openAITools
+  openAITools,
 } from "@api/src/services/index.js";
 import {
   OpenAIStructuredOutput,

@@ -3,7 +3,7 @@ import {
   createTask,
   getProjects,
   updateProject,
-  updateUserPreferences
+  updateUserPreferences,
 } from "@api/src/services/index.js";
 import { ToolCallFunctionReturn, ToolCallFunctions } from "@api/types/types.js";
 

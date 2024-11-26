@@ -21,26 +21,12 @@ type Query {
   task(id: ID!): Task
 }
 
-enum TaskPriority {
-  LOW
-  MEDIUM
-  HIGH
-  URGENT
-}
-
-enum TaskStatus {
-  TODO
-  IN_PROGRESS
-  COMPLETED
-  BLOCKED
-}
-
 type Mutation {
   createTask(
     title: String!
     description: String!
-    status: String!
-    priority: String!
+    status: TaskStatus!
+    priority: TaskPriority!
     dueDate: DateTime
     projectId: String!
   ): Task
@@ -48,8 +34,8 @@ type Mutation {
     id: ID!
     title: String
     description: String
-    status: String
-    priority: String
+    status: TaskStatus
+    priority: TaskPriority
     dueDate: DateTime
     projectId: String
   ): Task

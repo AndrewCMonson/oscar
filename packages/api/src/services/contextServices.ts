@@ -12,13 +12,13 @@ export const getContext = async (userId: string) => {
         globalContext: {
           include: {
             contextData: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
-    const assistantContext = assistant?.globalContext?.contextData
-  
+    const assistantContext = assistant?.globalContext?.contextData;
+
     const userContext = await prismadb.user.findFirst({
       where: {
         id: userId,
@@ -33,24 +33,24 @@ export const getContext = async (userId: string) => {
         notificationSettings: true,
       },
     });
-  
+
     const combinedContext = {
       globalContext: assistantContext,
       userContext: userContext,
     };
-  
+
     const formattedContext = formatMessageForOpenAI({
       role: "assistant",
       content: JSON.stringify(combinedContext),
       name: "assistant",
     });
-  
+
     return formattedContext;
   } catch (e) {
-    if(e instanceof PrismaClientKnownRequestError){
-      throw new Error("Error getting context with Prisma")
+    if (e instanceof PrismaClientKnownRequestError) {
+      throw new Error("Error getting context with Prisma");
     } else {
-      throw new Error("Error getting context")
+      throw new Error("Error getting context");
     }
   }
 };

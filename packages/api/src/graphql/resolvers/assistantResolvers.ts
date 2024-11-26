@@ -40,17 +40,17 @@ export const assistantResolvers: Resolvers = {
           },
           data: {
             model,
-          }
+          },
         });
 
-        if(!assistant){
-          throw new Error("Error updating assistant")
+        if (!assistant) {
+          throw new Error("Error updating assistant");
         }
 
         return assistant;
       } catch (e) {
-        if(e instanceof PrismaClientKnownRequestError){
-          throw new Error("Error updating assistant context with Prisma ORM")
+        if (e instanceof PrismaClientKnownRequestError) {
+          throw new Error("Error updating assistant context with Prisma ORM");
         } else {
           throw new Error("Error updating assistant context");
         }

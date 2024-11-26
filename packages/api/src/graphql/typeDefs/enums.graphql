@@ -11,3 +11,17 @@ enum AssistantAction {
   CREATE_CALENDAR_EVENT
   NONE
 }
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  BLOCKED
+}

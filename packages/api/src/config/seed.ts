@@ -81,10 +81,10 @@ export const seed = async () => {
               name: "system",
               content: initialLLMPrompt,
               role: "system",
-            }
-          }
-        }
-      }
+            },
+          },
+        },
+      },
     },
   });
   const userPreferences = await prismadb.userPreferences.create({
