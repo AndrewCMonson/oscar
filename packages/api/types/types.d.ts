@@ -1,10 +1,10 @@
 import {
   createProjectParameters,
-  createTaskParams,
+  createTaskParameters,
   getProjectsParameters,
   openAIStructuredOutput,
-  updateProjectParams,
-  updateUserPreferenceParams,
+  updateProjectParameters,
+  updateUserPreferenceParameters,
 } from "@api/src/services/OpenAI/";
 import {
   Prisma,
@@ -18,18 +18,20 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 type CreateProjectParameters = z.infer<typeof createProjectParameters>;
-type UpdateUserPreferenceParams = z.infer<typeof updateUserPreferenceParams>;
-type CreateTaskParams = z.infer<typeof createTaskParams>;
-type GetProjectsParams = z.infer<typeof getProjectsParameters>;
-type UpdateProjectDataParams = z.infer<typeof updateProjectParams>;
+type UpdateUserPreferenceParameters = z.infer<
+  typeof updateUserPreferenceParameters
+>;
+type CreateTaskParameters = z.infer<typeof createTaskParameters>;
+type GetProjectsParameters = z.infer<typeof getProjectsParameters>;
+type UpdateProjectDataParameters = z.infer<typeof updateProjectParameters>;
 type OpenAIStructuredOutput = z.infer<typeof openAIStructuredOutput>;
 
 export type ToolCallFunctions = {
   createProject: CreateProjectParameters;
-  updateUserPreferences: UpdateUserPreferenceParams;
-  createTask: CreateTaskParams;
-  getProjects: GetProjectsParams;
-  updateProjectData: UpdateProjectDataParams;
+  updateUserPreferences: UpdateUserPreferenceParameters;
+  createTask: CreateTaskParameters;
+  getProjects: GetProjectsParameters;
+  updateProjectData: UpdateProjectDataParameters;
 };
 
 export type ToolCallFunctionReturn =
@@ -65,10 +67,10 @@ export interface FormattedMessage {
 
 export type ToolCallFunctionArgs =
   | CreateProjectParameters
-  | UpdateUserPreferenceParams
-  | CreateTaskParams
-  | GetProjectsParams
-  | UpdateProjectDataParams;
+  | UpdateUserPreferenceParameters
+  | CreateTaskParameters
+  | GetProjectsParameters
+  | UpdateProjectDataParameters;
 
 export interface ChatGPTMessage {
   role: "user" | "function" | "assistant" | "system" | "tool";

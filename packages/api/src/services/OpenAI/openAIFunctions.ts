@@ -7,6 +7,10 @@ import {
 } from "@api/src/services/index.js";
 import { ToolCallFunctionReturn, ToolCallFunctions } from "@api/types/types.js";
 
+/*
+  This is the handler function for our tool calls.
+*/
+
 export const handleToolCallFunction = async <T extends keyof ToolCallFunctions>(
   toolCallFunctionName: T,
   toolCallFunctionArgs: ToolCallFunctions[T],

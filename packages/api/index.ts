@@ -5,7 +5,7 @@ import express, { Response } from "express";
 import { connectDB } from "./src/config/db.js";
 // import { router } from "./src/controllers/index.js";
 import { schema } from "./src/graphql/schema.js";
-import { middlewareContext } from "./src/utils/expressMiddleware.js";
+import { middlewareContext } from "./src/utils/index.js";
 
 const PORT = process.env.PORT || 3005;
 
@@ -17,8 +17,6 @@ const startServer = async () => {
   });
   await server.start();
 
-  // app.use("/api", router);
-
   app.use(
     "/graphql",
     express.json(),
@@ -29,7 +27,7 @@ const startServer = async () => {
     }),
   );
 
-  connectDB();
+  await connectDB();
 
   app.listen(PORT, () => {
     console.log(`app listening on ${PORT}`);
@@ -40,4 +38,4 @@ const startServer = async () => {
   });
 };
 
-startServer();
+await startServer();

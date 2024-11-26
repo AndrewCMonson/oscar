@@ -2,6 +2,7 @@ import { openAIClient } from "@api/src/config/openai.js";
 import {
   addMessageToConversation,
   handleToolCallFunction,
+  openAIStructuredOutput,
   openAITools,
 } from "@api/src/services/index.js";
 import {
@@ -14,14 +15,9 @@ import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod.js";
 import { ParsedChatCompletion } from "openai/resources/beta/chat/completions.js";
 import { ChatCompletionMessageParam } from "openai/resources/index.js";
-import { z } from "zod";
 
-export const openAIStructuredOutput = z.object({
-  role: z.string(),
-  name: z.string(),
-  content: z.string(),
-});
-
+// Current default settings for the openAI api call
+// TODO: incorporate this into the db so multiple assistants can be used based on user preferences i.e. more creativity, different model, etc...
 export const openAIApiOptions = {
   model: "gpt-4o-mini",
   max_tokens: 1000,
@@ -33,6 +29,7 @@ export const openAIApiOptions = {
   tools: openAITools,
 };
 
+// used when an AI response results in an undefined
 export const assistantFailureResponse = {
   role: "assistant",
   name: "assistant",
@@ -51,6 +48,10 @@ export const assistantFailureResponse = {
   },
 };
 
+/* 
+  typechecking function for when the assistant needs to call a tool to ensure it is an approved tool
+  * If a new tool call is created and not added here, it will always fail 
+*/
 export const openAIRoleCheck = (
   role: string,
 ): "function" | "user" | "assistant" | "tool" | "system" => {
@@ -114,6 +115,7 @@ export const handleResponseToolCalls = async (
   const toolCalls = openAIResponse.choices[0].message.tool_calls;
 
   // map over all of the tool calls, passing them to a function that handles them based on their name if their name is valid. If not, error is thrown.
+  // we format each toolcall result and store each of them in an array that will be sent back to the assistant
   const toolCallResults = await Promise.all(
     toolCalls.map(async (toolCall) => {
       const { function: toolCallFunction, id: toolCallID } = toolCall;
@@ -124,37 +126,29 @@ export const handleResponseToolCalls = async (
           toolCall.function.parsed_arguments as ToolCallFunctionArgs,
         );
 
-        return {
-          handledFunction,
-          id: toolCallID,
+        return formatMessageForOpenAI({
+          content: JSON.stringify(handledFunction),
+          role: "tool",
+          toolCallId: toolCallID,
           name: toolCallName,
-        };
+        });
       } else {
         throw new Error("Not a valid tool name");
       }
     }),
   );
-  // we map over the newly handled tool calls to create formatted messages to send to the assistant for additional context. The api requires us to respond to tool calls with a message containing tool call ids. this is that response.
-  const functionCallResultMessages = toolCallResults.map((functionhandled) => {
-    return formatMessageForOpenAI({
-      name: functionhandled?.name ?? "",
-      role: "tool",
-      content: JSON.stringify(functionhandled),
-      toolCallId: functionhandled?.id,
-    });
-  });
-
-  // call the api with the updated tool call information again. This will be the end of the loop and the final response by the assistant. Since tools were called it will be an update to the user on what actions were taken by the assistant.
+  // we call the api again, with the updated toolcall results. The api will respond with a finish reason
   const functionResponse = await openAIClient.beta.chat.completions.parse({
     messages: [
       context,
       ...formattedMessages,
       openAIResponse.choices[0].message,
-      ...functionCallResultMessages,
+      ...toolCallResults,
     ],
     ...openAIApiOptions,
   });
-
+  // if the finish reason is "tool_calls", the api has determined it needs to call additional functions
+  // so we recursively call handleResponseToolCalls on this result until there are no more tool calls
   if (functionResponse.choices[0].finish_reason === "tool_calls") {
     return handleResponseToolCalls(
       functionResponse,
@@ -164,6 +158,7 @@ export const handleResponseToolCalls = async (
       formattedMessages,
     );
   }
+  // once there are no more tool calls, we parse the response message
   const assistantResponse =
     functionResponse?.choices[0].message.parsed ?? assistantFailureResponse;
 
@@ -175,6 +170,6 @@ export const handleResponseToolCalls = async (
     assistantResponse.content,
     assistantResponse?.name,
   );
-
+  // return the response to the user
   return assistantResponse;
 };
