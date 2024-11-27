@@ -10,7 +10,7 @@ import {
   projectResolvers,
   taskResolvers,
   userResolvers,
-} from "./resolvers";
+} from "./resolvers/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
