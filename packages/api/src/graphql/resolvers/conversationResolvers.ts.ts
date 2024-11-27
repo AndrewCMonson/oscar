@@ -1,6 +1,6 @@
-import { prismadb } from "@api/src/config/db.js";
-import { chatWithAssistant } from "@api/src/services/index.js";
-import { ChatGPTMessage, Resolvers } from "@api/types/";
+import { prismadb } from "../../config/index.js";
+import { chatWithAssistant } from "../../services/index.js";
+import { ChatGPTMessage, Resolvers } from "../../../types/index.js";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
 
 export const conversationResolvers: Resolvers = {
