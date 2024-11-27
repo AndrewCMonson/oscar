@@ -8,7 +8,8 @@
   "scripts": {
     "lint": "eslint . --fix && prettier --write .",
     "start:api": "cd packages/api && yarn start:dev",
-    "start:client": "cd packages/client && yarn start:dev"
+    "start:client": "cd packages/client && yarn start:dev",
+    "spool": "yarn && cd packages/client && yarn && cd ../api && yarn"
   },
   "dependencies": {},
   "devDependencies": {
