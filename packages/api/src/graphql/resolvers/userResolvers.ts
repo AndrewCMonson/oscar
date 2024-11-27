@@ -1,5 +1,5 @@
-import { prismadb } from "../../config/index.js";
 import { Resolvers } from "../../../types/index.js";
+import { prismadb } from "../../config/index.js";
 
 export const userResolvers: Resolvers = {
   Query: {
