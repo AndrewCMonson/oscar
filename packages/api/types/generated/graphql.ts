@@ -242,7 +242,7 @@ export type Mutation = {
   createTask?: Maybe<Task>;
   createUser?: Maybe<User>;
   deleteConversation?: Maybe<Scalars["String"]["output"]>;
-  deleteMessage?: Maybe<Message>;
+  deleteMessage?: Maybe<Scalars["String"]["output"]>;
   deleteProject?: Maybe<Project>;
   deleteTask?: Maybe<Task>;
   deleteUser?: Maybe<User>;
@@ -257,7 +257,9 @@ export type Mutation = {
 
 export type MutationCreateMessageArgs = {
   content: Scalars["String"]["input"];
-  conversationId?: InputMaybe<Scalars["String"]["input"]>;
+  conversationId: Scalars["String"]["input"];
+  name: Scalars["String"]["input"];
+  role: Scalars["String"]["input"];
 };
 
 export type MutationCreateProjectArgs = {
@@ -1292,7 +1294,10 @@ export type MutationResolvers<
     Maybe<ResolversTypes["Message"]>,
     ParentType,
     ContextType,
-    RequireFields<MutationCreateMessageArgs, "content">
+    RequireFields<
+      MutationCreateMessageArgs,
+      "content" | "conversationId" | "name" | "role"
+    >
   >;
   createProject?: Resolver<
     Maybe<ResolversTypes["Project"]>,
@@ -1322,7 +1327,7 @@ export type MutationResolvers<
     RequireFields<MutationDeleteConversationArgs, "id">
   >;
   deleteMessage?: Resolver<
-    Maybe<ResolversTypes["Message"]>,
+    Maybe<ResolversTypes["String"]>,
     ParentType,
     ContextType,
     RequireFields<MutationDeleteMessageArgs, "id">
