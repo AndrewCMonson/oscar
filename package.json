@@ -1,14 +1,16 @@
 {
   "name": "personal-assistant",
   "version": "1.0.0",
-  "description": "Personal assistant powered by ChatGPT that integrates with JIRA, Motion Calendar and Eraser.io",
-  "main": "index.js",
+  "description": "Personal assistant powered by ChatGPT that integrates with JIRA, Github, Motion Calendar and Notion",
   "repository": "https://github.com/AndrewCMonson/personal-assistant.git",
   "author": "Andrew Monson <andrewmonsondev@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "lint": "eslint . --fix && prettier --write ."
+    "lint": "eslint . --fix && prettier --write .",
+    "start:api": "cd packages/api && yarn start:dev",
+    "start:client": "cd packages/client && yarn start:dev"
   },
+  "dependencies": {},
   "devDependencies": {
     "@eslint/js": "^9.14.0",
     "@types/eslint__js": "^8.42.3",
@@ -22,6 +24,5 @@
     "prettier": "3.3.3",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.14.0"
-  },
-  "dependencies": {}
+  }
 }

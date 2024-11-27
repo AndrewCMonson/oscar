@@ -1,4 +1,6 @@
-import { openAIClient } from "@api/src/config/index.js";
+import { User } from "@prisma/client";
+import { ChatGPTMessage, OpenAIStructuredOutput } from "../../../types/index.js";
+import { openAIClient } from "../../config/index.js";
 import {
   addMessageToConversation,
   assistantFailureResponse,
@@ -7,9 +9,7 @@ import {
   getContext,
   handleResponseToolCalls,
   openAIApiOptions,
-} from "@api/src/services/";
-import { ChatGPTMessage, OpenAIStructuredOutput } from "@api/types/index.js";
-import { User } from "@prisma/client";
+} from "../../services/index.js";
 
 export const chatWithAssistant = async (
   message: ChatGPTMessage,

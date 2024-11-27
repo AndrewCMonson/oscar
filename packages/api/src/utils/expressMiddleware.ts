@@ -1,7 +1,7 @@
-import { ExpressContextFunctionArgument } from "@apollo/server/express4";
 import { ContextFunction } from "@apollo/server";
+import { ExpressContextFunctionArgument } from "@apollo/server/express4";
+import { MiddlewareContext } from "../../types/index.js";
 import { prismadb } from "../config/index.js";
-import { MiddlewareContext } from "@api/types";
 
 export const middlewareContext: ContextFunction<
   [ExpressContextFunctionArgument],

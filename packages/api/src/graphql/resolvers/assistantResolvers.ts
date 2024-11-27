@@ -1,6 +1,6 @@
-import { prismadb } from "@api/src/config/db.js";
-import { Resolvers } from "@api/types/index.js";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
+import { Resolvers } from "../../../types/index.js";
+import { prismadb } from "../../config/index.js";
 
 export const assistantResolvers: Resolvers = {
   Query: {

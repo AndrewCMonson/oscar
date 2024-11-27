@@ -1,7 +1,7 @@
-import { prismadb } from "@api/src/config/db.js";
-import { chatWithAssistant } from "@api/src/services/index.js";
-import { ChatGPTMessage, Resolvers } from "@api/types/";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
+import { ChatGPTMessage, Resolvers } from "../../../types/index.js";
+import { prismadb } from "../../config/index.js";
+import { chatWithAssistant } from "../../services/index.js";
 
 export const conversationResolvers: Resolvers = {
   Query: {
@@ -76,10 +76,14 @@ export const conversationResolvers: Resolvers = {
 
         const conversationMessage = await chatWithAssistant(userMessage, user);
 
+        if(!conversationMessage){
+          throw new Error("Error communicating with the assistant")
+        }
+
         return conversationMessage;
       } catch (e) {
         if (e instanceof PrismaClientKnownRequestError) {
-          console.error(e.message);
+          throw new Error("Prisma error communicating with assistant")
         } else {
           throw new Error("Error handling conversation message");
         }

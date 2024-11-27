@@ -37,7 +37,12 @@ type Query {
 }
 
 type Mutation {
-  createMessage(conversationId: String, content: String!): Message
+  createMessage(
+    conversationId: String!
+    role: String!
+    name: String!
+    content: String!
+  ): Message
   updateMessage(id: ID!, content: String!): Message
-  deleteMessage(id: ID!): Message
+  deleteMessage(id: ID!): String
 }

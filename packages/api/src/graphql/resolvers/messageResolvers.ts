@@ -1,48 +1,112 @@
-import { prismadb } from "@api/src/config/db.js";
-import { Resolvers } from "@api/types/";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
+import { Resolvers } from "../../../types/index.js";
+import { prismadb } from "../../config/index.js";
 
 export const messageResolvers: Resolvers = {
   Query: {
     messages: async () => {
-      const messages = await prismadb.message.findMany();
-      return messages;
+      try {
+        const messages = await prismadb.message.findMany();
+
+        if (!messages) {
+          return [];
+        }
+        return messages;
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          throw new Error("Prisma error fetching messages");
+        } else {
+          throw new Error("Error fetching messages");
+        }
+      }
     },
     message: async (_, { id }) => {
-      const message = await prismadb.message.findUnique({
-        where: {
-          id: id,
-        },
-      });
-      return message;
+      try {
+        const message = await prismadb.message.findUnique({
+          where: {
+            id: id,
+          },
+        });
+
+        if (!message) {
+          throw new Error("No message found");
+        }
+
+        return message;
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          throw new Error("Prisma error retrieving message");
+        } else {
+          throw new Error("Error retrieving message");
+        }
+      }
     },
   },
   Mutation: {
-    createMessage: async (_, { data }) => {
-      const message = await prismadb.message.create({
-        data: {
-          ...data,
-        },
-      });
-      return message;
+    createMessage: async (
+      _,
+      { conversationId, content, role, name },
+      { user },
+    ) => {
+      try {
+        const message = await prismadb.message.create({
+          data: {
+            conversationId,
+            content,
+            userId: user.id,
+            role,
+            name,
+          },
+        });
+        return message;
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          throw new Error("Prisma error when creating new message");
+        } else {
+          throw new Error("Error creating new message");
+        }
+      }
     },
-    updateMessage: async (_, { id, data }) => {
-      const message = await prismadb.message.update({
-        where: {
-          id: id,
-        },
-        data: {
-          ...data,
-        },
-      });
-      return message;
+    updateMessage: async (_, { id, content }) => {
+      try {
+        const message = await prismadb.message.update({
+          where: {
+            id: id,
+          },
+          data: {
+            content,
+          },
+        });
+
+        if (!message) {
+          throw new Error("Message update unsuccessful");
+        }
+
+        return message;
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          throw new Error("Prisma error when updating message");
+        } else {
+          throw new Error("Error updating message");
+        }
+      }
     },
     deleteMessage: async (_, { id }) => {
-      const message = await prismadb.message.delete({
-        where: {
-          id: id,
-        },
-      });
-      return message;
+      try {
+        await prismadb.message.delete({
+          where: {
+            id: id,
+          },
+        });
+
+        return "Message deleted successfully";
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          throw new Error("Prisma error deleting message");
+        } else {
+          throw new Error("Error deleting message");
+        }
+      }
     },
   },
 };
