@@ -10,6 +10,7 @@ import {
   projectResolvers,
   taskResolvers,
   userResolvers,
+  assistantResolvers,
 } from "./resolvers/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -25,6 +26,7 @@ export const resolvers = mergeResolvers([
   projectResolvers,
   taskResolvers,
   userResolvers,
+  assistantResolvers
 ]);
 
 export const schema = makeExecutableSchema({ typeDefs, resolvers });
