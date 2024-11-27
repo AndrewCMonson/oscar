@@ -1,11 +1,11 @@
+import { ToolCallFunctionReturn, ToolCallFunctions } from "../../../types/index.js";
 import {
   createProject,
   createTask,
   getProjects,
   updateProject,
   updateUserPreferences,
-} from "@api/src/services/index.js";
-import { ToolCallFunctionReturn, ToolCallFunctions } from "@api/types/types.js";
+} from "../../services/index.js";
 
 /*
   This is the handler function for our tool calls.

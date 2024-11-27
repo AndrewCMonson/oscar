@@ -1,7 +1,7 @@
-import { prismadb } from "@api/src/config/index.js";
-import { formatMessageForOpenAI } from "@api/src/services/index.js";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
 import { ChatCompletionMessageParam } from "openai/resources/index.js";
+import { prismadb } from "../config/index.js";
+import { formatMessageForOpenAI } from "../services/index.js";
 
 // function used to get global context from the assistant and user context from the user to pass to the api call
 export const getContext = async (
