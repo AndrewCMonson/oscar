@@ -16,8 +16,14 @@ type Query {
   conversation(id: ID!): Conversation
 }
 
+type ConversationResponse {
+  role: String
+  name: String
+  content: String
+}
+
 type Mutation {
-  handleConversationMessage(message: String!): AssistantResponse
+  handleConversationMessage(message: String!): ConversationResponse
   createConversation: Conversation
   updateConversation(id: ID!, projectId: String!): Conversation
   deleteConversation(id: ID!): String

@@ -108,11 +108,8 @@ export enum AssistantAction {
 export type AssistantResponse = {
   __typename?: 'AssistantResponse';
   content?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type Conversation = {
@@ -127,6 +124,13 @@ export type Conversation = {
   updatedAt: Scalars['DateTime']['output'];
   user?: Maybe<User>;
   userId?: Maybe<Scalars['String']['output']>;
+};
+
+export type ConversationResponse = {
+  __typename?: 'ConversationResponse';
+  content?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  role?: Maybe<Scalars['String']['output']>;
 };
 
 export type FormattedMessage = {
@@ -221,7 +225,7 @@ export type Mutation = {
   deleteProject?: Maybe<Project>;
   deleteTask?: Maybe<Task>;
   deleteUser?: Maybe<User>;
-  handleConversationMessage?: Maybe<AssistantResponse>;
+  handleConversationMessage?: Maybe<ConversationResponse>;
   updateAssistant: Assistant;
   updateConversation?: Maybe<Conversation>;
   updateMessage?: Maybe<Message>;
@@ -588,6 +592,7 @@ export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Byte: ResolverTypeWrapper<Scalars['Byte']['output']>;
   Conversation: ResolverTypeWrapper<ConversationModel>;
+  ConversationResponse: ResolverTypeWrapper<ConversationResponse>;
   CountryCode: ResolverTypeWrapper<Scalars['CountryCode']['output']>;
   Cuid: ResolverTypeWrapper<Scalars['Cuid']['output']>;
   Currency: ResolverTypeWrapper<Scalars['Currency']['output']>;
@@ -687,6 +692,7 @@ export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']['output'];
   Byte: Scalars['Byte']['output'];
   Conversation: ConversationModel;
+  ConversationResponse: ConversationResponse;
   CountryCode: Scalars['CountryCode']['output'];
   Cuid: Scalars['Cuid']['output'];
   Currency: Scalars['Currency']['output'];
@@ -789,11 +795,8 @@ export type AssistantResolvers<ContextType = MiddlewareContext, ParentType exten
 
 export type AssistantResponseResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['AssistantResponse'] = ResolversParentTypes['AssistantResponse']> = ResolversObject<{
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   role?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -816,6 +819,13 @@ export type ConversationResolvers<ContextType = MiddlewareContext, ParentType ex
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ConversationResponseResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['ConversationResponse'] = ResolversParentTypes['ConversationResponse']> = ResolversObject<{
+  content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  role?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1032,7 +1042,7 @@ export type MutationResolvers<ContextType = MiddlewareContext, ParentType extend
   deleteProject?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
   deleteTask?: Resolver<Maybe<ResolversTypes['Task']>, ParentType, ContextType, RequireFields<MutationDeleteTaskArgs, 'id'>>;
   deleteUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
-  handleConversationMessage?: Resolver<Maybe<ResolversTypes['AssistantResponse']>, ParentType, ContextType, RequireFields<MutationHandleConversationMessageArgs, 'message'>>;
+  handleConversationMessage?: Resolver<Maybe<ResolversTypes['ConversationResponse']>, ParentType, ContextType, RequireFields<MutationHandleConversationMessageArgs, 'message'>>;
   updateAssistant?: Resolver<ResolversTypes['Assistant'], ParentType, ContextType, RequireFields<MutationUpdateAssistantArgs, 'id'>>;
   updateConversation?: Resolver<Maybe<ResolversTypes['Conversation']>, ParentType, ContextType, RequireFields<MutationUpdateConversationArgs, 'id' | 'projectId'>>;
   updateMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<MutationUpdateMessageArgs, 'content' | 'id'>>;
@@ -1282,6 +1292,7 @@ export type Resolvers<ContextType = MiddlewareContext> = ResolversObject<{
   BigInt?: GraphQLScalarType;
   Byte?: GraphQLScalarType;
   Conversation?: ConversationResolvers<ContextType>;
+  ConversationResponse?: ConversationResponseResolvers<ContextType>;
   CountryCode?: GraphQLScalarType;
   Cuid?: GraphQLScalarType;
   Currency?: GraphQLScalarType;

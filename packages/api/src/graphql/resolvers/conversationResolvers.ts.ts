@@ -76,10 +76,14 @@ export const conversationResolvers: Resolvers = {
 
         const conversationMessage = await chatWithAssistant(userMessage, user);
 
+        if(!conversationMessage){
+          throw new Error("Error communicating with the assistant")
+        }
+
         return conversationMessage;
       } catch (e) {
         if (e instanceof PrismaClientKnownRequestError) {
-          console.error(e.message);
+          throw new Error("Prisma error communicating with assistant")
         } else {
           throw new Error("Error handling conversation message");
         }

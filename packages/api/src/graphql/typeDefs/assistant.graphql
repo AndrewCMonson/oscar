@@ -34,9 +34,6 @@ input GlobalContextMessageInput {
 }
 
 type AssistantResponse {
-  id: String
-  createdAt: DateTime
-  updatedAt: DateTime
   role: String
   content: String
   name: String
