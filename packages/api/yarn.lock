@@ -3446,23 +3446,6 @@ path-type@^4.0.0:
   resolved "https://registry.yarnpkg.com/path-type/-/path-type-4.0.0.tgz#84ed01c0a7ba380afe09d90a8c180dcd9d03043b"
   integrity sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
 
-"personal_assistant_api@file:./":
-  version "1.0.0"
-  dependencies:
-    "@apollo/server" "^4.11.2"
-    "@prisma/client" "5.22.0"
-    "@types/express" "^5.0.0"
-    "@types/node" "^22.9.0"
-    chatgpt "^5.2.5"
-    cors "^2.8.5"
-    dotenv "^16.4.5"
-    express "^4.21.1"
-    graphql "^16.9.0"
-    openai "^4.72.0"
-    prisma "^5.22.0"
-    tsx "^4.19.2"
-    typescript "^5.6.3"
-
 pg-cloudflare@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/pg-cloudflare/-/pg-cloudflare-1.1.1.tgz#e6d5833015b170e23ae819e8c5d7eaedb472ca98"
