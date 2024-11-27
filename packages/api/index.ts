@@ -2,10 +2,9 @@ import { ApolloServer, BaseContext } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import cors from "cors";
 import express, { Response } from "express";
-import { connectDB } from "./config/db.js";
-// import { router } from "./src/controllers/index.js";
-import { schema } from "./graphql/schema.js";
-import { middlewareContext } from "./utils/index.js";
+import { connectDB } from "./src/config/db.js";
+import { schema } from "./src/graphql/schema.js";
+import { middlewareContext } from "./src/utils/index.js";
 
 const PORT = process.env.PORT || 3005;
 
