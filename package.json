@@ -7,7 +7,9 @@
   "author": "Andrew Monson <andrewmonsondev@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "lint": "eslint . --fix && prettier --write ."
+    "lint": "eslint . --fix && prettier --write .",
+    "start:api": "cd packages/api && yarn start:dev",
+    "start:client": "cd packages/client && yarn start:dev"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
