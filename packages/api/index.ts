@@ -8,6 +8,13 @@ import { middlewareContext } from "./src/utils/index.js";
 
 const PORT = process.env.PORT || 3005;
 
+const corsOptions = {
+  origin: [
+    "http://localhost:5173"
+  ],
+  credentials: true
+}
+
 const startServer = async () => {
   const app = express();
 
@@ -20,7 +27,7 @@ const startServer = async () => {
     "/graphql",
     express.json(),
     express.urlencoded({ extended: true }),
-    cors(),
+    cors(corsOptions),
     expressMiddleware(server, {
       context: middlewareContext,
     }),
