@@ -1,15 +1,15 @@
 import { useMutation } from "@apollo/client";
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import "./App.css";
-import { Button } from "./components/ui/button.tsx";
+import { Button } from "./components/ui/button.js";
 import {
   ChatBubble,
   ChatBubbleAvatar,
   ChatBubbleMessage,
-} from "./components/ui/chat/chat-bubble.tsx";
-import { ChatMessageList } from "./components/ui/chat/chat-message-list.tsx";
-import { Input } from "./components/ui/input.tsx";
-import { HandleConversationMessage } from "./utils/graphql/mutations.ts";
+} from "./components/ui/chat/chat-bubble.js";
+import { ChatMessageList } from "./components/ui/chat/chat-message-list.js";
+import { Input } from "./components/ui/input.js";
+import { HandleConversationMessage } from "./utils/graphql/mutations.js";
 
 interface ChatMessage {
   content: string;
