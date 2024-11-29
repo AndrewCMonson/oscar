@@ -11,6 +11,10 @@
 ## Introduction
 This project is an OpenAI-based personal assistant aimed at helping solo developers and junior developers manage their projects. It can help with project management tasks, architectural design and integrate with other tools via natural language.
 
+The main goal of this project is for junior level developers, or anyone interested in AI, to have an opportunity to contribute to a project.
+
+There is no task too small. Whether you are writing comments, creating documentation or redesinging the entire UI, no contribution is off limits. 
+
 ## Features
 - GitHub integration
 - Motion calendar integration
@@ -21,7 +25,7 @@ This project is an OpenAI-based personal assistant aimed at helping solo develop
 - Node.js
 - OpenAI API key -- if you intend to contribute to the project
 - TypeScript -- if you intend to contribute to the project
-- Yarn or NPM
+- Yarn
 - TypeScript Execute (TSX) -- if you intend to contribute to the project
 
 
@@ -36,15 +40,20 @@ This project is an OpenAI-based personal assistant aimed at helping solo develop
   ```
 3. Install dependencies:
   ```bash
-  npm spool
-  ```
-  or
-  ```bash
   yarn spool
+  ```
+4. Start the application
+  ```bash
+  yarn start:dev
   ```
 
 ## Usage
 For development purposes, you can run the project in development mode:
+1. Start the application
+  ```bash
+  yarn start:dev
+  ```
+2. Navigate to http://localhost:5173
 
 
 ## Contributing
@@ -65,7 +74,10 @@ For development purposes, you can run the project in development mode:
 5. Open a pull request.
 
 ### Code of Conduct
-Guidelines for contributing to the project.
+See the [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md)
 
 ## License
-Information about the project's license.
+See [LICENSE](LICENSE.txt)
+
+## Contact
+For any questions, contribution inquiries or information, contact Andrew Monson andrewmonsondev@gmail.com
