@@ -40,4 +40,3 @@ Please use the provided templates when opening a new feature issue or bug report
 ## License
 
 By contributing to this project, you agree that your contributions will be licensed under the [LICENSE](LICENSE.txt) file in the root directory of this source tree.
-

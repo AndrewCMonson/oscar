@@ -1,5 +1,8 @@
 import { User } from "@prisma/client";
-import { ChatGPTMessage, OpenAIStructuredOutput } from "../../../types/index.js";
+import {
+  ChatGPTMessage,
+  OpenAIStructuredOutput,
+} from "../../../types/index.js";
 import { openAIClient } from "../../config/index.js";
 import {
   addMessageToConversation,

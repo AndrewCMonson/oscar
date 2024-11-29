@@ -26,7 +26,7 @@ export const resolvers = mergeResolvers([
   projectResolvers,
   taskResolvers,
   userResolvers,
-  assistantResolvers
+  assistantResolvers,
 ]);
 
 export const schema = makeExecutableSchema({ typeDefs, resolvers });
