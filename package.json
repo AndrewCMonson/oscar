@@ -9,7 +9,9 @@
     "lint": "eslint . --fix && prettier --write .",
     "start:api": "cd packages/api && yarn start:dev",
     "start:client": "cd packages/client && yarn start:dev",
-    "spool": "yarn && cd packages/client && yarn && cd ../api && yarn"
+    "spool": "yarn && cd packages/client && yarn && cd ../api && yarn",
+    "start:dev": "concurrently --kill-others-on-fail \"yarn start:client\" \"yarn start:api\"",
+    "build": "cd packages/client && yarn build && cd ../api && yarn build"
   },
   "dependencies": {},
   "devDependencies": {
@@ -17,6 +19,7 @@
     "@types/eslint__js": "^8.42.3",
     "@typescript-eslint/eslint-plugin": "^8.14.0",
     "@typescript-eslint/parser": "^8.14.0",
+    "concurrently": "^9.1.0",
     "eslint": "^9.14.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-node": "^11.1.0",
