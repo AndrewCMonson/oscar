@@ -38,7 +38,7 @@ There is no task too small. Whether you are writing comments, creating documenta
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/AndrewCMonson/personal-assistant.git
+git clone https://github.com/AndrewCMonson/oscar.git
 ```
 
 2. Navigate to the project directory:
