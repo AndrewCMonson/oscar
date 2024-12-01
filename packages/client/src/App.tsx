@@ -10,6 +10,8 @@ import {
 import { ChatMessageList } from "./components/ui/chat/chat-message-list.js";
 import { Input } from "./components/ui/input.js";
 import { HandleConversationMessage } from "./utils/graphql/mutations.js";
+import { LoginButton } from "./components/LoginButton.js";
+import { LogoutButton } from "./components/LogoutButton.js";
 
 interface ChatMessage {
   content: string;
@@ -65,6 +67,8 @@ export const App = () => {
   return (
     <>
       <div className="flex flex-row justify-center h-full w-full items-center">
+        <LoginButton></LoginButton>
+        <LogoutButton></LogoutButton>
         <div className="flex h-3/4 w-1/2 flex-col items-center justify-center">
           <ChatMessageList
             className="w-full h-96 flex-col overflow-y-auto border rounded"

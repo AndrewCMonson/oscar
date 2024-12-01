@@ -7,6 +7,7 @@ import {
 } from "@apollo/client";
 import "./index.css";
 import { App } from "./App.tsx";
+import { Auth0Provider } from "@auth0/auth0-react";
 
 const link = new HttpLink({
   uri: "http://localhost:3005/graphql",
@@ -19,7 +20,16 @@ const client = new ApolloClient({
 });
 
 createRoot(document.getElementById("root")!).render(
-  <ApolloProvider client={client}>
-    <App />
-  </ApolloProvider>,
+  <Auth0Provider
+    domain="dev-bcm7n7u27bjemuzy.us.auth0.com"
+    clientId="2TM21EOpBcBXkHsQ6Kwretw5ZJ3SiFqe"
+    authorizationParams={{
+      redirect_uri: window.location.origin,
+    }}
+  >
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
+    ,
+  </Auth0Provider>,
 );
