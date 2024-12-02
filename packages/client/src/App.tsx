@@ -12,6 +12,7 @@ import { Input } from "./components/ui/input.js";
 import { HandleConversationMessage } from "./utils/graphql/mutations.js";
 import { LoginButton } from "./components/LoginButton.js";
 import { LogoutButton } from "./components/LogoutButton.js";
+import Profile from "./components/Profile.js";
 
 interface ChatMessage {
   content: string;
@@ -103,6 +104,7 @@ export const App = () => {
           <Button className="mt-2 rounded" size="lg" onClick={handleSubmit}>
             Chat
           </Button>
+          <Profile />
         </div>
       </div>
     </>
