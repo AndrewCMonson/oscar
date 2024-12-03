@@ -1,7 +1,10 @@
 import { useMutation } from "@apollo/client";
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import "./App.css";
-import { Button } from "./components/ui/button.js";
+import { LoginButton } from "./components/LoginButton.js";
+import { LogoutButton } from "./components/LogoutButton.js";
+import Profile from "./components/Profile.js";
+import { Button } from "./components/ui/button/button.js";
 import {
   ChatBubble,
   ChatBubbleAvatar,
@@ -10,9 +13,6 @@ import {
 import { ChatMessageList } from "./components/ui/chat/chat-message-list.js";
 import { Input } from "./components/ui/input.js";
 import { HandleConversationMessage } from "./utils/graphql/mutations.js";
-import { LoginButton } from "./components/LoginButton.js";
-import { LogoutButton } from "./components/LogoutButton.js";
-import Profile from "./components/Profile.js";
 
 interface ChatMessage {
   content: string;

@@ -12,15 +12,15 @@ export const middlewareContext: ContextFunction<
   res,
 }: ExpressContextFunctionArgument): Promise<MiddlewareContext> => {
   try {
-    console.log(req.headers.authorization)
+    console.log(req.headers.authorization);
 
     const token = req.headers.authorization?.split(" ")[1];
 
-    console.log(token)
+    console.log(token);
 
     const decoded = token ? jwt.decode(token) : null;
 
-    console.log(decoded)
+    console.log(decoded);
 
     const user = await prismadb.user.findUnique({
       where: { email: "andrew.c.monson@gmail.com" },

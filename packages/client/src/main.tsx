@@ -14,15 +14,17 @@ import "./index.css";
 //   cache: new InMemoryCache(),
 // });
 
-console.log(import.meta.env.VITE_AUTH0_DOMAIN)
+console.log(import.meta.env.VITE_AUTH0_DOMAIN);
 
 createRoot(document.getElementById("root")!).render(
   <Auth0Provider
-    domain={`${import.meta.env.VITE_AUTH0_DOMAIN}`}
-    clientId={`${import.meta.env.VITE_AUTH0_CLIENTID}`}
+    domain={import.meta.env.VITE_AUTH0_DOMAIN}
+    clientId={import.meta.env.VITE_AUTH0_CLIENTID}
     authorizationParams={{
-      audience: `${import.meta.env.VITE_AUTH0_AUDIENCE}`,
       redirect_uri: window.location.origin,
+      audience: `${import.meta.env.VITE_AUTH0_API_AUDIENCE}`,
+      scope:
+        "read:current_user update:current_user_metadata email profile openid",
     }}
     useRefreshTokens
     cacheLocation="localstorage"
