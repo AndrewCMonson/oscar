@@ -1,8 +1,8 @@
 import { ContextFunction } from "@apollo/server";
 import { ExpressContextFunctionArgument } from "@apollo/server/express4";
+import jwt from "jsonwebtoken";
 import { MiddlewareContext } from "../../types/index.js";
 import { prismadb } from "../config/index.js";
-import jwt from "jsonwebtoken";
 
 export const middlewareContext: ContextFunction<
   [ExpressContextFunctionArgument],
@@ -12,27 +12,62 @@ export const middlewareContext: ContextFunction<
   res,
 }: ExpressContextFunctionArgument): Promise<MiddlewareContext> => {
   try {
-    console.log(req.headers.authorization);
-
     const token = req.headers.authorization?.split(" ")[1];
+    const incomingUser = req.headers.authorizeduser as string | undefined;
 
-    console.log(token);
+    if(!incomingUser || !token){
+      return {
+        req,
+        res,
+      }
+    }
 
     const decoded = token ? jwt.decode(token) : null;
+    const authUser = JSON.parse(incomingUser)
+    console.log("authorizedUser", authUser)
+    console.log("Decoded Token", decoded);
+    const domain = `${process.env.AUTH0_DOMAIN}`
 
-    console.log(decoded);
+    const dbUser = await prismadb.user.findUnique({
+      where: {
+        auth0sub: authUser.sub
+      }
+    })
 
-    const user = await prismadb.user.findUnique({
-      where: { email: "andrew.c.monson@gmail.com" },
+    console.log("DBUSER", dbUser)
+
+    if(!dbUser){
+      const createdDBUser = await prismadb.user.create({
+        data: {
+          auth0sub: authUser.sub
+        }
+      })
+
+      console.log("CREATEDUSER", createdDBUser)
+
+      return {
+        req,
+        res,
+        user: createdDBUser,
+      }
+    }
+
+    const userDetailsByIdUrl = `https://${domain}/api/v2/users/${authUser.sub}`;
+
+    const metadataResponse = await fetch(userDetailsByIdUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
 
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const { user_metadata } = await metadataResponse.json();
+    console.log("Metadata", user_metadata);
+
+
     return {
       req,
       res,
-      user,
+      user: dbUser,
     };
   } catch (e) {
     console.error(e);

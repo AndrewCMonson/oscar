@@ -15,7 +15,7 @@ interface AuthorizedApolloProviderProps {
 export const AuthorizedApolloProvider: FC<AuthorizedApolloProviderProps> = ({
   children,
 }) => {
-  const { getAccessTokenSilently } = useAuth0();
+  const { user, getAccessTokenSilently } = useAuth0();
 
   const httpLink = new HttpLink({
     uri: "http://localhost:3005/graphql",
@@ -27,6 +27,7 @@ export const AuthorizedApolloProvider: FC<AuthorizedApolloProviderProps> = ({
     return {
       headers: {
         Authorization: `Bearer ${token}`,
+        AuthorizedUser: `${JSON.stringify(user)}`
       },
     };
   });
