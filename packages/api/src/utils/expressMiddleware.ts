@@ -1,6 +1,5 @@
 import { ContextFunction } from "@apollo/server";
 import { ExpressContextFunctionArgument } from "@apollo/server/express4";
-import jwt from "jsonwebtoken";
 import { MiddlewareContext } from "../../types/index.js";
 import { prismadb } from "../config/index.js";
 
@@ -15,54 +14,38 @@ export const middlewareContext: ContextFunction<
     const token = req.headers.authorization?.split(" ")[1];
     const incomingUser = req.headers.authorizeduser as string | undefined;
 
-    if(!incomingUser || !token){
+    if (!incomingUser) {
       return {
         req,
         res,
-      }
+      };
     }
 
-    const decoded = token ? jwt.decode(token) : null;
-    const authUser = JSON.parse(incomingUser)
-    console.log("authorizedUser", authUser)
-    console.log("Decoded Token", decoded);
-    const domain = `${process.env.AUTH0_DOMAIN}`
+    if (!token) {
+      throw new Error("User not authorized");
+    }
+
+    const authUser = JSON.parse(incomingUser);
 
     const dbUser = await prismadb.user.findUnique({
       where: {
-        auth0sub: authUser.sub
-      }
-    })
+        auth0sub: authUser.sub,
+      },
+    });
 
-    console.log("DBUSER", dbUser)
-
-    if(!dbUser){
+    if (!dbUser) {
       const createdDBUser = await prismadb.user.create({
         data: {
-          auth0sub: authUser.sub
-        }
-      })
-
-      console.log("CREATEDUSER", createdDBUser)
+          auth0sub: authUser.sub,
+        },
+      });
 
       return {
         req,
         res,
         user: createdDBUser,
-      }
+      };
     }
-
-    const userDetailsByIdUrl = `https://${domain}/api/v2/users/${authUser.sub}`;
-
-    const metadataResponse = await fetch(userDetailsByIdUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const { user_metadata } = await metadataResponse.json();
-    console.log("Metadata", user_metadata);
-
 
     return {
       req,

@@ -10,7 +10,6 @@ interface UserStore {
   clearUser: () => void;
 }
 
-
 export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
@@ -18,7 +17,7 @@ export const useUserStore = create<UserStore>()(
       userMetadata: null,
       setUserMetadata: (userMetadata) => set({ userMetadata }),
       setUser: (user: User) => set({ user }),
-      clearUser: () => set({ user: null, userMetadata: null })
+      clearUser: () => set({ user: null, userMetadata: null }),
     }),
     {
       name: "OSCUS-USE",

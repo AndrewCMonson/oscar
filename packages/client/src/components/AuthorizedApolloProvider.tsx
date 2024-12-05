@@ -27,7 +27,7 @@ export const AuthorizedApolloProvider: FC<AuthorizedApolloProviderProps> = ({
     return {
       headers: {
         Authorization: `Bearer ${token}`,
-        AuthorizedUser: `${JSON.stringify(user)}`
+        AuthorizedUser: `${JSON.stringify(user)}`,
       },
     };
   });

@@ -17,11 +17,11 @@ import {
 import { Request, Response } from "express";
 import { z } from "zod";
 
-declare module 'express' {
+declare module "express" {
   export interface Request {
-    headers: Request['headers'] & {
-      authorizeduser?: string | undefined
-    }
+    headers: Request["headers"] & {
+      authorizeduser?: string | undefined;
+    };
   }
 }
 
