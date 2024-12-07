@@ -1,4 +1,4 @@
-# Personal Assistant Project
+# OSCAR
 
 ## Table of Contents
 
