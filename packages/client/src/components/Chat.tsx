@@ -1,25 +1,22 @@
 import { useMutation } from "@apollo/client";
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from "react";
-import "./App.css";
-import { LoginButton } from "./components/LoginButton.js";
-import { LogoutButton } from "./components/LogoutButton.js";
-import Profile from "./components/Profile.js";
-import { Button } from "./components/ui/button/button.js";
+import { HandleConversationMessage } from "../utils/graphql/mutations.js";
+import Profile from "./Profile.js";
+import { Button } from "./ui/button/button.js";
 import {
   ChatBubble,
   ChatBubbleAvatar,
   ChatBubbleMessage,
-} from "./components/ui/chat/chat-bubble.js";
-import { ChatMessageList } from "./components/ui/chat/chat-message-list.js";
-import { Input } from "./components/ui/input.js";
-import { HandleConversationMessage } from "./utils/graphql/mutations.js";
+} from "./ui/chat/chat-bubble.js";
+import { ChatMessageList } from "./ui/chat/chat-message-list.js";
+import { Input } from "./ui/input.js";
 
 interface ChatMessage {
   content: string;
   role: string;
 }
 
-export const App = () => {
+export const Chat = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [userMessage, setUserMessage] = useState<ChatMessage>({
     content: "",
@@ -68,8 +65,6 @@ export const App = () => {
   return (
     <>
       <div className="flex flex-row justify-center h-full w-full items-center">
-        <LoginButton></LoginButton>
-        <LogoutButton></LogoutButton>
         <div className="flex h-3/4 w-1/2 flex-col items-center justify-center">
           <ChatMessageList
             className="w-full h-96 flex-col overflow-y-auto border rounded"
