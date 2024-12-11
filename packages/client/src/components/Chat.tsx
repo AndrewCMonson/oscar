@@ -10,6 +10,7 @@ import {
 } from "./ui/chat/chat-bubble.js";
 import { ChatMessageList } from "./ui/chat/chat-message-list.js";
 import { Input } from "./ui/input.js";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface ChatMessage {
   content: string;
@@ -61,6 +62,16 @@ export const Chat = () => {
       variables: { message: userMessage.content },
     });
   };
+
+  const { user } = useAuth0();
+
+  if(!user){
+    return(
+      <div className="text-center">
+        <p>You must be logged in to interact with the assistant</p>
+      </div>
+    )
+  }
 
   return (
     <>

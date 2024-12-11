@@ -1,8 +1,13 @@
 import { Nav } from "@/components/Nav.tsx";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { User } from "@auth0/auth0-react";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
-export const Route = createRootRoute({
+interface RouterContext {
+  user?: User
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: () => (
     <>
       <Nav />
