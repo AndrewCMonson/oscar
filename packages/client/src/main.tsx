@@ -1,25 +1,35 @@
-import { createRoot } from "react-dom/client";
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  HttpLink,
-} from "@apollo/client";
-import "./index.css";
+import { Auth0Provider } from "@auth0/auth0-react";
+import { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
 import { App } from "./App.tsx";
+import "./index.css";
+import { router } from "./router.ts";
 
-const link = new HttpLink({
-  uri: "http://localhost:3005/graphql",
-  credentials: "include",
-});
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
+}
 
-const client = new ApolloClient({
-  link: link,
-  cache: new InMemoryCache(),
-});
-
-createRoot(document.getElementById("root")!).render(
-  <ApolloProvider client={client}>
-    <App />
-  </ApolloProvider>,
-);
+const rootElement = document.getElementById("root")!;
+if (!rootElement.innerHTML) {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(
+    <StrictMode>
+      <Auth0Provider
+        domain={import.meta.env.VITE_AUTH0_DOMAIN}
+        clientId={import.meta.env.VITE_AUTH0_CLIENTID}
+        authorizationParams={{
+          redirect_uri: window.location.origin,
+          audience: `${import.meta.env.VITE_AUTH0_API_AUDIENCE}`,
+          scope:
+            "read:current_user update:current_user_metadata email profile openid",
+        }}
+        useRefreshTokens
+        cacheLocation="localstorage"
+      >
+        <App />
+      </Auth0Provider>
+    </StrictMode>,
+  );
+}

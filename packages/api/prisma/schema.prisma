@@ -82,12 +82,14 @@ enum AssistantAction {
 
 model User {
   id                   String                @id @default(cuid())
+  auth0sub             String                @unique
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
-  email                String                @unique
+  email                String?                @unique
+  password             String?
   firstName            String?
   lastName             String?
-  username             String
+  username             String?
   role                 String                @default("user")
   conversations        Conversation[]
   projects             Project[]

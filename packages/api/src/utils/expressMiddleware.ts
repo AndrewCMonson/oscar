@@ -11,17 +11,46 @@ export const middlewareContext: ContextFunction<
   res,
 }: ExpressContextFunctionArgument): Promise<MiddlewareContext> => {
   try {
-    const user = await prismadb.user.findUnique({
-      where: { email: "andrew.c.monson@gmail.com" },
+    const token = req.headers.authorization?.split(" ")[1];
+    const incomingUser = req.headers.authorizeduser as string | undefined;
+
+    if (!incomingUser) {
+      return {
+        req,
+        res,
+      };
+    }
+
+    if (!token) {
+      throw new Error("User not authorized");
+    }
+
+    const authUser = JSON.parse(incomingUser);
+
+    const dbUser = await prismadb.user.findUnique({
+      where: {
+        auth0sub: authUser.sub,
+      },
     });
 
-    if (!user) {
-      throw new Error("User not found");
+    if (!dbUser) {
+      const createdDBUser = await prismadb.user.create({
+        data: {
+          auth0sub: authUser.sub,
+        },
+      });
+
+      return {
+        req,
+        res,
+        user: createdDBUser,
+      };
     }
+
     return {
       req,
       res,
-      user,
+      user: dbUser,
     };
   } catch (e) {
     console.error(e);

@@ -1,11 +1,10 @@
-import * as React from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { forwardRef, TextareaHTMLAttributes } from "react";
 
-interface ChatInputProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+type ChatInputProps = TextareaHTMLAttributes<HTMLTextAreaElement>;
 
-const ChatInput = React.forwardRef<HTMLTextAreaElement, ChatInputProps>(
+export const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
   ({ className, ...props }, ref) => (
     <Textarea
       autoComplete="off"
@@ -20,5 +19,3 @@ const ChatInput = React.forwardRef<HTMLTextAreaElement, ChatInputProps>(
   ),
 );
 ChatInput.displayName = "ChatInput";
-
-export { ChatInput };

@@ -14,6 +14,7 @@ export const seed = async (): Promise<void> => {
     const user = await prismadb.user.create({
       data: {
         email: "andrew.c.monson@gmail.com",
+        auth0sub: "github|139920681",
         firstName: "Andrew",
         lastName: "Monson",
         username: "andrewmonson",

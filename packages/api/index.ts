@@ -37,7 +37,7 @@ const startServer = async () => {
     console.log(`app listening on ${PORT}`);
   });
 
-  app.get("/health", (res: Response) => {
+  app.get("/health", (_, res: Response) => {
     res.send("Server is running");
   });
 };
