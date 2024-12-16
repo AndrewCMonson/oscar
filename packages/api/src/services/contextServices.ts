@@ -3,7 +3,7 @@ import { ChatCompletionMessageParam } from "openai/resources/index.js";
 import { prismadb } from "../config/index.js";
 import { formatMessageForOpenAI } from "../services/index.js";
 
-/** function used to get global context from the assistant and user context from the user to pass to the api call */ 
+/** function used to get global context from the assistant and user context from the user to pass to the api call */
 export const getContext = async (
   userId: string,
 ): Promise<ChatCompletionMessageParam> => {

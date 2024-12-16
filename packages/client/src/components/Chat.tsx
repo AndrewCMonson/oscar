@@ -1,7 +1,6 @@
 import { useMutation } from "@apollo/client";
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import { HandleConversationMessage } from "../utils/graphql/mutations.js";
-import Profile from "./Profile.js";
 import { Button } from "./ui/button/button.js";
 import {
   ChatBubble,
@@ -65,12 +64,12 @@ export const Chat = () => {
 
   const { user } = useAuth0();
 
-  if(!user){
-    return(
+  if (!user) {
+    return (
       <div className="text-center">
         <p>You must be logged in to interact with the assistant</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -110,7 +109,6 @@ export const Chat = () => {
           <Button className="mt-2 rounded" size="lg" onClick={handleSubmit}>
             Chat
           </Button>
-          <Profile />
         </div>
       </div>
     </>

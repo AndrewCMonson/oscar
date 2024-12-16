@@ -136,15 +136,15 @@ export const isValidToolName = (
 
 /**
  * Handles the response tool calls from OpenAI and processes them accordingly.
- * 
+ *
  * @param openAIResponse - The parsed response from OpenAI containing structured output.
  * @param conversationHistory - The conversation history object.
  * @param user - The user object.
  * @param context - The context message parameter for the chat completion.
  * @param formattedMessages - The array of formatted message parameters.
- * 
+ *
  * @returns A promise that resolves to the structured output from OpenAI.
- * 
+ *
  * @throws Will throw an error if the tool name is not valid.
  */
 export const handleResponseToolCalls = async (

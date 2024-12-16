@@ -10,8 +10,6 @@ import {
   updateUserPreferences,
 } from "../../services/index.js";
 
-
-
 /**
  * Handles the execution of various tool call functions based on the provided function name and arguments.
  *

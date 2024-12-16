@@ -14,8 +14,6 @@ import {
   openAIApiOptions,
 } from "../../services/index.js";
 
-
-
 /**
  * Communicates with the assistant using the provided message and user information.
  *

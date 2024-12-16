@@ -4,7 +4,7 @@ import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
 interface RouterContext {
-  user?: User
+  user?: User;
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -16,4 +16,13 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       <TanStackRouterDevtools />
     </>
   ),
+  notFoundComponent: NotFoundRoute,
 });
+
+function NotFoundRoute() {
+  return (
+    <div className="flex justify-center">
+      <h3>{"This Page Doesn't Exist"}</h3>
+    </div>
+  );
+}
