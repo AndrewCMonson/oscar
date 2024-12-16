@@ -48,10 +48,14 @@ export const assistantFailureResponse = {
   },
 };
 
-/* 
-  typechecking function for when the assistant needs to call a tool to ensure it is an approved tool
-  * If a new tool call is created and not added here, it will always fail 
-*/
+/**
+ * Checks if the provided role is one of the allowed roles: "function", "user", "assistant", "tool", or "system".
+ * If the role is not one of these, an error is thrown.
+ *
+ * @param role - The role to check.
+ * @returns The validated role if it is one of the allowed roles.
+ * @throws {Error} If the role is not one of the allowed roles.
+ */
 export const openAIRoleCheck = (
   role: string,
 ): "function" | "user" | "assistant" | "tool" | "system" => {
@@ -68,6 +72,17 @@ export const openAIRoleCheck = (
   return role;
 };
 
+/**
+ * Formats a message for OpenAI's ChatCompletion API.
+ *
+ * @param {Object} params - The parameters for the message.
+ * @param {string} params.role - The role of the message sender.
+ * @param {string} params.content - The content of the message.
+ * @param {string} params.name - The name of the message sender.
+ * @param {string} [params.toolCallId] - Optional tool call ID associated with the message.
+ * @returns {OpenAI.ChatCompletionMessageParam} The formatted message object.
+ * @throws {Error} If role, content, or name is not provided.
+ */
 export const formatMessageForOpenAI = ({
   role,
   content,
@@ -93,6 +108,20 @@ export const formatMessageForOpenAI = ({
   return formattedMessage;
 };
 
+/**
+ * Checks if the provided name is a valid tool name.
+ *
+ * This function verifies if the given `name` is one of the predefined tool names
+ * in the `ToolCallFunctions` interface. The valid tool names are:
+ * - "createProject"
+ * - "updateUserPreferences"
+ * - "createTask"
+ * - "getProjects"
+ * - "updateProjectData"
+ *
+ * @param name - The name to check.
+ * @returns A boolean indicating whether the name is a valid tool name.
+ */
 export const isValidToolName = (
   name: string,
 ): name is keyof ToolCallFunctions => {
@@ -105,6 +134,19 @@ export const isValidToolName = (
   ].includes(name);
 };
 
+/**
+ * Handles the response tool calls from OpenAI and processes them accordingly.
+ * 
+ * @param openAIResponse - The parsed response from OpenAI containing structured output.
+ * @param conversationHistory - The conversation history object.
+ * @param user - The user object.
+ * @param context - The context message parameter for the chat completion.
+ * @param formattedMessages - The array of formatted message parameters.
+ * 
+ * @returns A promise that resolves to the structured output from OpenAI.
+ * 
+ * @throws Will throw an error if the tool name is not valid.
+ */
 export const handleResponseToolCalls = async (
   openAIResponse: ParsedChatCompletion<OpenAIStructuredOutput>,
   conversationHistory: Conversation,

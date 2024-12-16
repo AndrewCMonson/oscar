@@ -10,10 +10,22 @@ import {
   updateUserPreferences,
 } from "../../services/index.js";
 
-/*
-  This is the handler function for our tool calls.
-*/
 
+
+/**
+ * Handles the execution of various tool call functions based on the provided function name and arguments.
+ *
+ * @template T - The type of the tool call function name, which must be a key of `ToolCallFunctions`.
+ * @param {T} toolCallFunctionName - The name of the tool call function to execute.
+ * @param {ToolCallFunctions[T]} toolCallFunctionArgs - The arguments to pass to the tool call function.
+ * @returns {Promise<ToolCallFunctionReturn>} - A promise that resolves to the result of the tool call function.
+ * @throws {Error} - Throws an error if the provided arguments are invalid for the specified tool call function.
+ *
+ * @example
+ * ```typescript
+ * const result = await handleToolCallFunction("createProject", { name: "New Project" });
+ * ```
+ */
 export const handleToolCallFunction = async <T extends keyof ToolCallFunctions>(
   toolCallFunctionName: T,
   toolCallFunctionArgs: ToolCallFunctions[T],

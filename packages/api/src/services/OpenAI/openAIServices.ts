@@ -14,6 +14,28 @@ import {
   openAIApiOptions,
 } from "../../services/index.js";
 
+
+
+/**
+ * Communicates with the assistant using the provided message and user information.
+ *
+ * @param {ChatGPTMessage} message - The message to be sent to the assistant.
+ * @param {User} user - The user sending the message.
+ * @returns {Promise<OpenAIStructuredOutput>} - The structured output from the OpenAI API.
+ * @throws {Error} - Throws an error if the input is invalid or if an error occurs during the process.
+ *
+ * The function performs the following steps:
+ * 1. Validates the input message and user.
+ * 2. Retrieves the context for the user.
+ * 3. Checks for existing conversation history or creates a new conversation.
+ * 4. Adds the new message to the conversation.
+ * 5. Formats the conversation messages for the OpenAI API.
+ * 6. Sends the formatted messages and context to the OpenAI API.
+ * 7. Handles the response based on the finish reason:
+ *    - If the finish reason is "tool_calls", it processes tool calls.
+ *    - If the finish reason is "stop", it adds the assistant's response to the conversation history and returns it.
+ *    - Otherwise, it returns a failure response.
+ */
 export const chatWithAssistant = async (
   message: ChatGPTMessage,
   user: User,
