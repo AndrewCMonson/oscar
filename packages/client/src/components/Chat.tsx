@@ -1,5 +1,5 @@
 import { useMutation } from "@apollo/client";
-import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, MouseEvent, useEffect, useRef, useState, KeyboardEvent } from "react";
 import { HandleConversationMessage } from "../utils/graphql/mutations.js";
 import { Button } from "./ui/button/button.js";
 import {
@@ -62,6 +62,20 @@ export const Chat = () => {
     });
   };
 
+  const handleKeyDown = async (e: KeyboardEvent<HTMLInputElement> ) => {
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      updateMessages(userMessage);
+      setUserMessage({
+        content: "",
+        role: "",
+      });
+      await chat({
+        variables: { message: userMessage.content },
+      });
+    }
+  }
+
   const { user } = useAuth0();
 
   if (!user) {
@@ -74,16 +88,16 @@ export const Chat = () => {
 
   return (
     <>
-      <div className="flex flex-row justify-center h-full w-full items-center">
+      <div className="flex flex-row justify-center h-full w-full items-center text-white">
         <div className="flex h-3/4 w-1/2 flex-col items-center justify-center">
           <ChatMessageList
-            className="w-full h-96 flex-col overflow-y-auto border rounded"
+            className="w-full h-96 flex-col overflow-y-auto border border-4 rounded bg-zinc-900"
             ref={chatListRef}
           >
             {messages.map((message, i) =>
               message.role === "user" ? (
                 <ChatBubble key={i} variant="sent" layout="default">
-                  <ChatBubbleAvatar></ChatBubbleAvatar>
+                  <ChatBubbleAvatar src={user?.picture}></ChatBubbleAvatar>
                   <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
                 </ChatBubble>
               ) : (
@@ -101,16 +115,30 @@ export const Chat = () => {
             )}
           </ChatMessageList>
           <Input
-            className="w-96 mt-2"
+            className="w-96 mt-2 border bg-zinc-900"
             value={userMessage.content}
             onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
             placeholder="Enter your text here"
           ></Input>
-          <Button className="mt-2 rounded" size="lg" onClick={handleSubmit}>
+          <Button
+            className="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl shadow-blue-500/20 hover:scale-105 transition-transform rounded mt-2"
+            size="lg"
+            onClick={handleSubmit}
+            type="submit"
+          >
             Chat
           </Button>
         </div>
       </div>
+      <div
+        className="absolute top-1/3 left-1/2 w-72 h-72 bg-blue-600/20 rounded-full blur-3xl -translate-x-1/2 -z-10"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute top-2/3 right-1/3 w-72 h-72 bg-purple-600/20 rounded-full blur-3xl -translate-x-1/2 -z-10"
+        aria-hidden="true"
+      />
     </>
   );
 };

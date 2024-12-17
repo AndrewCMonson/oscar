@@ -5,5 +5,6 @@ export const router = createRouter({
   routeTree,
   context: {
     user: undefined!,
+    auth: undefined!,
   },
 });

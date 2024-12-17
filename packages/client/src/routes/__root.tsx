@@ -5,13 +5,13 @@ import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
 interface RouterContext {
   user?: User;
+  auth?: boolean
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: () => (
     <>
       <Nav />
-      <hr />
       <Outlet />
       <TanStackRouterDevtools />
     </>

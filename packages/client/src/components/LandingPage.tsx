@@ -3,8 +3,12 @@ import { motion } from "framer-motion";
 import { BookOpenIcon, CalendarIcon, CodeIcon, RocketIcon } from "lucide-react";
 import { FC } from "react";
 import { Button } from "./ui/button/button.tsx";
+import { Link } from "@tanstack/react-router";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export const OscarLandingPage: FC = () => {
+  const { isAuthenticated } = useAuth0();
+
   const features = [
     {
       icon: <CodeIcon className="w-12 h-12 text-blue-500" />,
@@ -56,7 +60,7 @@ export const OscarLandingPage: FC = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-950 to-black text-white font-['Montserrat'] overflow-hidden relative"
+      className="min-h-screen text-white overflow-hidden relative"
       aria-label="Oscar AI Developer Assistant Landing Page"
     >
       {/* Subtle Grid Background */}
@@ -104,13 +108,27 @@ export const OscarLandingPage: FC = () => {
             damping: 20,
           }}
         >
-          <Button
-            size="lg"
-            aria-label="Get Started with Oscar"
-            className="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl shadow-blue-500/20 hover:scale-105 transition-transform"
-          >
-            Get Started
-          </Button>
+          {isAuthenticated ? (
+            <Link to="/chat">
+              <Button
+                size="lg"
+                aria-label="Get Started with Oscar"
+                className="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl shadow-blue-500/20 hover:scale-105 transition-transform rounded"
+              >
+                Get Started
+              </Button>
+            </Link>
+          ) : (
+            <Link to="/">
+              <Button
+                size="lg"
+                aria-label="Get Started with Oscar"
+                className="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl shadow-blue-500/20 hover:scale-105 transition-transform rounded"
+              >
+                Get Started
+              </Button>
+            </Link>
+          )}
         </motion.div>
       </section>
 

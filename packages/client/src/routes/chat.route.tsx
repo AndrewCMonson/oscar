@@ -3,7 +3,7 @@ import { Chat } from "../components/Chat.tsx";
 
 export const Route = createFileRoute("/chat")({
   beforeLoad: ({ context, location }) => {
-    if (!context.user) {
+    if (!context.user || !context.auth) {
       throw redirect({
         to: "/",
         search: {
