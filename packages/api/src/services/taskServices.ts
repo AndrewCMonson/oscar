@@ -1,6 +1,6 @@
 import { Task } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
-import { CreateTaskParameters } from "../../types/index.js";
+import { CreateTaskParameters } from "@api/types";
 import { prismadb } from "../config/index.js";
 
 export const createTask = async (

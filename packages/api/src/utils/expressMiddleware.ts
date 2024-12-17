@@ -1,8 +1,27 @@
 import { ContextFunction } from "@apollo/server";
 import { ExpressContextFunctionArgument } from "@apollo/server/express4";
-import { MiddlewareContext } from "../../types/index.js";
+import { MiddlewareContext } from "@api/types";
 import { prismadb } from "../config/index.js";
 
+/**
+ * Middleware context function to handle user authentication and context creation.
+ *
+ * @param {ExpressContextFunctionArgument} param0 - The Express context function argument containing the request and response objects.
+ * @returns {Promise<MiddlewareContext>} - A promise that resolves to the middleware context containing the request, response, and optionally the authenticated user.
+ * @throws {Error} - Throws an error if the user is not authorized or if an error occurs while fetching the user.
+ *
+ * @example
+ * // Example usage in an Express middleware
+ * app.use(async (req, res, next) => {
+ *   try {
+ *     const context = await middlewareContext({ req, res });
+ *     req.context = context;
+ *     next();
+ *   } catch (error) {
+ *     res.status(401).send(error.message);
+ *   }
+ * });
+ */
 export const middlewareContext: ContextFunction<
   [ExpressContextFunctionArgument],
   MiddlewareContext

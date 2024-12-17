@@ -4,7 +4,7 @@ import {
   CreateProjectParameters,
   GetProjectsParameters,
   UpdateProjectDataParameters,
-} from "../../types/index.js";
+} from "@api/types";
 import { prismadb } from "../config/index.js";
 
 export const createProject = async (
@@ -100,7 +100,7 @@ export const updateProject = async (
       },
     });
 
-    const updatedProjectMetaData = await prismadb.projectMetadata.update({
+    return await prismadb.projectMetadata.update({
       where: {
         id: projectMetaData?.id,
       },
@@ -117,8 +117,6 @@ export const updateProject = async (
         tags,
       },
     });
-
-    return updatedProjectMetaData;
   } catch (e) {
     if (e instanceof PrismaClientKnownRequestError) {
       throw new Error("Error with prisma DB updating project data");

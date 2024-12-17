@@ -1,8 +1,8 @@
 import { useUserMetadata } from "@/hooks/useUserMetadata.tsx";
 import { useAuth0 } from "@auth0/auth0-react";
-import { FC } from "react";
+// import { FC } from "react"
 
-const Profile: FC = () => {
+export const Profile = () => {
   const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
     useAuth0();
 
@@ -29,4 +29,3 @@ const Profile: FC = () => {
   );
 };
 
-export default Profile;
