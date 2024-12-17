@@ -82,12 +82,14 @@ enum AssistantAction {
 
 model User {
   id                   String                @id @default(cuid())
+  auth0sub             String                @unique
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
-  email                String                @unique
+  email                String?                @unique
+  password             String?
   firstName            String?
   lastName             String?
-  username             String
+  username             String?
   role                 String                @default("user")
   conversations        Conversation[]
   projects             Project[]
@@ -97,7 +99,8 @@ model User {
   preferences          UserPreferences?
   memory               UserMemory?
   notificationSettings NotificationSettings?
-  Message              Message[]
+  Messages              Message[]
+  Sessions             Session[]
 }
 
 model UserPreferences {
@@ -320,4 +323,14 @@ model GlobalContextMessage {
   name            String
   globalContextId String
   globalContext   GlobalContext @relation(fields: [globalContextId], references: [id])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  token     String   @unique
+  expiresAt DateTime
 }

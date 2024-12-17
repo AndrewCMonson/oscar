@@ -17,6 +17,14 @@ import {
 import { Request, Response } from "express";
 import { z } from "zod";
 
+declare module "express" {
+  export interface Request {
+    headers: Request["headers"] & {
+      authorizeduser?: string | undefined;
+    };
+  }
+}
+
 type CreateProjectParameters = z.infer<typeof createProjectParameters>;
 type UpdateUserPreferenceParameters = z.infer<
   typeof updateUserPreferenceParameters
@@ -43,7 +51,7 @@ export type ToolCallFunctionReturn =
   | undefined;
 
 export interface MiddlewareContext {
-  user: User;
+  user?: User;
   req: Request;
   res: Response;
 }
