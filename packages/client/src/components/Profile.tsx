@@ -1,44 +1,20 @@
+import { Button } from "@/components/ui/button/button.tsx";
 import { useAuth0 } from "@auth0/auth0-react";
-import { motion } from "framer-motion"
-import { UserIcon, MailIcon, GlobeIcon } from "lucide-react";
-import { FC } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.tsx"
+import { motion } from "framer-motion";
+import { FC } from "react";
 
 export const Profile: FC  = () => {
-  const { user, isAuthenticated, isLoading } =
+  const { user, isAuthenticated, isLoading, logout } =
     useAuth0();
 
   // const { userMetadata } = useUserMetadata(getAccessTokenSilently, user);
-
-  const containerVariants = {
-     hidden: { opacity: 0 },
-     visible: {
-       opacity: 1,
-       transition: {
-         delayChildren: 0.3,
-         staggerChildren: 0.2,
-       },
-     },
-   };
-
-  const itemVariants = {
-     hidden: { y: 20, opacity: 0 },
-     visible: {
-       y: 0,
-       opacity: 1,
-       transition: {
-         duration: 0.5,
-         ease: "easeOut",
-       },
-     },
-   };
 
   if (isLoading) {
     return (
       <motion.main
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="min-h-screen text-white overflow-hidden relative flex items-center justify-center"
+        className="text-white relative flex items-center justify-center"
       >
         <p className="text-2xl text-zinc-400">Loading profile...</p>
       </motion.main>
@@ -50,7 +26,7 @@ export const Profile: FC  = () => {
        <motion.main
          initial={{ opacity: 0 }}
          animate={{ opacity: 1 }}
-         className="min-h-screen text-white overflow-hidden relative flex items-center justify-center"
+         className="text-white relative flex items-center justify-center"
        >
          <p className="text-2xl text-zinc-400">
            Please log in to view your profile.
@@ -59,139 +35,86 @@ export const Profile: FC  = () => {
      );
    }
 
-   const profileDetails = [
-     {
-       icon: <UserIcon className="w-12 h-12 text-blue-500" />,
-       title: "Name",
-       description: user?.name || "Not provided",
-     },
-     {
-       icon: <MailIcon className="w-12 h-12 text-green-500" />,
-       title: "Email",
-       description: user?.email || "Not provided",
-     },
-     {
-       icon: <GlobeIcon className="w-12 h-12 text-purple-500" />,
-       title: "Nickname",
-       description: user?.nickname || "Not provided",
-     },
-   ];
-
   return (
-    <motion.main
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="min-h-screen text-white overflow-hidden relative"
-      aria-label="Oscar User Profile Page"
-    >
-      {/* Subtle Grid Background */}
-      <div
-        className="absolute inset-0 bg-grid-white/5 opacity-20 pointer-events-none"
-        aria-hidden="true"
-      />
-
-      {/* Profile Section */}
-      <section
-        className="container mx-auto px-6 pt-24 pb-16 text-center relative z-10"
-        aria-labelledby="profile-title"
+    isAuthenticated && (
+      <motion.main
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="relative text-white"
+        aria-label="User Profile Page"
       >
-        <motion.h1
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{
-            type: "spring",
-            stiffness: 100,
-            duration: 0.5,
-          }}
-          className="text-5xl md:text-6xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600"
-        >
-          {user?.nickname}
-        </motion.h1>
+        {/* Subtle Grid Background */}
+        <div
+          className="absolute inset-0 bg-grid-white/5 opacity-20 pointer-events-none"
+          aria-hidden="true"
+        />
 
-        {user?.picture && (
-          <motion.img
-            src={user.picture}
-            alt="User Profile"
-            initial={{ scale: 0.5, opacity: 0 }}
+        {/* Profile Section */}
+        <section
+          className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 text-center relative z-10"
+          aria-labelledby="profile-title"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="mx-auto mb-8 w-20 rounded-full border-4 border-purple-600"
-          />
-        )}
-
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
-          className="max-w-4xl mx-auto"
-        >
-          <div
-            className="grid md:grid-cols-3 gap-8"
-            role="list"
-            aria-label="User Profile Details"
+            transition={{ type: "spring", stiffness: 100, damping: 20 }}
+            className="flex flex-col items-center justify-center space-y-6"
           >
-            {profileDetails.map((detail) => (
-              <motion.div
-                key={detail.title}
-                variants={itemVariants}
-                whileHover={{
-                  scale: 1.05,
-                  transition: { duration: 0.2 },
-                }}
-                whileTap={{ scale: 0.95 }}
-                role="listitem"
-                aria-label={detail.title}
+            {/* User Avatar */}
+            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-500 shadow-lg">
+              <img
+                src={user?.picture}
+                alt={`${user?.name}'s avatar`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            {/* User Name */}
+            <motion.h1
+              id="profile-title"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600"
+            >
+              {user?.name}
+            </motion.h1>
+
+            {/* User Email */}
+            <p className="text-lg sm:text-xl text-zinc-400">{user?.email}</p>
+
+            {/* User Metadata (Optional) */}
+            {user?.nickname && (
+              <p className="text-sm sm:text-base text-zinc-500">
+                Nickname:{" "}
+                <span className="font-semibold">{user?.nickname}</span>
+              </p>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 mt-6">
+              <Button
+                size="lg"
+                onClick={() =>
+                  logout({ logoutParams: { returnTo: window.location.origin } })
+                }
+                className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white rounded shadow-lg transition-transform hover:scale-105"
+                aria-label="Logout"
               >
-                <Card className="bg-zinc-900 border-zinc-800 hover:border-zinc-700 transition-colors duration-300 hover:bg-zinc-800/50 backdrop-blur-sm">
-                  <CardHeader className="flex flex-col items-center">
-                    <div className="mb-4" aria-hidden="true">
-                      {detail.icon}
-                    </div>
-                    <CardTitle className="text-xl text-center text-white">
-                      {detail.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-center text-zinc-400 break-words">
-                      {detail.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+                Logout
+              </Button>
+            </div>
+          </motion.div>
+        </section>
 
-        {/* <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{
-            delay: 0.7,
-            type: "spring",
-            stiffness: 260,
-            damping: 20,
-          }}
-          className="mt-12"
-        >
-          <button
-            onClick={handleLogout}
-            className="px-8 py-3 text-lg bg-gradient-to-r from-red-600 to-pink-700 hover:from-red-700 hover:to-pink-800 text-white shadow-xl shadow-red-500/20 hover:scale-105 transition-transform rounded"
-          >
-            Log Out
-          </button>
-        </motion.div> */}
-      </section>
-
-      {/* Subtle Glow Effects */}
-      <div
-        className="absolute top-1/3 left-1/2 w-72 h-72 bg-blue-600/20 rounded-full blur-3xl -translate-x-1/2 -z-10"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute top-2/3 right-1/3 w-72 h-72 bg-purple-600/20 rounded-full blur-3xl -translate-x-1/2 -z-10"
-        aria-hidden="true"
-      />
-    </motion.main>
+        {/* Subtle Glow Effects */}
+        <div
+          className="absolute top-1/3 left-1/2 w-48 sm:w-64 h-48 sm:h-64 bg-blue-600/20 rounded-full blur-3xl -translate-x-1/2 -z-10"
+          aria-hidden="true"
+        />
+        <div
+          className="absolute bottom-1/4 right-1/4 w-48 sm:w-64 h-48 sm:h-64 bg-purple-600/20 rounded-full blur-3xl translate-x-1/2 -z-10"
+          aria-hidden="true"
+        />
+      </motion.main>
+    )
   );
 };

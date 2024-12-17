@@ -60,7 +60,7 @@ export const OscarLandingPage: FC = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen text-white overflow-hidden relative"
+      className="relative text-white"
       aria-label="Oscar AI Developer Assistant Landing Page"
     >
       {/* Subtle Grid Background */}
@@ -71,9 +71,10 @@ export const OscarLandingPage: FC = () => {
 
       {/* Hero Section */}
       <section
-        className="container mx-auto px-6 pt-24 pb-16 text-center relative z-10"
+        className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 md:pt-24 md:pb-16 text-center relative z-10"
         aria-labelledby="hero-title"
       >
+        {/* Hero Heading */}
         <motion.h1
           id="hero-title"
           initial={{ scale: 0.8, opacity: 0 }}
@@ -83,21 +84,22 @@ export const OscarLandingPage: FC = () => {
             stiffness: 100,
             duration: 0.5,
           }}
-          className="text-5xl md:text-6xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600"
+          className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600"
         >
           Oscar
         </motion.h1>
 
+        {/* Hero Description */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="text-xl md:text-2xl max-w-3xl mx-auto mb-10 text-zinc-400"
-          aria-describedby="hero-title"
+          className="text-lg sm:text-xl lg:text-2xl max-w-3xl mx-auto mb-8 text-zinc-400"
         >
           AI-Powered Developer Assistant for Seamless Project Management
         </motion.p>
 
+        {/* Action Button */}
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -113,27 +115,27 @@ export const OscarLandingPage: FC = () => {
               <Button
                 size="lg"
                 aria-label="Get Started with Oscar"
-                className="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl shadow-blue-500/20 hover:scale-105 transition-transform rounded"
+                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl hover:scale-105 transition-transform rounded"
               >
                 Get Started
               </Button>
             </Link>
           ) : (
-              <Button
-                size="lg"
-                aria-label="Get Started with Oscar"
-                className="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl shadow-blue-500/20 hover:scale-105 transition-transform rounded"
-                onClick={() => loginWithRedirect()}
-              >
-                Get Started
-              </Button>
+            <Button
+              size="lg"
+              aria-label="Get Started with Oscar"
+              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl hover:scale-105 transition-transform rounded"
+              onClick={() => loginWithRedirect()}
+            >
+              Get Started
+            </Button>
           )}
         </motion.div>
       </section>
 
       {/* Features Section */}
       <section
-        className="container mx-auto px-6 py-16 relative z-10"
+        className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 relative z-10"
         aria-labelledby="features-heading"
       >
         <h2 id="features-heading" className="sr-only">
@@ -145,7 +147,7 @@ export const OscarLandingPage: FC = () => {
           variants={containerVariants}
         >
           <div
-            className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8"
             role="list"
             aria-label="Oscar Features List"
           >
@@ -159,19 +161,22 @@ export const OscarLandingPage: FC = () => {
                 }}
                 whileTap={{ scale: 0.95 }}
                 role="listitem"
-                aria-label={feature.title}
+                aria-labelledby={`feature-${feature.title}`}
               >
                 <Card className="bg-zinc-900 border-zinc-800 hover:border-zinc-700 transition-colors duration-300 hover:bg-zinc-800/50 backdrop-blur-sm">
                   <CardHeader className="flex flex-col items-center">
                     <div className="mb-4" aria-hidden="true">
                       {feature.icon}
                     </div>
-                    <CardTitle className="text-xl text-center text-white">
+                    <CardTitle
+                      id={`feature-${feature.title}`}
+                      className="text-lg sm:text-xl text-center text-white"
+                    >
                       {feature.title}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-center text-zinc-400">
+                    <p className="text-center text-sm sm:text-base text-zinc-400">
                       {feature.description}
                     </p>
                   </CardContent>
@@ -182,13 +187,13 @@ export const OscarLandingPage: FC = () => {
         </motion.div>
       </section>
 
-      {/* Subtle Glow Effect */}
+      {/* Subtle Glow Effects */}
       <div
-        className="absolute top-1/3 left-1/2 w-72 h-72 bg-blue-600/20 rounded-full blur-3xl -translate-x-1/2 -z-10"
+        className="absolute top-1/4 left-1/2 w-48 sm:w-64 h-48 sm:h-64 bg-blue-600/20 rounded-full blur-3xl -translate-x-1/2 -z-10"
         aria-hidden="true"
       />
       <div
-        className="absolute top-2/3 right-1/3 w-72 h-72 bg-purple-600/20 rounded-full blur-3xl -translate-x-1/2 -z-10"
+        className="absolute top-3/4 right-1/4 w-48 sm:w-64 h-48 sm:h-64 bg-purple-600/20 rounded-full blur-3xl translate-x-1/2 -z-10"
         aria-hidden="true"
       />
     </motion.main>
