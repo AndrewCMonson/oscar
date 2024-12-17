@@ -1,7 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { Profile } from "../components/Profile.tsx"
+import { createFileRoute } from "@tanstack/react-router";
+import { Profile } from "../components/Profile.tsx";
 
-export const Route = createFileRoute('/profile')({
+export const Route = createFileRoute("/profile")({
   component: Profile,
-})
-
+});
