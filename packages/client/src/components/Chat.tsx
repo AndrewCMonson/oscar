@@ -7,6 +7,7 @@ import {
   ChatBubbleAvatar,
   ChatBubbleMessage,
 } from "./ui/chat/chat-bubble.js";
+import { motion } from "framer-motion"
 import { ChatMessageList } from "./ui/chat/chat-message-list.js";
 import { Input } from "./ui/input.js";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -88,8 +89,25 @@ export const Chat = () => {
 
   return (
     <>
-      <div className="flex flex-row justify-center h-full w-full items-center text-white">
+      <motion.main
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="flex justify-center h-full"
+      >
         <div className="flex h-3/4 w-1/2 flex-col items-center justify-center">
+          <motion.h1
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{
+              type: "spring",
+              stiffness: 100,
+              duration: 0.5,
+            }}
+            className="text-5xl md:text-6xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600"
+          >
+            Chat with Oscar
+          </motion.h1>
           <ChatMessageList
             className="w-full h-96 flex-col overflow-y-auto border border-4 rounded bg-zinc-900"
             ref={chatListRef}
@@ -130,7 +148,7 @@ export const Chat = () => {
             Chat
           </Button>
         </div>
-      </div>
+      </motion.main>
       <div
         className="absolute top-1/3 left-1/2 w-72 h-72 bg-blue-600/20 rounded-full blur-3xl -translate-x-1/2 -z-10"
         aria-hidden="true"

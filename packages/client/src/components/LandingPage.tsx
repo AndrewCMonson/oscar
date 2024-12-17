@@ -7,7 +7,7 @@ import { Link } from "@tanstack/react-router";
 import { useAuth0 } from "@auth0/auth0-react";
 
 export const OscarLandingPage: FC = () => {
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
 
   const features = [
     {
@@ -119,15 +119,14 @@ export const OscarLandingPage: FC = () => {
               </Button>
             </Link>
           ) : (
-            <Link to="/">
               <Button
                 size="lg"
                 aria-label="Get Started with Oscar"
                 className="bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl shadow-blue-500/20 hover:scale-105 transition-transform rounded"
+                onClick={() => loginWithRedirect()}
               >
                 Get Started
               </Button>
-            </Link>
           )}
         </motion.div>
       </section>
