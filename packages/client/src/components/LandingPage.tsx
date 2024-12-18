@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { BookOpenIcon, CalendarIcon, CodeIcon, RocketIcon } from "lucide-react";
 import { FC } from "react";
 import { Button } from "./ui/button/button.tsx";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router";
 import { useAuth0 } from "@auth0/auth0-react";
 
 export const OscarLandingPage: FC = () => {
