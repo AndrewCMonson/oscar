@@ -23,7 +23,10 @@ type ConversationResponse {
 }
 
 type Mutation {
-  handleConversationMessage(message: String!): ConversationResponse
+  handleConversationMessage(
+    message: String!
+    projectId: String!
+  ): ConversationResponse
   createConversation: Conversation
   updateConversation(id: ID!, projectId: String!): Conversation
   deleteConversation(id: ID!): String

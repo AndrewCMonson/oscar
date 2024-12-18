@@ -37,6 +37,7 @@ import {
 export const chatWithAssistant = async (
   message: ChatGPTMessage,
   user: User,
+  projectId?: string,
 ): Promise<OpenAIStructuredOutput> => {
   if (!message || !user) {
     throw new Error("Invalid input");
@@ -44,7 +45,14 @@ export const chatWithAssistant = async (
 
   try {
     // get context from the assistant and the user
-    const context = await getContext(user.id);
+
+    let context;
+
+    if (projectId) {
+      context = await getContext(user.id, projectId);
+    }
+
+    context = await getContext(user.id);
     // check if the user has conversation history with the assistant. If they don't, it creates a conversation.
     const conversationHistory = await findConversation(user.id);
     // The new message is added to the conversation

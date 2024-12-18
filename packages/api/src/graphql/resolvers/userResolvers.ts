@@ -7,10 +7,10 @@ export const userResolvers: Resolvers = {
       const users = await prismadb.user.findMany();
       return users;
     },
-    user: async (_, { id }) => {
+    user: async (_, { auth0sub }) => {
       const user = await prismadb.user.findUnique({
         where: {
-          id: id,
+          auth0sub: auth0sub,
         },
       });
 
@@ -22,12 +22,13 @@ export const userResolvers: Resolvers = {
     },
   },
   Mutation: {
-    createUser: async (_, { email, username, role }) => {
+    createUser: async (_, { email, username, role, auth0sub }) => {
       const user = await prismadb.user.create({
         data: {
           email,
           username,
           role,
+          auth0sub,
         },
       });
       return user;
@@ -110,6 +111,19 @@ export const userResolvers: Resolvers = {
         throw new Error("An error occurred getting the user memory");
       }
       return memory;
+    },
+    projects: async (parent) => {
+      const projects = await prismadb.project.findMany({
+        where: {
+          userId: parent.id,
+        },
+      });
+
+      if (!projects) {
+        return [];
+      }
+
+      return projects;
     },
   },
 };

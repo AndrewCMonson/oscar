@@ -59,6 +59,7 @@ export const assistantFailureResponse = {
 export const openAIRoleCheck = (
   role: string,
 ): "function" | "user" | "assistant" | "tool" | "system" => {
+  console.log(role);
   if (
     role !== "function" &&
     role !== "user" &&

@@ -6,6 +6,11 @@ export const projectResolvers: Resolvers = {
   Query: {
     projects: async () => {
       const projects = await prismadb.project.findMany();
+
+      if (!projects) {
+        return [];
+      }
+
       return projects;
     },
     project: async (_, { id }) => {
@@ -36,17 +41,51 @@ export const projectResolvers: Resolvers = {
   },
   Mutation: {
     createProject: async (_, { name, description, type }, { user }) => {
+      if (!user) {
+        throw new Error("User is required to create a new project");
+      }
+
+      const assistant = await prismadb.assistant.findFirst({
+        where: {
+          role: "assistant",
+        },
+      });
+
+      if (!assistant) {
+        throw new Error("Assistant not found");
+      }
+
       const project = await prismadb.project.create({
         data: {
           name,
           description,
           type,
           userId: user.id,
+          conversation: {
+            create: {
+              userId: user.id,
+              assistantId: assistant.id,
+              messages: {
+                create: [
+                  {
+                    userId: user.id,
+                    name: "System",
+                    content: `This project is called ${name}`,
+                    role: "system",
+                  },
+                ],
+              },
+            },
+          },
         },
       });
       return project;
     },
     updateProject: async (_, { id, name, description }, { user }) => {
+      if (!user) {
+        throw new Error("User is required to update a project");
+      }
+
       const project = await prismadb.project.update({
         where: {
           id: id,
@@ -69,11 +108,11 @@ export const projectResolvers: Resolvers = {
     },
   },
   Project: {
-    user: async (project) => {
+    user: async (parent) => {
       try {
         const user = await prismadb.user.findUnique({
           where: {
-            id: project.userId,
+            id: parent.userId,
           },
         });
 
@@ -87,6 +126,23 @@ export const projectResolvers: Resolvers = {
           throw new Error(e.message);
         } else {
           throw new Error("An error occurred while fetching the user");
+        }
+      }
+    },
+    conversation: async (parent) => {
+      try {
+        const conversation = await prismadb.conversation.findUnique({
+          where: {
+            projectId: parent.id,
+          },
+        });
+
+        return conversation;
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          throw new Error(e.message);
+        } else {
+          return e;
         }
       }
     },
