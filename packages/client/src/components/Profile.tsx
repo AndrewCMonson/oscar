@@ -3,9 +3,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
 import { FC } from "react";
 
-export const Profile: FC  = () => {
-  const { user, isAuthenticated, isLoading, logout } =
-    useAuth0();
+export const Profile: FC = () => {
+  const { user, isAuthenticated, isLoading, logout } = useAuth0();
 
   // const { userMetadata } = useUserMetadata(getAccessTokenSilently, user);
 
@@ -21,19 +20,19 @@ export const Profile: FC  = () => {
     );
   }
 
-   if (!isAuthenticated) {
-     return (
-       <motion.main
-         initial={{ opacity: 0 }}
-         animate={{ opacity: 1 }}
-         className="text-white relative flex items-center justify-center"
-       >
-         <p className="text-2xl text-zinc-400">
-           Please log in to view your profile.
-         </p>
-       </motion.main>
-     );
-   }
+  if (!isAuthenticated) {
+    return (
+      <motion.main
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="text-white relative flex items-center justify-center"
+      >
+        <p className="text-2xl text-zinc-400">
+          Please log in to view your profile.
+        </p>
+      </motion.main>
+    );
+  }
 
   return (
     isAuthenticated && (

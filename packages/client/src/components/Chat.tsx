@@ -1,45 +1,62 @@
-import { useMutation } from "@apollo/client";
-import { ChangeEvent, MouseEvent, useEffect, useRef, useState, KeyboardEvent } from "react";
-import { HandleConversationMessage } from "../utils/graphql/mutations.js";
+import { useMutation, useQuery } from "@apollo/client";
+import { useAuth0 } from "@auth0/auth0-react";
+import { motion } from "framer-motion";
+import { debounce } from "lodash";
+import {
+  ChangeEvent,
+  KeyboardEvent,
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { ChatGPTMessage, Project } from "../../../api/types/index.js";
+import {
+  GetUserProjects,
+  HandleConversationMessage,
+} from "../utils/graphql/index.js";
 import { Button } from "./ui/button/button.js";
 import {
   ChatBubble,
   ChatBubbleAvatar,
   ChatBubbleMessage,
 } from "./ui/chat/chat-bubble.js";
-import { motion } from "framer-motion"
 import { ChatMessageList } from "./ui/chat/chat-message-list.js";
 import { Input } from "./ui/input.js";
-import { useAuth0 } from "@auth0/auth0-react";
-
-interface ChatMessage {
-  content: string;
-  role: string;
-}
 
 export const Chat = () => {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [userMessage, setUserMessage] = useState<ChatMessage>({
+  const { user, isLoading, isAuthenticated } = useAuth0();
+  const [messages, setMessages] = useState<ChatGPTMessage[]>([]);
+  const [userMessage, setUserMessage] = useState<ChatGPTMessage>({
     content: "",
-    role: "",
+    role: "user",
+    name: `${user?.name}`,
   });
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const chatListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (chatListRef.current) {
-      chatListRef.current.scrollTop = chatListRef.current.scrollHeight;
-    }
+    const scrollToBottom = debounce(() => {
+      if (chatListRef.current) {
+        chatListRef.current.scrollTop = chatListRef.current.scrollHeight;
+      }
+    }, 100);
+
+    scrollToBottom();
+    return () => scrollToBottom.cancel();
   }, [messages]);
 
-  const updateMessages = (message: ChatMessage) => {
+  const updateMessages = useCallback((message: ChatGPTMessage) => {
     setMessages((prevMessages) => [...prevMessages, message]);
-  };
+  }, []);
 
   const [chat, { loading }] = useMutation(HandleConversationMessage, {
     onCompleted: (data) => {
       updateMessages({
         content: data.handleConversationMessage.content,
         role: "assistant",
+        name: "assistant",
       });
     },
     onError: (error) => console.log(error),
@@ -49,6 +66,7 @@ export const Chat = () => {
     setUserMessage({
       content: event.target.value,
       role: "user",
+      name: `${user?.name}`,
     });
 
   const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
@@ -56,28 +74,71 @@ export const Chat = () => {
     updateMessages(userMessage);
     setUserMessage({
       content: "",
-      role: "",
+      role: "user",
+      name: `${user?.name}`,
     });
     await chat({
       variables: { message: userMessage.content },
     });
   };
 
-  const handleKeyDown = async (e: KeyboardEvent<HTMLInputElement> ) => {
-    if(e.key === 'Enter'){
+  const handleKeyDown = async (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
       e.preventDefault();
       updateMessages(userMessage);
       setUserMessage({
         content: "",
-        role: "",
+        role: "user",
+        name: `${user?.name}`,
       });
       await chat({
-        variables: { message: userMessage.content },
+        variables: {
+          message: userMessage.content,
+          projectId: selectedProject?.id,
+        },
       });
     }
-  }
+  };
 
-  const { user, isLoading, isAuthenticated } = useAuth0();
+  const handleProjectSelection = (project: Project) => {
+    setSelectedProject(project);
+
+    console.log("Current Project", project);
+  };
+
+  const {
+    loading: projectLoading,
+    error: projectError,
+    data: projectData,
+  } = useQuery(GetUserProjects, {
+    variables: { auth0sub: user?.sub },
+    pollInterval: 5000,
+  });
+
+  // TODO: FIX THIS TYPECASTING
+  useEffect(() => {
+    if (selectedProject?.conversation?.messages) {
+      const messages = selectedProject.conversation.messages.map((message) => {
+        return {
+          role: message?.role,
+          content: message?.content,
+          name: message?.user?.username ?? "",
+        };
+      }) as ChatGPTMessage[];
+
+      setMessages(messages ?? []);
+    }
+
+    if(!selectedProject?.conversation?.messages){
+      setMessages([]);
+    }
+  }, [selectedProject]);
+
+  useEffect(() => {
+    if (projectData) {
+      setSelectedProject(projectData.user.projects[0]);
+    }
+  }, [projectData]);
 
   if (!isAuthenticated) {
     return (
@@ -86,7 +147,9 @@ export const Chat = () => {
         animate={{ opacity: 1 }}
         className="text-white relative flex items-center justify-center"
       >
-        <p className="text-2xl text-zinc-400">Please login to interface with the assistant</p>
+        <p className="text-2xl text-zinc-400">
+          Please login to interface with the assistant
+        </p>
       </motion.main>
     );
   }
@@ -106,7 +169,27 @@ export const Chat = () => {
   return (
     isAuthenticated && (
       <>
-        {/* Main container with improved responsive spacing */}
+        {/* Main content */}
+        <div className="bg-zinc-900 text-white p-4">
+          {projectLoading && <p>Loading...</p>}
+          {!projectLoading && projectError && (
+            <p>Error: {projectError.message}</p>
+          )}
+          {!projectLoading && !projectError && projectData && (
+            <ul>
+              {projectData.user.projects.map((project: Project) => (
+                <li key={project.id}>
+                  <p
+                    onClick={() => handleProjectSelection(project)}
+                    className={`cursor-pointer ${selectedProject?.id === project.id ? "text-blue-400" : ""}`}
+                  >
+                    {project.name}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         <motion.main
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -145,22 +228,18 @@ export const Chat = () => {
                     className="flex items-center"
                   >
                     <ChatBubbleAvatar src={user?.picture} />
-                    <ChatBubbleMessage>
-                      {message.content}
-                    </ChatBubbleMessage>
+                    <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
                   </ChatBubble>
-                ) : (
+                ) : message.role === "assistant" ? (
                   <ChatBubble
                     key={i}
                     variant="received"
                     className="flex items-center"
                   >
                     <ChatBubbleAvatar />
-                    <ChatBubbleMessage>
-                      {message.content}
-                    </ChatBubbleMessage>
+                    <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
                   </ChatBubble>
-                ),
+                ) : null,
               )}
               {loading && (
                 <ChatBubble variant="received">

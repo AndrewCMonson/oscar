@@ -6,6 +6,7 @@ import { formatMessageForOpenAI } from "../services/index.js";
 /** function used to get global context from the assistant and user context from the user to pass to the api call */
 export const getContext = async (
   userId: string,
+  projectId?: string,
 ): Promise<ChatCompletionMessageParam> => {
   if (!userId) {
     throw new Error("User id needed to get context");
@@ -42,7 +43,23 @@ export const getContext = async (
       },
     });
 
-    const combinedContext = {
+    const projectContext = await prismadb.project.findFirst({
+      where: {
+        id: projectId,
+      },
+    });
+
+    let combinedContext;
+
+    if (projectContext) {
+      combinedContext = {
+        globalContext: assistantContext,
+        userContext: userContext,
+        projectContext: projectContext,
+      };
+    }
+
+    combinedContext = {
       globalContext: assistantContext,
       userContext: userContext,
     };

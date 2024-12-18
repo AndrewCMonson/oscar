@@ -58,7 +58,7 @@ export const conversationResolvers: Resolvers = {
     },
   },
   Mutation: {
-    handleConversationMessage: async (_, { message }, { user }) => {
+    handleConversationMessage: async (_, { message, projectId }, { user }) => {
       try {
         if (!message) {
           throw new Error("Message is required");
@@ -71,10 +71,14 @@ export const conversationResolvers: Resolvers = {
         const userMessage: ChatGPTMessage = {
           role: "user",
           content: message,
-          name: user.firstName ?? user.username,
+          name: user.firstName ?? user.username ?? "",
         };
 
-        const conversationMessage = await chatWithAssistant(userMessage, user);
+        const conversationMessage = await chatWithAssistant(
+          userMessage,
+          user,
+          projectId,
+        );
 
         if (!conversationMessage) {
           throw new Error("Error communicating with the assistant");
@@ -129,7 +133,7 @@ export const conversationResolvers: Resolvers = {
         const conversation = await prismadb.conversation.update({
           where: {
             id: id,
-            userId: user.id,
+            userId: user?.id,
           },
           data: {
             projectId,
@@ -161,6 +165,29 @@ export const conversationResolvers: Resolvers = {
           console.error(e.message);
         } else {
           throw new Error("Error deleting conversation");
+        }
+      }
+    },
+  },
+  Conversation: {
+    messages: async (parent) => {
+      try {
+        const messages = await prismadb.message.findMany({
+          where: {
+            conversationId: parent.id,
+          },
+        });
+
+        if (!messages) {
+          return [];
+        }
+
+        return messages;
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          console.error(e.message);
+        } else {
+          throw new Error("Error fetching messages");
         }
       }
     },

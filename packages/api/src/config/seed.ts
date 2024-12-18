@@ -27,11 +27,44 @@ export const seed = async (): Promise<void> => {
         },
       },
     });
+    const assistant = await prismadb.assistant.create({
+      data: {
+        role: "assistant",
+        model: "gpt-4",
+        globalContext: {
+          create: {
+            contextData: {
+              create: {
+                name: "system",
+                content: initialLLMPrompt,
+                role: "system",
+              },
+            },
+          },
+        },
+      },
+    });
     const project = await prismadb.project.create({
       data: {
         name: "CRM-ATS Application",
         description: "Full stack applicaiton for CRM/ATS system",
         userId: user.id,
+        conversation: {
+          create: {
+            assistantId: assistant.id,
+            userId: user.id,
+            messages: {
+              create: [
+                {
+                  userId: user.id,
+                  name: "System",
+                  content: "This project is called CRM-ATS Application",
+                  role: "system",
+                },
+              ],
+            },
+          },
+        },
         projectContext: {
           create: {
             metadata: {
@@ -67,23 +100,6 @@ export const seed = async (): Promise<void> => {
                   content: "Created project timeline in Jira",
                 },
               ],
-            },
-          },
-        },
-      },
-    });
-    const assistant = await prismadb.assistant.create({
-      data: {
-        role: "assistant",
-        model: "gpt-4",
-        globalContext: {
-          create: {
-            contextData: {
-              create: {
-                name: "system",
-                content: initialLLMPrompt,
-                role: "system",
-              },
             },
           },
         },

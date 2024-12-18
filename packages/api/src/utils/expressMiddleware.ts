@@ -33,7 +33,7 @@ export const middlewareContext: ContextFunction<
     const token = req.headers.authorization?.split(" ")[1];
     const incomingUser = req.headers.authorizeduser as string | undefined;
 
-    if (!incomingUser) {
+    if (!incomingUser || incomingUser === "undefined") {
       return {
         req,
         res,

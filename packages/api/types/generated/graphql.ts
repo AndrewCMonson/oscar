@@ -295,6 +295,7 @@ export type MutationCreateTaskArgs = {
 };
 
 export type MutationCreateUserArgs = {
+  auth0sub: Scalars["String"]["input"];
   email: Scalars["String"]["input"];
   role?: InputMaybe<Scalars["String"]["input"]>;
   username: Scalars["String"]["input"];
@@ -322,6 +323,7 @@ export type MutationDeleteUserArgs = {
 
 export type MutationHandleConversationMessageArgs = {
   message: Scalars["String"]["input"];
+  projectId: Scalars["String"]["input"];
 };
 
 export type MutationUpdateAssistantArgs = {
@@ -367,7 +369,7 @@ export type MutationUpdateUserArgs = {
 
 export type Project = {
   __typename?: "Project";
-  conversations?: Maybe<Array<Maybe<Conversation>>>;
+  conversation?: Maybe<Conversation>;
   createdAt: Scalars["DateTime"]["output"];
   description?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["ID"]["output"];
@@ -421,7 +423,7 @@ export type QueryTaskArgs = {
 };
 
 export type QueryUserArgs = {
-  id: Scalars["ID"]["input"];
+  auth0sub: Scalars["String"]["input"];
 };
 
 export type Task = {
@@ -459,6 +461,7 @@ export enum TaskStatus {
 
 export type User = {
   __typename?: "User";
+  auth0sub: Scalars["String"]["output"];
   conversations?: Maybe<Array<Maybe<Conversation>>>;
   createdAt?: Maybe<Scalars["DateTime"]["output"]>;
   email?: Maybe<Scalars["String"]["output"]>;
@@ -1299,7 +1302,7 @@ export type MutationResolvers<
     Maybe<ResolversTypes["User"]>,
     ParentType,
     ContextType,
-    RequireFields<MutationCreateUserArgs, "email" | "username">
+    RequireFields<MutationCreateUserArgs, "auth0sub" | "email" | "username">
   >;
   deleteConversation?: Resolver<
     Maybe<ResolversTypes["String"]>,
@@ -1335,7 +1338,10 @@ export type MutationResolvers<
     Maybe<ResolversTypes["ConversationResponse"]>,
     ParentType,
     ContextType,
-    RequireFields<MutationHandleConversationMessageArgs, "message">
+    RequireFields<
+      MutationHandleConversationMessageArgs,
+      "message" | "projectId"
+    >
   >;
   updateAssistant?: Resolver<
     ResolversTypes["Assistant"],
@@ -1445,8 +1451,8 @@ export type ProjectResolvers<
   ParentType extends
     ResolversParentTypes["Project"] = ResolversParentTypes["Project"],
 > = ResolversObject<{
-  conversations?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes["Conversation"]>>>,
+  conversation?: Resolver<
+    Maybe<ResolversTypes["Conversation"]>,
     ParentType,
     ContextType
   >;
@@ -1529,7 +1535,7 @@ export type QueryResolvers<
     Maybe<ResolversTypes["User"]>,
     ParentType,
     ContextType,
-    RequireFields<QueryUserArgs, "id">
+    RequireFields<QueryUserArgs, "auth0sub">
   >;
   users?: Resolver<
     Maybe<Array<Maybe<ResolversTypes["User"]>>>,
@@ -1652,6 +1658,7 @@ export type UserResolvers<
   ParentType extends
     ResolversParentTypes["User"] = ResolversParentTypes["User"],
 > = ResolversObject<{
+  auth0sub?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   conversations?: Resolver<
     Maybe<Array<Maybe<ResolversTypes["Conversation"]>>>,
     ParentType,

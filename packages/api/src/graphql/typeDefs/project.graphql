@@ -8,7 +8,7 @@ type Project {
   userId: String!
   user: User
   tasks: [Task]
-  conversations: [Conversation]
+  conversation: Conversation
 }
 
 enum ProjectType {

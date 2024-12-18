@@ -5,7 +5,7 @@ import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
 interface RouterContext {
   user?: User;
-  auth?: boolean
+  auth?: boolean;
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({

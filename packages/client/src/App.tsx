@@ -5,7 +5,12 @@ import { router } from "./router.tsx";
 
 const InnerApp = () => {
   const { isAuthenticated, user } = useAuth0();
-  return <RouterProvider router={router} context={{ user: user, auth: isAuthenticated }} />;
+  return (
+    <RouterProvider
+      router={router}
+      context={{ user: user, auth: isAuthenticated }}
+    />
+  );
 };
 
 export const App = () => {
