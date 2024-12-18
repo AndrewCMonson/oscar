@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router";
 import { LoginLogoutButton } from "./LoginLogoutButton.tsx";
 import { Button } from "./ui/button/button.tsx";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar.tsx";
