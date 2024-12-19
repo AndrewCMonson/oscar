@@ -87,6 +87,7 @@ export const createConversation = async (
 
 export const findConversation = async (
   userId: string,
+  projectId: string | undefined,
 ): Promise<ConversationWithMessages> => {
   try {
     const assistant = await prismadb.assistant.findFirst({
@@ -99,8 +100,9 @@ export const findConversation = async (
       throw new Error("Assistant not found");
     }
 
-    let conversation = await prismadb.conversation.findFirst({
+    let conversation = await prismadb.conversation.findUnique({
       where: {
+        projectId: projectId,
         userId: userId,
         assistantId: assistant.id,
       },
@@ -114,6 +116,17 @@ export const findConversation = async (
         data: {
           userId: userId,
           assistantId: assistant.id,
+          projectId: projectId,
+          messages: {
+            create: [
+              {
+                userId: userId,
+                role: "system",
+                content: "This is a new conversation",
+                name: "system",
+              },
+            ]
+          }
         },
         include: {
           messages: true,

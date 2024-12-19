@@ -53,8 +53,10 @@ export const chatWithAssistant = async (
     }
 
     context = await getContext(user.id);
-    // check if the user has conversation history with the assistant. If they don't, it creates a conversation.
-    const conversationHistory = await findConversation(user.id);
+    // check if the user has conversation history with the assistant for this project. If they don't, it creates a conversation based on the current project and the user.
+    const conversationHistory = await findConversation(user.id, projectId);
+
+    console.log("conversationHistory", conversationHistory);
     // The new message is added to the conversation
     const updatedConversation = await addMessageToConversation(
       conversationHistory.id,

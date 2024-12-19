@@ -24,16 +24,30 @@ import {
 } from "./ui/chat/chat-bubble.js";
 import { ChatMessageList } from "./ui/chat/chat-message-list.js";
 import { Input } from "./ui/input.js";
+import { useSearchParams } from "react-router";
 
 export const Chat = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
   const [messages, setMessages] = useState<ChatGPTMessage[]>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [userMessage, setUserMessage] = useState<ChatGPTMessage>({
     content: "",
     role: "user",
     name: `${user?.name}`,
   });
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(() => {
+    const projectId = searchParams.get("projectId");
+    return projectId
+      ? {
+          id: projectId,
+          createdAt: "",
+          name: "",
+          type: "",
+          updatedAt: "",
+          userId: "",
+        }
+      : null;
+  });
   const chatListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -102,6 +116,7 @@ export const Chat = () => {
 
   const handleProjectSelection = (project: Project) => {
     setSelectedProject(project);
+    setSearchParams({ projectId: project.id });
 
     console.log("Current Project", project);
   };
@@ -114,7 +129,7 @@ export const Chat = () => {
     variables: { auth0sub: user?.sub },
     pollInterval: 5000,
   });
-
+  
   // TODO: FIX THIS TYPECASTING
   useEffect(() => {
     if (selectedProject?.conversation?.messages) {
@@ -133,12 +148,6 @@ export const Chat = () => {
       setMessages([]);
     }
   }, [selectedProject]);
-
-  useEffect(() => {
-    if (projectData) {
-      setSelectedProject(projectData.user.projects[0]);
-    }
-  }, [projectData]);
 
   if (!isAuthenticated) {
     return (
