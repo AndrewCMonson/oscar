@@ -47,6 +47,13 @@ export const getContext = async (
       where: {
         id: projectId,
       },
+      include: {
+        conversation: {
+          include: {
+            messages: true,
+          },
+        }
+      }
     });
 
     let combinedContext;
