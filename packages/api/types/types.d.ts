@@ -16,6 +16,7 @@ import {
 } from "@prisma/client";
 import { Request, Response } from "express";
 import { z } from "zod";
+import { User as Auth0User } from "auth0";
 
 declare module "express" {
   export interface Request {
@@ -122,4 +123,8 @@ export interface UserMemoryData {
   notifications: boolean;
   timeZone: string;
   language: string;
+}
+
+interface IncomingUser extends Auth0User {
+  sub: string;
 }

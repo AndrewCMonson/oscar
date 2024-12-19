@@ -2,6 +2,8 @@ import { ContextFunction } from "@apollo/server";
 import { ExpressContextFunctionArgument } from "@apollo/server/express4";
 import { MiddlewareContext } from "@api/types";
 import { prismadb } from "../config/index.js";
+import { IncomingUser } from "@api/types";
+
 
 /**
  * Middleware context function to handle user authentication and context creation.
@@ -44,7 +46,7 @@ export const middlewareContext: ContextFunction<
       throw new Error("User not authorized");
     }
 
-    const authUser = JSON.parse(incomingUser);
+    const authUser: IncomingUser = JSON.parse(incomingUser);
 
     const dbUser = await prismadb.user.findUnique({
       where: {
@@ -56,6 +58,9 @@ export const middlewareContext: ContextFunction<
       const createdDBUser = await prismadb.user.create({
         data: {
           auth0sub: authUser.sub,
+          firstName: authUser.given_name || authUser.name?.split(" ")[0],
+          lastName: authUser.family_name || authUser.name?.split(" ")[1],
+          username: authUser.nickname || authUser.username,
         },
       });
 
