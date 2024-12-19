@@ -8,7 +8,7 @@ export const Nav = () => {
   const { isAuthenticated, user } = useAuth0();
 
   return (
-    <div className="p-2 flex items-center gap-2 justify-between text-white overflow-hidden">
+    <div className="p-2 mr-2 flex justify-end items-center gap-2 text-white overflow-hidden">
       <div className="flex gap-2">
         <Link to="/" className="[&.active]:font-bold">
           <Button variant={"ghost"}>Home</Button>
@@ -20,7 +20,7 @@ export const Nav = () => {
         )}
       </div>
 
-      <div className="flex items-center gap-2 ml-auto">
+      <div className="flex items-center gap-2">
         {!isAuthenticated ? (
           <LoginLogoutButton action={"login"} variant={"ghost"} />
         ) : (

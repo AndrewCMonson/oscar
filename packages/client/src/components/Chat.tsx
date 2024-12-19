@@ -25,6 +25,7 @@ import {
 } from "./ui/chat/chat-bubble.js";
 import { ChatMessageList } from "./ui/chat/chat-message-list.js";
 import { Input } from "./ui/input.js";
+import { SidebarTrigger } from "./ui/sidebar.js";
 
 export const Chat = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
@@ -76,6 +77,7 @@ export const Chat = () => {
 
   const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if(userMessage.content === "") return;
     updateMessages(userMessage);
     setUserMessage({
       content: "",
@@ -151,96 +153,115 @@ export const Chat = () => {
   return (
     isAuthenticated && (
       <>
-        <div className="bg-zinc-900 text-white p-4">
-          {userLoading && <p>Loading...</p>}
-          {!userLoading && userError && <p>Error: {userError.message}</p>}
-          {userProjects && (
-            <ProjectList
-              projects={
-                userProjects?.filter((project) => project !== null) as Project[]
-              }
-              selectedProject={selectedProject ?? ""}
-              handleProjectSelection={handleProjectSelection}
-            />
-          )}
-        </div>
         <motion.main
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
           role="main"
-          className="flex flex-col justify-center items-center px-4 py-12 lg:py-24 "
+          className="flex h-full"
         >
-          <div className="flex w-full max-w-4xl flex-col items-center justify-center space-y-4 sm:space-y-6">
-            <motion.h1
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{
-                type: "spring",
-                stiffness: 100,
-                duration: 0.5,
-              }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-center mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600"
+          <SidebarTrigger />
+          <div className="text-white p-4 border-r border-gray-700 h-full xs:w-1/5 sm:flex justify-center">
+            {userLoading && <p>Loading...</p>}
+            {!userLoading && userError && <p>Error: {userError.message}</p>}
+            {userProjects && userProjects.length > 0 && (
+              <ProjectList
+                projects={
+                  userProjects?.filter(
+                    (project) => project !== null,
+                  ) as Project[]
+                }
+                selectedProject={selectedProject ?? ""}
+                handleProjectSelection={handleProjectSelection}
+              />
+            )}
+            {userProjects && userProjects.length === 0 && (
+              <Button
+                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl hover:scale-105 transition-transform rounded-lg px-6 py-2 mt-2"
+                size="lg"
+                aria-label="create a project"
+                onClick={() => console.log("Create a project")}
+              >
+                Create a project
+              </Button>
+            )}
+          </div>
+          <div className="container mx-auto flex flex-col justify-center items-center px-4 py-12 lg:py-24 h-full bg">
+            <motion.div
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex w-full max-w-4xl flex-col items-center justify-center space-y-4 sm:space-y-6"
             >
-              Chat with Oscar
-            </motion.h1>
+              <motion.h1
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 100,
+                  duration: 0.5,
+                }}
+                className="text-4xl sm:text-5xl lg:text-6xl font-bold text-center mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600"
+              >
+                Chat with Oscar
+              </motion.h1>
 
-            <ChatMessageList
-              className="w-full h-72 sm:h-80 md:h-96 flex flex-col overflow-y-auto border border-gray-700 rounded-lg bg-zinc-900"
-              aria-label="Chat messages"
-              ref={chatListRef}
-            >
-              {messages.map((message, i) =>
-                message.role === "user" ? (
-                  <ChatBubble
-                    key={i}
-                    variant="sent"
-                    layout="default"
-                    className="flex items-center"
-                  >
-                    <ChatBubbleAvatar src={user?.picture} />
-                    <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
-                  </ChatBubble>
-                ) : message.role === "assistant" ? (
-                  <ChatBubble
-                    key={i}
-                    variant="received"
-                    className="flex items-center"
-                  >
+              <ChatMessageList
+                className="w-full h-72 sm:h-80 md:h-96 flex flex-col overflow-y-auto border border-gray-700 rounded-lg bg-zinc-900"
+                aria-label="Chat messages"
+                ref={chatListRef}
+              >
+                {messages.map((message, i) =>
+                  message.role === "user" ? (
+                    <ChatBubble
+                      key={i}
+                      variant="sent"
+                      layout="default"
+                      className="flex items-center"
+                    >
+                      <ChatBubbleAvatar src={user?.picture} />
+                      <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
+                    </ChatBubble>
+                  ) : message.role === "assistant" ? (
+                    <ChatBubble
+                      key={i}
+                      variant="received"
+                      className="flex items-center"
+                    >
+                      <ChatBubbleAvatar />
+                      <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
+                    </ChatBubble>
+                  ) : null,
+                )}
+                {loading && (
+                  <ChatBubble variant="received">
                     <ChatBubbleAvatar />
-                    <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
+                    <ChatBubbleMessage isLoading />
                   </ChatBubble>
-                ) : null,
-              )}
-              {loading && (
-                <ChatBubble variant="received">
-                  <ChatBubbleAvatar />
-                  <ChatBubbleMessage isLoading />
-                </ChatBubble>
-              )}
-            </ChatMessageList>
+                )}
+              </ChatMessageList>
 
-            <Input
-              className="w-full sm:w-3/4 lg:w-1/2 mt-2 border border-gray-600 rounded-lg bg-zinc-900 p-2"
-              value={userMessage.content}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              placeholder="Enter your text here"
-              aria-label="Chat input field"
-            />
+              <Input
+                className="w-full sm:w-3/4 lg:w-1/2 mt-2 border border-gray-600 rounded-lg bg-zinc-900 p-2"
+                value={userMessage.content}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                placeholder="Enter your text here"
+                aria-label="Chat input field"
+              />
 
-            <Button
-              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl hover:scale-105 transition-transform rounded-lg px-6 py-2 mt-2"
-              size="lg"
-              onClick={handleSubmit}
-              type="submit"
-              aria-label="Submit chat message"
-            >
-              Chat
-            </Button>
+              <Button
+                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl hover:scale-105 transition-transform rounded-lg px-6 py-2 mt-2"
+                size="lg"
+                onClick={handleSubmit}
+                type="submit"
+                aria-label="Submit chat message"
+              >
+                Chat
+              </Button>
+            </motion.div>
           </div>
         </motion.main>
-
         <div
           className="absolute top-1/3 left-1/2 w-56 sm:w-72 h-56 sm:h-72 bg-blue-600/20 rounded-full blur-3xl -translate-x-1/2 -z-10"
           aria-hidden="true"

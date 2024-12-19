@@ -133,7 +133,6 @@ export const OscarLandingPage: FC = () => {
         </motion.div>
       </section>
 
-      {/* Features Section */}
       <section
         className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 relative z-10"
         aria-labelledby="features-heading"
@@ -187,7 +186,6 @@ export const OscarLandingPage: FC = () => {
         </motion.div>
       </section>
 
-      {/* Subtle Glow Effects */}
       <div
         className="absolute top-1/4 left-1/2 w-48 sm:w-64 h-48 sm:h-64 bg-blue-600/20 rounded-full blur-3xl -translate-x-1/2 -z-10"
         aria-hidden="true"
