@@ -76,7 +76,7 @@ type Memory {
 
 type Query {
   users: [User]
-  user(auth0sub: String!): User
+  user(auth0Sub: String!): User!
 }
 
 type Mutation {

@@ -7,7 +7,9 @@
     "start:dev": "vite",
     "build": "tsc -b && vite build",
     "lint:fix": "cd ../.. && yarn lint --fix",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "codegen": "graphql-codegen",
+    "codegen:watch": "graphql-codegen -w"
   },
   "dependencies": {
     "@apollo/client": "^3.11.10",
@@ -17,7 +19,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "framer-motion": "^11.15.0",
-    "graphql": "^16.9.0",
+    "graphql": "^16.10.0",
     "lucide-react": "^0.460.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -28,6 +30,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
+    "@graphql-codegen/cli": "^5.0.3",
+    "@graphql-codegen/client-preset": "^4.5.1",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@types/auth0": "^3.3.10",
     "@types/lodash": "^4.17.13",
     "@types/node": "^22.9.3",

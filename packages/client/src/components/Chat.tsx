@@ -1,3 +1,4 @@
+import { Project } from "@/__generated__/graphql.js";
 import { useMutation, useQuery } from "@apollo/client";
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
@@ -11,11 +12,11 @@ import {
   useRef,
   useState,
 } from "react";
-import { ChatGPTMessage, Project } from "../../../api/types/index.js";
-import {
-  GetUserProjects,
-  HandleConversationMessage,
-} from "../utils/graphql/index.js";
+import { useSearchParams } from "react-router";
+import { ChatGPTMessage } from "../../../api/types/index.js";
+import { GetUser, HandleConversationMessage } from "../utils/graphql/index.js";
+import { LoadingScreen } from "./LoadingScreen.js";
+import { ProjectList } from "./ProjectList.js";
 import { Button } from "./ui/button/button.js";
 import {
   ChatBubble,
@@ -24,7 +25,6 @@ import {
 } from "./ui/chat/chat-bubble.js";
 import { ChatMessageList } from "./ui/chat/chat-message-list.js";
 import { Input } from "./ui/input.js";
-import { useSearchParams } from "react-router";
 
 export const Chat = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
@@ -35,18 +35,9 @@ export const Chat = () => {
     role: "user",
     name: `${user?.name}`,
   });
-  const [selectedProject, setSelectedProject] = useState<Project | null>(() => {
+  const [selectedProject, setSelectedProject] = useState<string | null>(() => {
     const projectId = searchParams.get("projectId");
-    return projectId
-      ? {
-          id: projectId,
-          createdAt: "",
-          name: "",
-          type: "",
-          updatedAt: "",
-          userId: "",
-        }
-      : null;
+    return projectId ? projectId : null;
   });
   const chatListRef = useRef<HTMLDivElement>(null);
 
@@ -108,107 +99,79 @@ export const Chat = () => {
       await chat({
         variables: {
           message: userMessage.content,
-          projectId: selectedProject?.id,
+          projectId: selectedProject,
         },
       });
     }
   };
 
-  const handleProjectSelection = (project: Project) => {
-    setSelectedProject(project);
-    setSearchParams({ projectId: project.id });
-
-    console.log("Current Project", project);
+  const handleProjectSelection = (projectId: string) => {
+    setSelectedProject(projectId);
+    setSearchParams({ projectId });
   };
 
   const {
-    loading: projectLoading,
-    error: projectError,
-    data: projectData,
-  } = useQuery(GetUserProjects, {
-    variables: { auth0sub: user?.sub },
-    pollInterval: 5000,
+    data: userData,
+    loading: userLoading,
+    error: userError,
+  } = useQuery(GetUser, {
+    variables: { auth0Sub: user?.sub ?? "" },
   });
-  
-  // TODO: FIX THIS TYPECASTING
+
+  const userProjects = userData?.user?.projects;
+
   useEffect(() => {
-    if (selectedProject?.conversation?.messages) {
-      const messages = selectedProject.conversation.messages.map((message) => {
-        return {
-          role: message?.role,
-          content: message?.content,
-          name: message?.user?.username ?? "",
-        };
-      }) as ChatGPTMessage[];
-
-      setMessages(messages ?? []);
+    if (userProjects) {
+      const project = userProjects.find(
+        (project) => project?.id === selectedProject,
+      );
+      if (project) {
+        const messages = project?.conversation?.messages?.map((message) => {
+          return {
+            role: message?.role,
+            content: message?.content,
+            name: message?.name ?? "",
+          };
+        }) as ChatGPTMessage[];
+        setMessages(messages);
+      }
     }
-
-    if(!selectedProject?.conversation?.messages){
-      setMessages([]);
-    }
-  }, [selectedProject]);
+  }, [selectedProject, userProjects]);
 
   if (!isAuthenticated) {
     return (
-      <motion.main
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="text-white relative flex items-center justify-center"
-      >
-        <p className="text-2xl text-zinc-400">
-          Please login to interface with the assistant
-        </p>
-      </motion.main>
+      <LoadingScreen message="Please login to interface with the assistant" />
     );
   }
 
   if (isLoading) {
-    return (
-      <motion.main
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="text-white relative flex items-center justify-center"
-      >
-        <p className="text-2xl text-zinc-400">Loading Oscar</p>
-      </motion.main>
-    );
+    return <LoadingScreen message="Loading Oscar" />;
   }
 
   return (
     isAuthenticated && (
       <>
-        {/* Main content */}
         <div className="bg-zinc-900 text-white p-4">
-          {projectLoading && <p>Loading...</p>}
-          {!projectLoading && projectError && (
-            <p>Error: {projectError.message}</p>
-          )}
-          {!projectLoading && !projectError && projectData && (
-            <ul>
-              {projectData.user.projects.map((project: Project) => (
-                <li key={project.id}>
-                  <p
-                    onClick={() => handleProjectSelection(project)}
-                    className={`cursor-pointer ${selectedProject?.id === project.id ? "text-blue-400" : ""}`}
-                  >
-                    {project.name}
-                  </p>
-                </li>
-              ))}
-            </ul>
+          {userLoading && <p>Loading...</p>}
+          {!userLoading && userError && <p>Error: {userError.message}</p>}
+          {userProjects && (
+            <ProjectList
+              projects={
+                userProjects?.filter((project) => project !== null) as Project[]
+              }
+              selectedProject={selectedProject ?? ""}
+              handleProjectSelection={handleProjectSelection}
+            />
           )}
         </div>
         <motion.main
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
-          role="main" // ARIA role
+          role="main"
           className="flex flex-col justify-center items-center px-4 py-12 lg:py-24 "
         >
-          {/* Content wrapper */}
           <div className="flex w-full max-w-4xl flex-col items-center justify-center space-y-4 sm:space-y-6">
-            {/* Accessible heading */}
             <motion.h1
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -222,7 +185,6 @@ export const Chat = () => {
               Chat with Oscar
             </motion.h1>
 
-            {/* Chat Message List */}
             <ChatMessageList
               className="w-full h-72 sm:h-80 md:h-96 flex flex-col overflow-y-auto border border-gray-700 rounded-lg bg-zinc-900"
               aria-label="Chat messages"
@@ -258,7 +220,6 @@ export const Chat = () => {
               )}
             </ChatMessageList>
 
-            {/* Input Field */}
             <Input
               className="w-full sm:w-3/4 lg:w-1/2 mt-2 border border-gray-600 rounded-lg bg-zinc-900 p-2"
               value={userMessage.content}
@@ -268,7 +229,6 @@ export const Chat = () => {
               aria-label="Chat input field"
             />
 
-            {/* Submit Button */}
             <Button
               className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl hover:scale-105 transition-transform rounded-lg px-6 py-2 mt-2"
               size="lg"
@@ -281,7 +241,6 @@ export const Chat = () => {
           </div>
         </motion.main>
 
-        {/* Decorative elements */}
         <div
           className="absolute top-1/3 left-1/2 w-56 sm:w-72 h-56 sm:h-72 bg-blue-600/20 rounded-full blur-3xl -translate-x-1/2 -z-10"
           aria-hidden="true"

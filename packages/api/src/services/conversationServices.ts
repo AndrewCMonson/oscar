@@ -125,8 +125,8 @@ export const findConversation = async (
                 content: "This is a new conversation",
                 name: "system",
               },
-            ]
-          }
+            ],
+          },
         },
         include: {
           messages: true,

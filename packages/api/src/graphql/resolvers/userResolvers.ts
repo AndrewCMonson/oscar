@@ -7,10 +7,10 @@ export const userResolvers: Resolvers = {
       const users = await prismadb.user.findMany();
       return users;
     },
-    user: async (_, { auth0sub }) => {
+    user: async (_, { auth0Sub }) => {
       const user = await prismadb.user.findUnique({
         where: {
-          auth0sub: auth0sub,
+          auth0sub: auth0Sub,
         },
       });
 
