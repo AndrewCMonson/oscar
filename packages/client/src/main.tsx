@@ -1,15 +1,13 @@
 import { Auth0Provider } from "@auth0/auth0-react";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Route, Routes } from 'react-router';
+import { BrowserRouter, Route, Routes } from "react-router";
 import { App } from "./App.tsx";
 import { AuthorizedApolloProvider } from "./components/AuthorizedApolloProvider.tsx";
 import { Chat } from "./components/Chat.tsx";
 import { OscarLandingPage } from "./components/LandingPage.tsx";
 import { Profile } from "./components/Profile.tsx";
 import "./index.css";
-
-
 
 const rootElement = document.getElementById("root")!;
 if (!rootElement.innerHTML) {
@@ -31,7 +29,7 @@ if (!rootElement.innerHTML) {
         <AuthorizedApolloProvider>
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<App />} >
+              <Route path="/" element={<App />}>
                 <Route index element={<OscarLandingPage />} />
                 <Route path="chat" element={<Chat />} />
                 <Route path="/profile" element={<Profile />} />

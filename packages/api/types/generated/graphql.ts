@@ -392,13 +392,14 @@ export type Query = {
   conversation?: Maybe<Conversation>;
   conversations?: Maybe<Array<Maybe<Conversation>>>;
   getAssistant?: Maybe<Assistant>;
+  getProjectsByUserId: Array<Project>;
   message?: Maybe<Message>;
   messages?: Maybe<Array<Maybe<Message>>>;
   project?: Maybe<Project>;
-  projects?: Maybe<Array<Maybe<Project>>>;
+  projects: Array<Project>;
   task?: Maybe<Task>;
   tasks?: Maybe<Array<Maybe<Task>>>;
-  user?: Maybe<User>;
+  user: User;
   users?: Maybe<Array<Maybe<User>>>;
 };
 
@@ -408,6 +409,10 @@ export type QueryConversationArgs = {
 
 export type QueryGetAssistantArgs = {
   role?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type QueryGetProjectsByUserIdArgs = {
+  auth0Sub?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type QueryMessageArgs = {
@@ -423,7 +428,7 @@ export type QueryTaskArgs = {
 };
 
 export type QueryUserArgs = {
-  auth0sub: Scalars["String"]["input"];
+  auth0Sub: Scalars["String"]["input"];
 };
 
 export type Task = {
@@ -1498,6 +1503,12 @@ export type QueryResolvers<
     ContextType,
     Partial<QueryGetAssistantArgs>
   >;
+  getProjectsByUserId?: Resolver<
+    Array<ResolversTypes["Project"]>,
+    ParentType,
+    ContextType,
+    Partial<QueryGetProjectsByUserIdArgs>
+  >;
   message?: Resolver<
     Maybe<ResolversTypes["Message"]>,
     ParentType,
@@ -1516,7 +1527,7 @@ export type QueryResolvers<
     RequireFields<QueryProjectArgs, "id">
   >;
   projects?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes["Project"]>>>,
+    Array<ResolversTypes["Project"]>,
     ParentType,
     ContextType
   >;
@@ -1532,10 +1543,10 @@ export type QueryResolvers<
     ContextType
   >;
   user?: Resolver<
-    Maybe<ResolversTypes["User"]>,
+    ResolversTypes["User"],
     ParentType,
     ContextType,
-    RequireFields<QueryUserArgs, "auth0sub">
+    RequireFields<QueryUserArgs, "auth0Sub">
   >;
   users?: Resolver<
     Maybe<Array<Maybe<ResolversTypes["User"]>>>,

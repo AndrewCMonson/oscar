@@ -4,7 +4,6 @@ import { MiddlewareContext } from "@api/types";
 import { prismadb } from "../config/index.js";
 import { IncomingUser } from "@api/types";
 
-
 /**
  * Middleware context function to handle user authentication and context creation.
  *

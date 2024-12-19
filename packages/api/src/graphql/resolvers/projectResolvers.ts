@@ -38,6 +38,41 @@ export const projectResolvers: Resolvers = {
         }
       }
     },
+    getProjectsByUserId: async (_, { auth0Sub }) => {
+      if (!auth0Sub) {
+        throw new Error("auth0Sub is required");
+      }
+
+      try {
+        const user = await prismadb.user.findUnique({
+          where: {
+            auth0sub: auth0Sub,
+          },
+        });
+
+        if (!user) {
+          throw new Error("User not found");
+        }
+
+        const projects = await prismadb.project.findMany({
+          where: {
+            userId: user?.id,
+          },
+        });
+
+        if (!projects) {
+          throw new Error("Projects not found");
+        }
+
+        return projects;
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          throw new Error(e.message);
+        } else {
+          throw new Error("An error occurred while fetching the projects");
+        }
+      }
+    },
   },
   Mutation: {
     createProject: async (_, { name, description, type }, { user }) => {

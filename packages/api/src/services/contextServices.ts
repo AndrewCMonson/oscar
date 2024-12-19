@@ -52,8 +52,8 @@ export const getContext = async (
           include: {
             messages: true,
           },
-        }
-      }
+        },
+      },
     });
 
     let combinedContext;

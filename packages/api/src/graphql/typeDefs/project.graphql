@@ -18,8 +18,9 @@ enum ProjectType {
 }
 
 type Query {
-  projects: [Project]
+  projects: [Project!]!
   project(id: ID!): Project
+  getProjectsByUserId(auth0Sub: String): [Project!]!
 }
 
 type Mutation {
