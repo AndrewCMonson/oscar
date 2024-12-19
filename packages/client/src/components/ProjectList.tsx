@@ -16,7 +16,7 @@ export const ProjectList = ({
       <li key={project.id}>
         <p
           onClick={() => handleProjectSelection(project.id)}
-          className={`cursor-pointer ${selectedProject === project.id ? "text-blue-400" : ""}`}
+          className={`cursor-pointer mt-2 p-2 ${selectedProject === project.id ? "w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl hover:scale-105 transition-transform rounded" : ""}`}
         >
           {project.name}
         </p>
