@@ -2,28 +2,21 @@ import { Project } from "@/__generated__/graphql.js";
 import { useMutation, useQuery } from "@apollo/client";
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
-import { debounce } from "lodash";
 import {
   ChangeEvent,
   KeyboardEvent,
   MouseEvent,
   useCallback,
   useEffect,
-  useRef,
   useState,
 } from "react";
 import { useSearchParams } from "react-router";
 import { ChatGPTMessage } from "../../../api/types/index.js";
 import { GetUser, HandleConversationMessage } from "../utils/graphql/index.js";
+import { Chatbox } from "./Chatbox.js";
+import { ChatSidebar } from "./ChatSideBar.js";
 import { LoadingScreen } from "./LoadingScreen.js";
-import { ProjectList } from "./ProjectList.js";
 import { Button } from "./ui/button/button.js";
-import {
-  ChatBubble,
-  ChatBubbleAvatar,
-  ChatBubbleMessage,
-} from "./ui/chat/chat-bubble.js";
-import { ChatMessageList } from "./ui/chat/chat-message-list.js";
 import { Input } from "./ui/input.js";
 import { SidebarTrigger } from "./ui/sidebar.js";
 
@@ -40,18 +33,6 @@ export const Chat = () => {
     const projectId = searchParams.get("projectId");
     return projectId ? projectId : null;
   });
-  const chatListRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const scrollToBottom = debounce(() => {
-      if (chatListRef.current) {
-        chatListRef.current.scrollTop = chatListRef.current.scrollHeight;
-      }
-    }, 100);
-
-    scrollToBottom();
-    return () => scrollToBottom.cancel();
-  }, [messages]);
 
   const updateMessages = useCallback((message: ChatGPTMessage) => {
     setMessages((prevMessages) => [...prevMessages, message]);
@@ -77,7 +58,7 @@ export const Chat = () => {
 
   const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if(userMessage.content === "") return;
+    if (userMessage.content === "") return;
     updateMessages(userMessage);
     setUserMessage({
       content: "",
@@ -112,11 +93,7 @@ export const Chat = () => {
     setSearchParams({ projectId });
   };
 
-  const {
-    data: userData,
-    loading: userLoading,
-    error: userError,
-  } = useQuery(GetUser, {
+  const { data: userData } = useQuery(GetUser, {
     variables: { auth0Sub: user?.sub ?? "" },
   });
 
@@ -160,32 +137,14 @@ export const Chat = () => {
           role="main"
           className="flex h-full"
         >
-          <SidebarTrigger />
-          <div className="text-white p-4 border-r border-gray-700 h-full xs:w-1/5 sm:flex justify-center">
-            {userLoading && <p>Loading...</p>}
-            {!userLoading && userError && <p>Error: {userError.message}</p>}
-            {userProjects && userProjects.length > 0 && (
-              <ProjectList
-                projects={
-                  userProjects?.filter(
-                    (project) => project !== null,
-                  ) as Project[]
-                }
-                selectedProject={selectedProject ?? ""}
-                handleProjectSelection={handleProjectSelection}
-              />
-            )}
-            {userProjects && userProjects.length === 0 && (
-              <Button
-                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl hover:scale-105 transition-transform rounded-lg px-6 py-2 mt-2"
-                size="lg"
-                aria-label="create a project"
-                onClick={() => console.log("Create a project")}
-              >
-                Create a project
-              </Button>
-            )}
-          </div>
+          <ChatSidebar
+            projects={
+              userProjects?.filter((project) => project !== null) as Project[]
+            }
+            selectedProject={selectedProject ?? ""}
+            handleProjectSelection={handleProjectSelection}
+          />
+          <SidebarTrigger className="absolute top-2" />
           <div className="container mx-auto flex flex-col justify-center items-center px-4 py-12 lg:py-24 h-full bg">
             <motion.div
               initial={{ opacity: 0, y: -50 }}
@@ -206,40 +165,11 @@ export const Chat = () => {
                 Chat with Oscar
               </motion.h1>
 
-              <ChatMessageList
-                className="w-full h-72 sm:h-80 md:h-96 flex flex-col overflow-y-auto border border-gray-700 rounded-lg bg-zinc-900"
-                aria-label="Chat messages"
-                ref={chatListRef}
-              >
-                {messages.map((message, i) =>
-                  message.role === "user" ? (
-                    <ChatBubble
-                      key={i}
-                      variant="sent"
-                      layout="default"
-                      className="flex items-center"
-                    >
-                      <ChatBubbleAvatar src={user?.picture} />
-                      <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
-                    </ChatBubble>
-                  ) : message.role === "assistant" ? (
-                    <ChatBubble
-                      key={i}
-                      variant="received"
-                      className="flex items-center"
-                    >
-                      <ChatBubbleAvatar />
-                      <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
-                    </ChatBubble>
-                  ) : null,
-                )}
-                {loading && (
-                  <ChatBubble variant="received">
-                    <ChatBubbleAvatar />
-                    <ChatBubbleMessage isLoading />
-                  </ChatBubble>
-                )}
-              </ChatMessageList>
+              <Chatbox
+                messages={messages}
+                picture={user?.picture}
+                loading={loading}
+              />
 
               <Input
                 className="w-full sm:w-3/4 lg:w-1/2 mt-2 border border-gray-600 rounded-lg bg-zinc-900 p-2"

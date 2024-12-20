@@ -10,7 +10,7 @@
     "start:api": "cd packages/api && yarn start:dev",
     "start:client": "cd packages/client && yarn start:dev",
     "spool": "yarn && cd packages/client && yarn && cd ../api && yarn",
-    "start:dev": "concurrently --kill-others-on-fail \"yarn start:client\" \"yarn start:api\"",
+    "start:dev": "concurrently -r --kill-others-on-fail \"yarn start:api\" \"yarn start:client\" ",
     "build": "cd packages/client && yarn build && cd ../api && yarn build"
   },
   "dependencies": {
