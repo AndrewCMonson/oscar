@@ -31,5 +31,5 @@ type Mutation {
     description: String
     type: String
   ): Project
-  deleteProject(id: ID!): Project
+  deleteProject(id: ID!): String
 }

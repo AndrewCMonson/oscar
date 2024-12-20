@@ -134,12 +134,25 @@ export const projectResolvers: Resolvers = {
       return project;
     },
     deleteProject: async (_, { id }) => {
-      const project = await prismadb.project.delete({
-        where: {
-          id: id,
-        },
-      });
-      return project;
+      if (!id) {
+        throw new Error("Project ID is required");
+      }
+
+      try {
+        await prismadb.project.delete({
+          where: {
+            id: id,
+          },
+        });
+
+        return "Project deleted successfully";
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          throw new Error(e.message);
+        } else {
+          throw new Error("An error occurred while deleting the project");
+        }
+      }
     },
   },
   Project: {

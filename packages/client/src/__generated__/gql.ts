@@ -16,6 +16,10 @@ import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/
 const documents = {
   "\n  mutation handleConversationMessage($message: String!, $projectId: String!) {\n  handleConversationMessage(message: $message, projectId: $projectId) {\n  content\n  role\n    }\n  }\n":
     types.HandleConversationMessageDocument,
+  "\n  mutation createProject($name: String!, $description: String!, $type: ProjectType!) {\n  createProject(name: $name, description: $description, type: $type) {\n  id\n  name\n    }\n  }\n":
+    types.CreateProjectDocument,
+  "\n  mutation deleteProject($id: ID!) {\n  deleteProject(id: $id) \n  }\n":
+    types.DeleteProjectDocument,
   "\n  query GetUser($auth0Sub: String!){\n    user(auth0Sub: $auth0Sub){\n      id\n      username\n      email\n      projects {\n        id\n        name\n        conversation {\n          id\n          messages {\n            id\n            content\n            role\n            createdAt\n            name\n          }\n        }\n      }\n    }\n  }\n":
     types.GetUserDocument,
   "\n  query GetProjectsByUserId($auth0Sub: String!){\n    getProjectsByUserId(auth0Sub: $auth0Sub){\n      id\n      name\n      description\n      type\n      conversation {\n        id\n        messages {\n          id\n          content\n          createdAt\n          role\n          user {\n            id\n            username\n          }\n        }\n      }\n    }\n  }\n":
@@ -44,6 +48,18 @@ export function gql(source: string): unknown;
 export function gql(
   source: "\n  mutation handleConversationMessage($message: String!, $projectId: String!) {\n  handleConversationMessage(message: $message, projectId: $projectId) {\n  content\n  role\n    }\n  }\n",
 ): (typeof documents)["\n  mutation handleConversationMessage($message: String!, $projectId: String!) {\n  handleConversationMessage(message: $message, projectId: $projectId) {\n  content\n  role\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(
+  source: "\n  mutation createProject($name: String!, $description: String!, $type: ProjectType!) {\n  createProject(name: $name, description: $description, type: $type) {\n  id\n  name\n    }\n  }\n",
+): (typeof documents)["\n  mutation createProject($name: String!, $description: String!, $type: ProjectType!) {\n  createProject(name: $name, description: $description, type: $type) {\n  id\n  name\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(
+  source: "\n  mutation deleteProject($id: ID!) {\n  deleteProject(id: $id) \n  }\n",
+): (typeof documents)["\n  mutation deleteProject($id: ID!) {\n  deleteProject(id: $id) \n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

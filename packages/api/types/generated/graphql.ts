@@ -260,7 +260,7 @@ export type Mutation = {
   createUser?: Maybe<User>;
   deleteConversation?: Maybe<Scalars["String"]["output"]>;
   deleteMessage?: Maybe<Scalars["String"]["output"]>;
-  deleteProject?: Maybe<Project>;
+  deleteProject?: Maybe<Scalars["String"]["output"]>;
   deleteTask?: Maybe<Task>;
   deleteUser?: Maybe<User>;
   handleConversationMessage?: Maybe<ConversationResponse>;
@@ -483,7 +483,7 @@ export type User = {
   role?: Maybe<Scalars["String"]["output"]>;
   tasks?: Maybe<Array<Maybe<Task>>>;
   updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-  username: Scalars["String"]["output"];
+  username?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type UserIntegration = {
@@ -1322,7 +1322,7 @@ export type MutationResolvers<
     RequireFields<MutationDeleteMessageArgs, "id">
   >;
   deleteProject?: Resolver<
-    Maybe<ResolversTypes["Project"]>,
+    Maybe<ResolversTypes["String"]>,
     ParentType,
     ContextType,
     RequireFields<MutationDeleteProjectArgs, "id">
@@ -1730,7 +1730,7 @@ export type UserResolvers<
     ParentType,
     ContextType
   >;
-  username?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  username?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
