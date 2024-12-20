@@ -1,8 +1,7 @@
-import { AppSidebar } from "@/components/AppSidebar.tsx";
+import Cookies from "js-cookie";
 import { Outlet } from "react-router";
 import { Nav } from "./components/Nav.tsx";
 import { SidebarProvider } from "./components/ui/sidebar.tsx";
-import Cookies from "js-cookie";
 
 export const App = () => {
   const defaultOpen = Cookies.get("sidebar:state") === "true";
@@ -10,10 +9,8 @@ export const App = () => {
   return (
     <>
       <SidebarProvider defaultOpen={defaultOpen}>
-        <AppSidebar />
         <div className="h-full w-full flex flex-col">
           <Nav />
-          
           <Outlet />
         </div>
       </SidebarProvider>

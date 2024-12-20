@@ -27,3 +27,5 @@ export const LoginLogoutButton = forwardRef<
     </Button>
   );
 });
+
+LoginLogoutButton.displayName = "LoginLogoutButton";
