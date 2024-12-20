@@ -30,7 +30,7 @@ export const Chatbox = ({ messages, picture, loading }: ChatboxProps) => {
 
   return (
     <ChatMessageList
-      className="w-full h-72 sm:h-80 md:h-96 flex flex-col overflow-y-auto border border-gray-700 rounded-lg bg-zinc-900"
+      className={`w-full h-72 sm:h-80 md:h-96 flex flex-col overflow-y-auto border border-gray-700 rounded-lg bg-zinc-900 no-scrollbar ${messages ? "md:h-3/5" : ""}`}
       aria-label="Chat messages"
       ref={chatListRef}
     >

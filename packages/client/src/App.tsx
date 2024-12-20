@@ -9,7 +9,7 @@ export const App = () => {
   return (
     <>
       <SidebarProvider defaultOpen={defaultOpen}>
-        <div className="h-full w-full flex flex-col">
+        <div className="w-full h-full">
           <Nav />
           <Outlet />
         </div>

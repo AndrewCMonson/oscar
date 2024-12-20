@@ -133,12 +133,11 @@ export const Chat = () => {
   return (
     isAuthenticated && (
       <>
-        <motion.main
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
-          role="main"
-          className="flex h-full"
+          className="flex max-h-[calc(100vh-4rem)]"
         >
           <ChatSidebar
             projects={
@@ -150,7 +149,7 @@ export const Chat = () => {
           />
           <CreateProjectDialog open={dialogOpen} setOpen={setDialogOpen} />
           <SidebarTrigger className="absolute top-2" />
-          <div className="container mx-auto flex flex-col justify-center items-center px-4 py-12 lg:py-24 h-full bg">
+          <div className="container mx-auto flex flex-col justify-center items-center px-4 py-12 lg:py-24">
             <motion.div
               initial={{ opacity: 0, y: -50 }}
               animate={{ opacity: 1, y: 0 }}
@@ -196,7 +195,7 @@ export const Chat = () => {
               </Button>
             </motion.div>
           </div>
-        </motion.main>
+        </motion.div>
         <div
           className="absolute top-1/3 left-1/2 w-56 sm:w-72 h-56 sm:h-72 bg-blue-600/20 rounded-full blur-3xl -translate-x-1/2 -z-10"
           aria-hidden="true"
