@@ -9,11 +9,11 @@ import {
   isValidElement,
 } from "react";
 import { Button, ButtonProps } from "../button/button.tsx";
+import { Spinner } from "../spinner.tsx";
 import {
   chatBubbleMessageVariants,
   chatBubbleVariant,
 } from "./chatVariants.ts";
-import MessageLoading from "./message-loading";
 
 // ChatBubble
 interface ChatBubbleProps
@@ -84,7 +84,7 @@ const ChatBubbleMessage = forwardRef<HTMLDivElement, ChatBubbleMessageProps>(
     >
       {isLoading ? (
         <div className="flex items-center space-x-2">
-          <MessageLoading />
+          <Spinner size="small" show />
         </div>
       ) : (
         children

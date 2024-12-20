@@ -231,7 +231,7 @@ export type Mutation = {
   createUser?: Maybe<User>;
   deleteConversation?: Maybe<Scalars["String"]["output"]>;
   deleteMessage?: Maybe<Scalars["String"]["output"]>;
-  deleteProject?: Maybe<Project>;
+  deleteProject?: Maybe<Scalars["String"]["output"]>;
   deleteTask?: Maybe<Task>;
   deleteUser?: Maybe<User>;
   handleConversationMessage?: Maybe<ConversationResponse>;
@@ -521,6 +521,26 @@ export type HandleConversationMessageMutation = {
   } | null;
 };
 
+export type CreateProjectMutationVariables = Exact<{
+  name: Scalars["String"]["input"];
+  description: Scalars["String"]["input"];
+  type: ProjectType;
+}>;
+
+export type CreateProjectMutation = {
+  __typename?: "Mutation";
+  createProject?: { __typename?: "Project"; id: string; name: string } | null;
+};
+
+export type DeleteProjectMutationVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
+
+export type DeleteProjectMutation = {
+  __typename?: "Mutation";
+  deleteProject?: string | null;
+};
+
 export type GetUserQueryVariables = Exact<{
   auth0Sub: Scalars["String"]["input"];
 }>;
@@ -690,6 +710,141 @@ export const HandleConversationMessageDocument = {
 } as unknown as DocumentNode<
   HandleConversationMessageMutation,
   HandleConversationMessageMutationVariables
+>;
+export const CreateProjectDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "createProject" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "name" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "description" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "type" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "ProjectType" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createProject" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "name" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "name" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "description" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "description" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "type" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "type" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreateProjectMutation,
+  CreateProjectMutationVariables
+>;
+export const DeleteProjectDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "deleteProject" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "ID" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "deleteProject" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  DeleteProjectMutation,
+  DeleteProjectMutationVariables
 >;
 export const GetUserDocument = {
   kind: "Document",

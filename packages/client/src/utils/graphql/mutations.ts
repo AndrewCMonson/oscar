@@ -8,3 +8,18 @@ export const HandleConversationMessage = gql(`
     }
   }
 `);
+
+export const CreateProject = gql(`
+  mutation createProject($name: String!, $description: String!, $type: ProjectType!) {
+  createProject(name: $name, description: $description, type: $type) {
+  id
+  name
+    }
+  }
+`);
+
+export const DeleteProject = gql(`
+  mutation deleteProject($id: ID!) {
+  deleteProject(id: $id) 
+  }
+`);

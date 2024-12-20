@@ -73,7 +73,7 @@ export const Chat = () => {
   };
 
   const handleKeyDown = async (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && userMessage.content !== "") {
       e.preventDefault();
       updateMessages(userMessage);
       setUserMessage({
@@ -97,6 +97,7 @@ export const Chat = () => {
 
   const { data: userData } = useQuery(GetUser, {
     variables: { auth0Sub: user?.sub ?? "" },
+    pollInterval: 1000,
   });
 
   const userProjects = userData?.user?.projects;

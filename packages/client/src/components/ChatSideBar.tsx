@@ -13,7 +13,9 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Button } from "./ui/button.tsx";
-import { PlusCircleIcon } from "lucide-react";
+import { PlusCircleIcon, Trash } from "lucide-react";
+import { useMutation } from "@apollo/client";
+import { DeleteProject } from "@/utils/graphql/mutations.ts";
 
 interface ChatSidebarProps {
   projects: Project[];
@@ -28,9 +30,25 @@ export const ChatSidebar = ({
   handleProjectSelection,
   setOpen,
 }: ChatSidebarProps) => {
+  const [deleteProject] = useMutation(DeleteProject, {
+    onCompleted: (data) => {
+      console.log(data);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const handleDeleteProject = (projectId: string) => {
+    deleteProject({
+      variables: {
+        id: projectId,
+      },
+    });
+  };
+
   return (
     <Sidebar>
-      {/* <SidebarTrigger /> */}
       <SidebarHeader className="bg-zinc-900">
         <SidebarTrigger className="text-white" aria-label="Close the sidebar" />
       </SidebarHeader>
@@ -49,12 +67,18 @@ export const ChatSidebar = ({
             {projects?.map((project) => (
               <SidebarMenuItem key={project.id}>
                 <SidebarMenuButton asChild>
-                  <p
+                  <div
+                    className={`flex flex-row justify-between items-center w-full cursor-pointer ${selectedProject === project.id ? "w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl  transition-transform rounded overflow-x-hidden" : ""}`}
                     onClick={() => handleProjectSelection(project.id)}
-                    className={`cursor-pointer p-2 ${selectedProject === project.id ? "w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl  transition-transform rounded overflow-x-hidden" : ""}`}
                   >
-                    {project.name}
-                  </p>
+                    <p className="truncate">{project.name}</p>
+                    <Button
+                      className="bg-transparent hover:bg-red-500 text-white font-semibold hover:text-white py-1 px-2 border border-transparent rounded "
+                      onClick={() => handleDeleteProject(project.id)}
+                    >
+                      <Trash size={18} className="cursor-pointer" />
+                    </Button>
+                  </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}

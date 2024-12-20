@@ -20,6 +20,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useMutation } from "@apollo/client";
+import { CreateProject } from "@/utils/graphql/mutations.ts";
+import { Spinner } from "./ui/spinner.tsx";
 
 const formSchema = z.object({
   projectName: z.string().min(3),
@@ -29,7 +32,11 @@ const formSchema = z.object({
     .describe("The type of project"),
 });
 
-export const CreateProjectForm = () => {
+interface CreateProjectFormProps {
+  setOpen: (open: boolean) => void;
+}
+
+export const CreateProjectForm = ({ setOpen }: CreateProjectFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,8 +46,24 @@ export const CreateProjectForm = () => {
     },
   });
 
+  const [createProject, { loading }] = useMutation(CreateProject, {
+    onCompleted: (data) => {
+      setOpen(false);
+      console.log(data);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    createProject({
+      variables: {
+        name: values.projectName,
+        description: values.description,
+        type: values.type,
+      },
+    });
   };
 
   return (
@@ -107,7 +130,7 @@ export const CreateProjectForm = () => {
           type="submit"
           className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl hover:scale-105 transition-transform rounded-lg px-6 py-2 mt-4"
         >
-          Create Project
+          {loading ? <Spinner /> : "Create Project"}
         </Button>
       </form>
     </Form>

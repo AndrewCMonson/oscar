@@ -24,7 +24,7 @@ export const CreateProjectDialog = ({
           <DialogDescription>
             Create a new project to chat with Oscar
           </DialogDescription>
-          <CreateProjectForm />
+          <CreateProjectForm setOpen={setOpen} />
         </DialogHeader>
       </DialogContent>
     </Dialog>

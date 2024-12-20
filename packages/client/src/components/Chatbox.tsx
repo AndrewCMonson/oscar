@@ -34,24 +34,29 @@ export const Chatbox = ({ messages, picture, loading }: ChatboxProps) => {
       aria-label="Chat messages"
       ref={chatListRef}
     >
-      {messages.map((message, i) =>
-        message.role === "user" ? (
-          <ChatBubble
-            key={i}
-            variant="sent"
-            layout="default"
-            className="flex items-center"
-          >
-            <ChatBubbleAvatar src={picture} />
-            <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
-          </ChatBubble>
-        ) : message.role === "assistant" ? (
-          <ChatBubble key={i} variant="received" className="flex items-center">
-            <ChatBubbleAvatar />
-            <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
-          </ChatBubble>
-        ) : null,
-      )}
+      {messages &&
+        messages.map((message, i) =>
+          message.role === "user" ? (
+            <ChatBubble
+              key={i}
+              variant="sent"
+              layout="default"
+              className="flex items-center"
+            >
+              <ChatBubbleAvatar src={picture} />
+              <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
+            </ChatBubble>
+          ) : message.role === "assistant" ? (
+            <ChatBubble
+              key={i}
+              variant="received"
+              className="flex items-center"
+            >
+              <ChatBubbleAvatar />
+              <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
+            </ChatBubble>
+          ) : null,
+        )}
       {loading && (
         <ChatBubble variant="received">
           <ChatBubbleAvatar />
