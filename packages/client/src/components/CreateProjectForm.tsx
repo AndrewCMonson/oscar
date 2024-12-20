@@ -1,7 +1,7 @@
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ProjectType } from '@/__generated__/graphql.ts';
-import { useForm } from 'react-hook-form';
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ProjectType } from "@/__generated__/graphql.ts";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button.tsx";
 import {
   Form,
@@ -13,7 +13,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   projectName: z.string().min(3),
@@ -30,12 +36,12 @@ export const CreateProjectForm = () => {
       projectName: "",
       description: "",
       type: ProjectType.Client,
-    }
-  })
+    },
+  });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
-  }
+  };
 
   return (
     <Form {...form}>
@@ -99,11 +105,11 @@ export const CreateProjectForm = () => {
         />
         <Button
           type="submit"
-          className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl hover:scale-105 transition-transform rounded-lg px-6 py-2 mt-2"
+          className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl hover:scale-105 transition-transform rounded-lg px-6 py-2 mt-4"
         >
           Create Project
         </Button>
       </form>
     </Form>
   );
-}
+};
