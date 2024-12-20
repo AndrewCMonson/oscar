@@ -3,7 +3,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { CreateProjectForm } from "./CreateProjectForm.tsx";
 
@@ -12,7 +12,10 @@ type CreateProjectDialogProps = {
   setOpen: (open: boolean) => void;
 };
 
-export const CreateProjectDialog = ({ open, setOpen }: CreateProjectDialogProps) => {
+export const CreateProjectDialog = ({
+  open,
+  setOpen,
+}: CreateProjectDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="bg-zinc-900 text-white">

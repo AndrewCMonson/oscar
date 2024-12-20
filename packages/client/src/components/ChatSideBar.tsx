@@ -37,7 +37,10 @@ export const ChatSidebar = ({
       <SidebarContent className="bg-zinc-900 text-white">
         <SidebarGroupLabel className="text-white text-md flex flex-row justify-between items-center">
           <p>Projects</p>
-          <Button aria-label="Create a new project" onClick={() => setOpen(true)}>
+          <Button
+            aria-label="Create a new project"
+            onClick={() => setOpen(true)}
+          >
             <PlusCircleIcon size={24} className="mt-1" />
           </Button>
         </SidebarGroupLabel>
