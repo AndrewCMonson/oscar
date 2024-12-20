@@ -19,6 +19,7 @@ import { LoadingScreen } from "./LoadingScreen.js";
 import { Button } from "./ui/button/button.js";
 import { Input } from "./ui/input.js";
 import { SidebarTrigger } from "./ui/sidebar.js";
+import { CreateProjectDialog } from "./CreateProjectDialog.js";
 
 export const Chat = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
@@ -33,6 +34,7 @@ export const Chat = () => {
     const projectId = searchParams.get("projectId");
     return projectId ? projectId : null;
   });
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
   const updateMessages = useCallback((message: ChatGPTMessage) => {
     setMessages((prevMessages) => [...prevMessages, message]);
@@ -143,7 +145,9 @@ export const Chat = () => {
             }
             selectedProject={selectedProject ?? ""}
             handleProjectSelection={handleProjectSelection}
+            setOpen={setDialogOpen}
           />
+          <CreateProjectDialog open={dialogOpen} setOpen={setDialogOpen} />
           <SidebarTrigger className="absolute top-2" />
           <div className="container mx-auto flex flex-col justify-center items-center px-4 py-12 lg:py-24 h-full bg">
             <motion.div

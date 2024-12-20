@@ -19,12 +19,14 @@ interface ChatSidebarProps {
   projects: Project[];
   selectedProject: string;
   handleProjectSelection: (projectId: string) => void;
+  setOpen: (open: boolean) => void;
 }
 
 export const ChatSidebar = ({
   projects,
   selectedProject,
   handleProjectSelection,
+  setOpen,
 }: ChatSidebarProps) => {
   return (
     <Sidebar>
@@ -35,7 +37,7 @@ export const ChatSidebar = ({
       <SidebarContent className="bg-zinc-900 text-white">
         <SidebarGroupLabel className="text-white text-md flex flex-row justify-between items-center">
           <p>Projects</p>
-          <Button aria-label="Create a new project">
+          <Button aria-label="Create a new project" onClick={() => setOpen(true)}>
             <PlusCircleIcon size={24} className="mt-1" />
           </Button>
         </SidebarGroupLabel>
