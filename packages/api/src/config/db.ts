@@ -1,6 +1,18 @@
 import { PrismaClient } from "@prisma/client";
+import { AWSSecretsRetrieval } from "../services/AWS/secretsManager.js";
+import { escapeForPrisma } from "../utils/escapePrismaPw.js";
 
-export const prismadb = new PrismaClient();
+const { username, password } = await AWSSecretsRetrieval();
+
+const escapedPassword = escapeForPrisma(password);
+
+export const prismadb = new PrismaClient({
+  datasources: {
+    db: {
+      url: `postgresql://${username}:${escapedPassword}@linkedin-automation.czceykye0ffg.us-east-1.rds.amazonaws.com:5432/postgres?schema=public`,
+    },
+  }
+});
 
 export const connectDB = async (): Promise<void> => {
   try {
