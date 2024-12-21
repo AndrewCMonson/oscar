@@ -6,10 +6,19 @@ const { username, password } = await AWSSecretsRetrieval();
 
 const escapedPassword = escapeForPrisma(password);
 
+/**
+ * An instance of PrismaClient configured to connect to a PostgreSQL database.
+ * 
+ * @constant
+ * @type {PrismaClient}
+ * @property {Object} datasources - Configuration for the database connection.
+ * @property {Object} datasources.db - Database connection details.
+ * @property {string} datasources.db.url - The connection URL for the PostgreSQL database, including username, password, host, port, and schema.
+ */
 export const prismadb = new PrismaClient({
   datasources: {
     db: {
-      url: `postgresql://${username}:${escapedPassword}@linkedin-automation.czceykye0ffg.us-east-1.rds.amazonaws.com:5432/postgres?schema=public`,
+      url: `postgresql://${username}:${escapedPassword}@${process.env.AWS_DATABASE_NAME}.us-east-1.rds.amazonaws.com:5432/postgres?schema=public`,
     },
   }
 });

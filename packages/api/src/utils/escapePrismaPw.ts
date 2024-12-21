@@ -1,5 +1,13 @@
+/**
+ * Escapes special characters in a string for use with Prisma.
+ *
+ * This function replaces all characters that are not alphanumeric or one of the reserved characters
+ * (`-`, `_`, `.`, `~`) with their percent-encoded equivalents.
+ *
+ * @param input - The string to be escaped.
+ * @returns The escaped string, with special characters percent-encoded.
+ */
 export const escapeForPrisma = (input: string): string => {
-  // Reserved characters we want to preserve, if any
   const reservedCharacters = [
     "-", "_", ".", "~"
   ];
