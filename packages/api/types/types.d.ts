@@ -128,3 +128,8 @@ export interface UserMemoryData {
 interface IncomingUser extends Auth0User {
   sub: string;
 }
+
+export interface AWSSecrets {
+  username: string;
+  password: string;
+}
