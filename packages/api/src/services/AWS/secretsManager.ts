@@ -14,7 +14,7 @@ import { AWSSecrets } from '@api/types/types.js';
  * console.log(secrets);
  * ```
  */
-export const AWSSecretsRetrieval = async () => {
+export const AWSSecretsRetrieval = async (): Promise<AWSSecrets> => {
   const SecretId = process.env.AWS_SECRET_ID;
 
   const client = new SecretsManagerClient({
