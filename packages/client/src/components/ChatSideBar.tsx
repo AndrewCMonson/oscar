@@ -16,6 +16,7 @@ import { Button } from "./ui/button.tsx";
 import { PlusCircleIcon, Trash } from "lucide-react";
 import { useMutation } from "@apollo/client";
 import { DeleteProject } from "@/utils/graphql/mutations.ts";
+import { useNavigate } from "react-router";
 
 interface ChatSidebarProps {
   projects: Project[];
@@ -30,9 +31,12 @@ export const ChatSidebar = ({
   handleProjectSelection,
   setOpen,
 }: ChatSidebarProps) => {
+  const navigate = useNavigate();
+
   const [deleteProject] = useMutation(DeleteProject, {
-    onCompleted: (data) => {
-      console.log(data);
+    onCompleted: () => {
+      navigate("/chat");
+      window.location.reload();
     },
     onError: (error) => {
       console.error(error);
