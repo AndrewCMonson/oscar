@@ -1,5 +1,8 @@
-import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
-import { AWSSecrets } from '@api/types/types.js';
+import {
+  SecretsManagerClient,
+  GetSecretValueCommand,
+} from "@aws-sdk/client-secrets-manager";
+import { AWSSecrets } from "@api/types/types.js";
 
 /**
  * Retrieves AWS secrets from AWS Secrets Manager.
