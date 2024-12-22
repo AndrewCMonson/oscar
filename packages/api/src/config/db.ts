@@ -18,7 +18,7 @@ const escapedPassword = escapeForPrisma(password);
 export const prismadb = new PrismaClient({
   datasources: {
     db: {
-      url: `postgresql://${username}:${escapedPassword}@${process.env.AWS_DATABASE_NAME}.us-east-1.rds.amazonaws.com:5432/postgres?schema=public`,
+      url: `postgresql://${username}:${escapedPassword}@${process.env.AWS_DB_ENDPOINT}:5432/postgres?schema=public`,
     },
   }
 });
