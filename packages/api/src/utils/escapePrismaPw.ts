@@ -8,14 +8,12 @@
  * @returns The escaped string, with special characters percent-encoded.
  */
 export const escapeForPrisma = (input: string): string => {
-  const reservedCharacters = [
-    "-", "_", ".", "~"
-  ];
+  const reservedCharacters = ["-", "_", ".", "~"];
 
   const regex = new RegExp(
-    `[^a-zA-Z0-9${reservedCharacters.map(char => `\\${char}`).join("")}]`,
-    "g"
+    `[^a-zA-Z0-9${reservedCharacters.map((char) => `\\${char}`).join("")}]`,
+    "g",
   );
 
-  return input.replace(regex, char => encodeURIComponent(char));
-}
+  return input.replace(regex, (char) => encodeURIComponent(char));
+};

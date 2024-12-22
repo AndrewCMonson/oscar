@@ -15,11 +15,11 @@ import { ChatGPTMessage } from "../../../api/types/index.js";
 import { GetUser, HandleConversationMessage } from "../utils/graphql/index.js";
 import { Chatbox } from "./Chatbox.js";
 import { ChatSidebar } from "./ChatSideBar.js";
+import { CreateProjectDialog } from "./CreateProjectDialog.js";
 import { LoadingScreen } from "./LoadingScreen.js";
 import { Button } from "./ui/button/button.js";
-import { Input } from "./ui/input.js";
 import { SidebarTrigger } from "./ui/sidebar.js";
-import { CreateProjectDialog } from "./CreateProjectDialog.js";
+import { Textarea } from "./ui/textarea.js";
 
 export const Chat = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();
@@ -51,7 +51,7 @@ export const Chat = () => {
     onError: (error) => console.log(error),
   });
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) =>
+  const handleInputChange = (event: ChangeEvent<HTMLTextAreaElement>) =>
     setUserMessage({
       content: event.target.value,
       role: "user",
@@ -72,8 +72,16 @@ export const Chat = () => {
     });
   };
 
-  const handleKeyDown = async (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && userMessage.content !== "") {
+  const handleKeyDown = async (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && e.shiftKey) {
+      e.preventDefault();
+
+      setUserMessage({
+        ...userMessage,
+        content: `${userMessage.content}\n`,
+      });
+    }
+    if (e.key === "Enter" && !e.shiftKey && userMessage.content !== "") {
       e.preventDefault();
       updateMessages(userMessage);
       setUserMessage({
@@ -149,52 +157,50 @@ export const Chat = () => {
           />
           <CreateProjectDialog open={dialogOpen} setOpen={setDialogOpen} />
           <SidebarTrigger className="absolute top-2" />
-          <div className="container mx-auto flex flex-col justify-center items-center px-4 py-12 lg:py-24">
-            <motion.div
-              initial={{ opacity: 0, y: -50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="flex w-full max-w-4xl flex-col items-center justify-center space-y-4 sm:space-y-6"
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="container mx-auto flex w-full max-w-4xl flex-col items-center justify-center space-y-4 sm:space-y-6 p-4 sm:p-8"
+          >
+            <motion.h1
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{
+                type: "spring",
+                stiffness: 100,
+                duration: 0.5,
+              }}
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-center mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600"
             >
-              <motion.h1
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 100,
-                  duration: 0.5,
-                }}
-                className="text-4xl sm:text-5xl lg:text-6xl font-bold text-center mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600"
-              >
-                Chat with Oscar
-              </motion.h1>
+              Chat with Oscar
+            </motion.h1>
 
-              <Chatbox
-                messages={messages}
-                picture={user?.picture}
-                loading={loading}
-              />
+            <Chatbox
+              messages={messages}
+              picture={user?.picture}
+              loading={loading}
+            />
 
-              <Input
-                className="w-full sm:w-3/4 lg:w-1/2 mt-2 border border-gray-600 rounded-lg bg-zinc-900 p-2"
-                value={userMessage.content}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                placeholder="Enter your text here"
-                aria-label="Chat input field"
-              />
+            <Textarea
+              className="w-full sm:w-3/4 mt-2 border border-gray-600 rounded-lg bg-zinc-900 p-2 resize-none border-gray-700"
+              value={userMessage.content}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              placeholder="Enter your text here"
+              aria-label="Chat input field"
+            />
 
-              <Button
-                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl hover:scale-105 transition-transform rounded-lg px-6 py-2 mt-2"
-                size="lg"
-                onClick={handleSubmit}
-                type="submit"
-                aria-label="Submit chat message"
-              >
-                Chat
-              </Button>
-            </motion.div>
-          </div>
+            <Button
+              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl hover:scale-105 transition-transform rounded-lg px-6 py-2 mt-2"
+              size="lg"
+              onClick={handleSubmit}
+              type="submit"
+              aria-label="Submit chat message"
+            >
+              Chat
+            </Button>
+          </motion.div>
         </motion.div>
         <div
           className="absolute top-1/3 left-1/2 w-56 sm:w-72 h-56 sm:h-72 bg-blue-600/20 rounded-full blur-3xl -translate-x-1/2 -z-10"
