@@ -1,12 +1,19 @@
+import { containsMarkdown } from "@/utils/containsMarkdown.js";
+import { debounce } from "lodash";
 import { useEffect, useRef } from "react";
+import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import {
+  materialDark
+} from "react-syntax-highlighter/dist/esm/styles/prism";
+import { ChatGPTMessage } from "../../../api/types/index.js";
 import {
   ChatBubble,
   ChatBubbleAvatar,
   ChatBubbleMessage,
 } from "./ui/chat/chat-bubble.js";
 import { ChatMessageList } from "./ui/chat/chat-message-list.js";
-import { ChatGPTMessage } from "../../../api/types/index.js";
-import { debounce } from "lodash";
+
 
 interface ChatboxProps {
   messages: ChatGPTMessage[];
@@ -53,7 +60,52 @@ export const Chatbox = ({ messages, picture, loading }: ChatboxProps) => {
               className="flex items-center"
             >
               <ChatBubbleAvatar />
-              <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
+              <ChatBubbleMessage>
+                {containsMarkdown(message.content) ? (
+                  <div>
+                    <ReactMarkdown
+                      components={{
+                        code({ className, children, ...props }) {
+                          const match = /language-(\w+)/.exec(className || "");
+                          return match ? (
+                            <>
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  right: "0",
+                                  padding: "0.25rem 0rem",
+                                  fontSize: "0.75rem",
+                                  color: "#fff",
+                                  backgroundColor: "#333",
+                                  borderRadius: "0 0 0 4px",
+                                  zIndex: 1,
+                                }}
+                              >
+                                {match[1]}
+                              </div>
+                              <SyntaxHighlighter
+                                language={match[1]}
+                                PreTag="div"
+                                style={materialDark}
+                              >
+                                {String(children).replace(/\n$/, "")}
+                              </SyntaxHighlighter>
+                            </>
+                          ) : (
+                            <code className={className} {...props}>
+                              {children}
+                            </code>
+                          );
+                        },
+                      }}
+                    >
+                      {message.content}
+                    </ReactMarkdown>
+                  </div>
+                ) : (
+                  message.content
+                )}
+              </ChatBubbleMessage>
             </ChatBubble>
           ) : null,
         )}
