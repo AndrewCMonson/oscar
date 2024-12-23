@@ -90,7 +90,7 @@ export const chatWithAssistant = async (
         context,
         formattedMessages,
       );
-      return handledToolCallsResponse;
+      return {...handledToolCallsResponse, projectId: conversationHistory.projectId ?? ""};
     }
     // if the finish reason is "stop", we add the response to the conversation history and return it to the user.
     if (finishReason === "stop") {
@@ -105,9 +105,9 @@ export const chatWithAssistant = async (
         assistantResponse?.name,
       );
 
-      return assistantResponse;
+      return {...assistantResponse, projectId: conversationHistory.projectId ?? ""};
     }
-    return assistantFailureResponse;
+    return {...assistantFailureResponse, projectId: conversationHistory.projectId ?? ""};
   } catch (error) {
     console.error(error);
     throw new Error("An error occurred chatting with the assistant");
@@ -188,15 +188,9 @@ export const assistantGeneratedProject = async (
               },
               {
                 userId: user.id,
-                role: "user",
-                content: message.content,
-                name: message.name,
-              },
-              {
-                userId: user.id,
-                role: "assistant",
+                role: "system",
                 content: assistantResponse.content,
-                name: assistantResponse.name,
+                name: "system",
               },
             ]
           }
@@ -211,7 +205,6 @@ export const assistantGeneratedProject = async (
       }
       return generatedProjectConversation;
 
-    
   } catch (error) {
     console.error(error);
     throw new Error("An error occurred generating the project");

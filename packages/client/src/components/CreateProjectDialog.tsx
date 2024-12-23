@@ -10,11 +10,13 @@ import { CreateProjectForm } from "./CreateProjectForm.tsx";
 type CreateProjectDialogProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
+  setSelectedProject: (projectId: string | null) => void;
 };
 
 export const CreateProjectDialog = ({
   open,
   setOpen,
+  setSelectedProject,
 }: CreateProjectDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -24,7 +26,7 @@ export const CreateProjectDialog = ({
           <DialogDescription>
             Create a new project to chat with Oscar
           </DialogDescription>
-          <CreateProjectForm setOpen={setOpen} />
+          <CreateProjectForm setOpen={setOpen} setSelectedProject={setSelectedProject} />
         </DialogHeader>
       </DialogContent>
     </Dialog>

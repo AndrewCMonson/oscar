@@ -7,22 +7,24 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
+  SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenu,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Button } from "./ui/button.tsx";
-import { PlusCircleIcon, Trash } from "lucide-react";
-import { useMutation } from "@apollo/client";
 import { DeleteProject } from "@/utils/graphql/mutations.ts";
+import { useMutation } from "@apollo/client";
+import { PlusCircleIcon, Trash } from "lucide-react";
 import { useNavigate } from "react-router";
+import { ChatGPTMessage } from "../../../api/types/index.ts";
+import { Button } from "./ui/button.tsx";
 
 interface ChatSidebarProps {
   projects: Project[];
   selectedProject: string;
-  handleProjectSelection: (projectId: string) => void;
+  handleProjectSelection: (projectId: string | null) => void;
   setOpen: (open: boolean) => void;
+  setMessages: (messages: ChatGPTMessage[]) => void;
 }
 
 export const ChatSidebar = ({
@@ -30,14 +32,18 @@ export const ChatSidebar = ({
   selectedProject,
   handleProjectSelection,
   setOpen,
+  setMessages,
 }: ChatSidebarProps) => {
   const navigate = useNavigate();
 
   const [deleteProject] = useMutation(DeleteProject, {
     onCompleted: () => {
+      console.log("Project deleted");
+      handleProjectSelection(null);
+      setMessages([]);
       navigate("/chat");
-      window.location.reload();
     },
+    refetchQueries: ["GetUser"],
     onError: (error) => {
       console.error(error);
     },

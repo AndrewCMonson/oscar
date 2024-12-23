@@ -94,6 +94,11 @@ export const formatMessageForOpenAI = ({
   name: string;
   toolCallId?: string;
 }): OpenAI.ChatCompletionMessageParam => {
+  console.log("role: ", role);
+  console.log("content: ", content);
+  console.log("name: ", name);
+  console.log("toolCallId: ", toolCallId);
+
   if (!role || !content || !name) {
     throw new Error("Please provide a role, content, and name for the message");
   }
@@ -126,7 +131,6 @@ export const isValidToolName = (
   name: string,
 ): name is keyof ToolCallFunctions => {
   return [
-    "createProject",
     "updateUserPreferences",
     "createTask",
     "getProjects",

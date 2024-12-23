@@ -1,42 +1,10 @@
-import { Prisma, Project, ProjectMetadata } from "@prisma/client";
+import { Project, ProjectMetadata } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
 import {
-  CreateProjectParameters,
   GetProjectsParameters,
   UpdateProjectDataParameters,
 } from "@api/types";
 import { prismadb } from "../config/index.js";
-
-export const createProject = async (
-  createProjectParams: CreateProjectParameters,
-): Promise<Project> => {
-  if (!createProjectParams) {
-    throw new Error("No parameters provided to create project");
-  }
-
-  const { name, userId } = createProjectParams;
-
-  try {
-    const createdProject = await prismadb.project.create({
-      data: {
-        name,
-        userId,
-      },
-    });
-
-    if (!createdProject) {
-      throw new Error("Error creating the project");
-    }
-    return createdProject;
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      console.error(e);
-      throw new Error("Database Error occured when creating project");
-    } else {
-      throw new Error("Error creating the project");
-    }
-  }
-};
 
 export const getProjects = async (
   getProjectParams: GetProjectsParameters,

@@ -42,11 +42,16 @@ export const Chat = () => {
 
   const [chat, { loading }] = useMutation(HandleConversationMessage, {
     onCompleted: (data) => {
+      console.log(data);
       updateMessages({
         content: data.handleConversationMessage.content,
         role: "assistant",
         name: "assistant",
       });
+      if (selectedProject === null) {
+        setSelectedProject(data.handleConversationMessage.projectId);
+        setSearchParams({ projectId: data.handleConversationMessage.projectId });
+      }
     },
     onError: (error) => console.log(error),
   });
@@ -98,9 +103,13 @@ export const Chat = () => {
     }
   };
 
-  const handleProjectSelection = (projectId: string) => {
+  const handleProjectSelection = (projectId: string | null) => {
     setSelectedProject(projectId);
-    setSearchParams({ projectId });
+    if (projectId) {
+      setSearchParams({ projectId });
+    } else {
+      setSearchParams({});
+    }
   };
 
   const { data: userData } = useQuery(GetUser, {
@@ -154,8 +163,9 @@ export const Chat = () => {
             selectedProject={selectedProject ?? ""}
             handleProjectSelection={handleProjectSelection}
             setOpen={setDialogOpen}
+            setMessages={setMessages}
           />
-          <CreateProjectDialog open={dialogOpen} setOpen={setDialogOpen} />
+          <CreateProjectDialog open={dialogOpen} setOpen={setDialogOpen} setSelectedProject={setSelectedProject}/>
           <SidebarTrigger className="absolute top-2" />
           <motion.div
             initial={{ opacity: 0, y: -50 }}

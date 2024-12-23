@@ -1,11 +1,10 @@
 import {
   ProjectPriority,
   ProjectStatus,
-  ProjectType,
   ResponseStyle,
   TaskPriority,
   TaskStatus,
-  Tone,
+  Tone
 } from "@prisma/client";
 import { zodFunction } from "openai/helpers/zod.js";
 import { z } from "zod";
@@ -18,6 +17,7 @@ export const openAIStructuredOutput = z.object({
   role: z.string(),
   name: z.string(),
   content: z.string(),
+  projectId: z.string().optional(),
 });
 
 /*
@@ -30,15 +30,6 @@ export const openAIStructuredOutput = z.object({
   These parameters define the expected return params from the api when calling a function we define.
   Typically, they will match the needed parameters for a prisma ORM action (CRUD)
 */
-export const createProjectParameters = z.object({
-  name: z.string().describe("The project's name"),
-  description: z.string().describe("A brief description of the project"),
-  type: z
-    .enum([ProjectType.CLIENT, ProjectType.INTERNAL, ProjectType.PERSONAL])
-    .describe("The type of project"),
-  userId: z.string().describe("The user's id"),
-});
-
 export const getProjectsParameters = z.object({
   userId: z.string().describe("The user's id used to retrieve their projects"),
 });
@@ -111,11 +102,6 @@ export const updateProjectParameters = z.object({
   * If a tool is not defined here, it cannot be called by the api.
 */
 export const openAITools = [
-  zodFunction({
-    name: "createProject",
-    parameters: createProjectParameters,
-    description: "This function is used to create new projects",
-  }),
   zodFunction({
     name: "updateUserPreferences",
     parameters: updateUserPreferenceParameters,
