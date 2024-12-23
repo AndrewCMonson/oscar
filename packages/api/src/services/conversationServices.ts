@@ -87,7 +87,7 @@ export const createConversation = async (
 
 export const findConversation = async (
   userId: string,
-  projectId: string | undefined,
+  projectId?: string,
 ): Promise<ConversationWithMessages> => {
   try {
     const assistant = await prismadb.assistant.findFirst({
