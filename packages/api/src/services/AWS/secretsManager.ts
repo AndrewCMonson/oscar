@@ -44,5 +44,3 @@ export const AWSSecretsRetrieval = async (): Promise<AWSSecrets> => {
 
   return awsSecrets;
 };
-
-AWSSecretsRetrieval();
