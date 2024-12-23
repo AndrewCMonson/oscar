@@ -74,11 +74,11 @@ export const conversationResolvers: Resolvers = {
           name: user.firstName ?? user.username ?? "",
         };
 
-        const conversationMessage = await chatWithAssistant(
+        const conversationMessage = projectId ? await chatWithAssistant(
           userMessage,
           user,
           projectId,
-        );
+        ) : await chatWithAssistant(userMessage, user);
 
         if (!conversationMessage) {
           throw new Error("Error communicating with the assistant");
@@ -89,7 +89,12 @@ export const conversationResolvers: Resolvers = {
         if (e instanceof PrismaClientKnownRequestError) {
           throw new Error("Prisma error communicating with assistant");
         } else {
-          throw new Error("Error handling conversation message");
+          if (e instanceof Error) {
+            console.log(e);
+            throw new Error(e.message);
+          } else {
+            throw new Error("An unknown error occurred while communicating with the assistant");
+          }
         }
       }
     },
