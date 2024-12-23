@@ -3,9 +3,7 @@ import { debounce } from "lodash";
 import { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import {
-  materialDark
-} from "react-syntax-highlighter/dist/esm/styles/prism";
+import { materialDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { ChatGPTMessage } from "../../../api/types/index.js";
 import {
   ChatBubble,
@@ -13,7 +11,6 @@ import {
   ChatBubbleMessage,
 } from "./ui/chat/chat-bubble.js";
 import { ChatMessageList } from "./ui/chat/chat-message-list.js";
-
 
 interface ChatboxProps {
   messages: ChatGPTMessage[];
@@ -60,9 +57,7 @@ export const Chatbox = ({ messages, picture, loading }: ChatboxProps) => {
                           const match = /language-(\w+)/.exec(className || "");
                           return match ? (
                             <>
-                              <div
-                                className="absolute left-1 pl-5 z-10"
-                              >
+                              <div className="absolute left-1 pl-5 z-10">
                                 {match[1]}
                               </div>
                               <SyntaxHighlighter
@@ -105,9 +100,7 @@ export const Chatbox = ({ messages, picture, loading }: ChatboxProps) => {
                           const match = /language-(\w+)/.exec(className || "");
                           return match ? (
                             <>
-                              <div
-                                className="absolute right-0 pr-5  bg-gray z-10"
-                              >
+                              <div className="absolute right-0 pr-5  bg-gray z-10">
                                 {match[1]}
                               </div>
                               <SyntaxHighlighter
