@@ -5,6 +5,7 @@ export const HandleConversationMessage = gql(`
   handleConversationMessage(message: $message, projectId: $projectId) {
   content
   role
+  projectId
     }
   }
 `);

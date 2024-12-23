@@ -3,11 +3,10 @@ import {
   ToolCallFunctions,
 } from "../../../types/index.js";
 import {
-  createProject,
   createTask,
   getProjects,
   updateProject,
-  updateUserPreferences,
+  updateUserPreferences
 } from "../../services/index.js";
 
 /**
@@ -29,14 +28,6 @@ export const handleToolCallFunction = async <T extends keyof ToolCallFunctions>(
   toolCallFunctionArgs: ToolCallFunctions[T],
 ): Promise<ToolCallFunctionReturn> => {
   switch (toolCallFunctionName) {
-    case "createProject": {
-      if (!("name" in toolCallFunctionArgs)) {
-        throw new Error("Invalid arguments for createProject");
-      }
-      const createdProject = await createProject(toolCallFunctionArgs);
-
-      return createdProject;
-    }
     case "updateUserPreferences": {
       if (!("tone" in toolCallFunctionArgs)) {
         throw new Error("Invalid arguments for updateUserPreferences");

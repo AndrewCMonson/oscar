@@ -1,10 +1,9 @@
 import {
-  createProjectParameters,
   createTaskParameters,
   getProjectsParameters,
   openAIStructuredOutput,
   updateProjectParameters,
-  updateUserPreferenceParameters,
+  updateUserPreferenceParameters
 } from "@api/src/services/OpenAI/";
 import {
   Prisma,
@@ -14,9 +13,9 @@ import {
   User,
   UserPreferences,
 } from "@prisma/client";
+import { User as Auth0User } from "auth0";
 import { Request, Response } from "express";
 import { z } from "zod";
-import { User as Auth0User } from "auth0";
 
 declare module "express" {
   export interface Request {
@@ -26,7 +25,6 @@ declare module "express" {
   }
 }
 
-type CreateProjectParameters = z.infer<typeof createProjectParameters>;
 type UpdateUserPreferenceParameters = z.infer<
   typeof updateUserPreferenceParameters
 >;
@@ -36,7 +34,6 @@ type UpdateProjectDataParameters = z.infer<typeof updateProjectParameters>;
 type OpenAIStructuredOutput = z.infer<typeof openAIStructuredOutput>;
 
 export type ToolCallFunctions = {
-  createProject: CreateProjectParameters;
   updateUserPreferences: UpdateUserPreferenceParameters;
   createTask: CreateTaskParameters;
   getProjects: GetProjectsParameters;

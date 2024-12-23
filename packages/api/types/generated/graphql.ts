@@ -130,6 +130,7 @@ export type ConversationResponse = {
   __typename?: 'ConversationResponse';
   content?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+  projectId?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Scalars['String']['output']>;
 };
 
@@ -834,6 +835,7 @@ export type ConversationResolvers<ContextType = MiddlewareContext, ParentType ex
 export type ConversationResponseResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['ConversationResponse'] = ResolversParentTypes['ConversationResponse']> = ResolversObject<{
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  projectId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   role?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

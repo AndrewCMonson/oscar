@@ -34,9 +34,10 @@ const formSchema = z.object({
 
 interface CreateProjectFormProps {
   setOpen: (open: boolean) => void;
+  setSelectedProject: (projectId: string | null) => void;
 }
 
-export const CreateProjectForm = ({ setOpen }: CreateProjectFormProps) => {
+export const CreateProjectForm = ({ setOpen, setSelectedProject }: CreateProjectFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -49,6 +50,7 @@ export const CreateProjectForm = ({ setOpen }: CreateProjectFormProps) => {
   const [createProject, { loading }] = useMutation(CreateProject, {
     onCompleted: (data) => {
       setOpen(false);
+      setSelectedProject(data.createProject.id);
       console.log(data);
     },
     onError: (error) => {
