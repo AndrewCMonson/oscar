@@ -51,7 +51,43 @@ export const Chatbox = ({ messages, picture, loading }: ChatboxProps) => {
               className="flex items-center"
             >
               <ChatBubbleAvatar src={picture} />
-              <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
+              <ChatBubbleMessage>
+                {containsMarkdown(message.content) ? (
+                  <div>
+                    <ReactMarkdown
+                      components={{
+                        code({ className, children, ...props }) {
+                          const match = /language-(\w+)/.exec(className || "");
+                          return match ? (
+                            <>
+                              <div
+                                className="absolute left-1 pl-5 z-10"
+                              >
+                                {match[1]}
+                              </div>
+                              <SyntaxHighlighter
+                                language={match[1]}
+                                PreTag="div"
+                                style={materialDark}
+                              >
+                                {String(children).replace(/\n$/, "")}
+                              </SyntaxHighlighter>
+                            </>
+                          ) : (
+                            <code className={className} {...props}>
+                              {children}
+                            </code>
+                          );
+                        },
+                      }}
+                    >
+                      {message.content}
+                    </ReactMarkdown>
+                  </div>
+                ) : (
+                  message.content
+                )}
+              </ChatBubbleMessage>
             </ChatBubble>
           ) : message.role === "assistant" ? (
             <ChatBubble
@@ -70,16 +106,7 @@ export const Chatbox = ({ messages, picture, loading }: ChatboxProps) => {
                           return match ? (
                             <>
                               <div
-                                style={{
-                                  position: "absolute",
-                                  right: "0",
-                                  padding: "0.25rem 0rem",
-                                  fontSize: "0.75rem",
-                                  color: "#fff",
-                                  backgroundColor: "#333",
-                                  borderRadius: "0 0 0 4px",
-                                  zIndex: 1,
-                                }}
+                                className="absolute right-0 pr-5  bg-gray z-10"
                               >
                                 {match[1]}
                               </div>
