@@ -19,6 +19,7 @@ import {
  *
  * @param {ChatGPTMessage} message - The message to be sent to the assistant.
  * @param {User} user - The user sending the message.
+ * @param {string} projectId - The project ID for the conversation.
  * @returns {Promise<OpenAIStructuredOutput>} - The structured output from the OpenAI API.
  * @throws {Error} - Throws an error if the input is invalid or if an error occurs during the process.
  *
@@ -46,17 +47,12 @@ export const chatWithAssistant = async (
   try {
     // get context from the assistant and the user
 
-    let context;
-
-    if (projectId) {
-      context = await getContext(user.id, projectId);
-    }
-
-    context = await getContext(user.id);
+    const context = projectId
+      ? await getContext(user.id, projectId)
+      : await getContext(user.id);
     // check if the user has conversation history with the assistant for this project. If they don't, it creates a conversation based on the current project and the user.
     const conversationHistory = await findConversation(user.id, projectId);
 
-    console.log("conversationHistory", conversationHistory);
     // The new message is added to the conversation
     const updatedConversation = await addMessageToConversation(
       conversationHistory.id,

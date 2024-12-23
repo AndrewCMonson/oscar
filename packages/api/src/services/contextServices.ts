@@ -43,33 +43,31 @@ export const getContext = async (
       },
     });
 
-    const projectContext = await prismadb.project.findFirst({
-      where: {
-        id: projectId,
-      },
-      include: {
-        conversation: {
-          include: {
-            messages: true,
+    const projectContext = projectId
+      ? await prismadb.project.findFirst({
+          where: {
+            id: projectId,
           },
-        },
-      },
-    });
+          include: {
+            conversation: {
+              include: {
+                messages: true,
+              },
+            },
+          },
+        })
+      : null;
 
-    let combinedContext;
-
-    if (projectContext) {
-      combinedContext = {
-        globalContext: assistantContext,
-        userContext: userContext,
-        projectContext: projectContext,
-      };
-    }
-
-    combinedContext = {
-      globalContext: assistantContext,
-      userContext: userContext,
-    };
+    const combinedContext = projectContext
+      ? {
+          globalContext: assistantContext,
+          userContext: userContext,
+          projectContext: projectContext,
+        }
+      : {
+          globalContext: assistantContext,
+          userContext: userContext,
+        };
 
     return formatMessageForOpenAI({
       role: "assistant",
