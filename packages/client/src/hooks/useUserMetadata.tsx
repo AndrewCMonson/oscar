@@ -3,27 +3,48 @@ import {
   GetTokenSilentlyOptions,
   AuthenticationError,
 } from "@auth0/auth0-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type GetAccessTokenSilentlyType = (
   options?: GetTokenSilentlyOptions,
 ) => Promise<string>;
 
 interface UseUserMetadataReturn {
-  userMetadata: object | null;
+  userMetadata: UserMetadata | null;
   loading: boolean;
   error: object | null;
+}
+
+interface UserMetadata {
+  chatModel: string;
+  integrations: string;
+  preferredLanguage: string;
+  responseStyle: string;
+  timezone: string;
+  tone: string;
 }
 
 export const useUserMetadata = (
   getAccessTokenSilently: GetAccessTokenSilentlyType,
   user: User | undefined,
 ): UseUserMetadataReturn => {
-  const [userMetadata, setUserMetadata] = useState<object>({});
+  const [userMetadata, setUserMetadata] = useState<UserMetadata>({
+    chatModel: "",
+    integrations: "",
+    preferredLanguage: "",
+    responseStyle: "",
+    timezone: "",
+    tone: "",
+  });
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<AuthenticationError | null>(null);
+  const lastFetchedUser = useRef<User | undefined>(user);
 
   useEffect(() => {
+    if (lastFetchedUser.current?.sub === user?.sub) {
+      return;
+    }
+
     const getUserMetadata = async () => {
       const domain = `${import.meta.env.VITE_AUTH0_DOMAIN}`;
 
@@ -37,7 +58,6 @@ export const useUserMetadata = (
           },
         });
 
-        console.log("Access Token", accessToken);
         const userDetailsByIdUrl = `https://${domain}/api/v2/users/${user?.sub}`;
 
         const metadataResponse = await fetch(userDetailsByIdUrl, {

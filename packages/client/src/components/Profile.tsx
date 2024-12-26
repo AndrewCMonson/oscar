@@ -2,11 +2,13 @@ import { Button } from "@/components/ui/button/button.tsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
 import { FC } from "react";
+import { useUserMetadata } from "@/hooks/useUserMetadata.tsx";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card.tsx";
 
 export const Profile: FC = () => {
-  const { user, isAuthenticated, isLoading, logout } = useAuth0();
+  const { user, isAuthenticated, isLoading, logout, getAccessTokenSilently } = useAuth0();
 
-  // const { userMetadata } = useUserMetadata(getAccessTokenSilently, user);
+  const { userMetadata } = useUserMetadata(getAccessTokenSilently, user);
 
   if (isLoading) {
     return (
@@ -86,6 +88,56 @@ export const Profile: FC = () => {
                 Nickname:{" "}
                 <span className="font-semibold">{user?.nickname}</span>
               </p>
+            )}
+            {userMetadata && (
+              <Card className="bg-zinc-900 border-zinc-800 hover:border-zinc-700 transition-colors duration-300 hover:bg-zinc-800/50 backdrop-blur-sm">
+                <CardHeader
+                  title="User Metadata"
+                  className="flex flex-col items-center"
+                >
+                  <CardTitle
+                    className="text-lg sm:text-xl text-center text-white"
+                    aria-hidden="true"
+                  >
+                    User Metadata
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+
+                <p className="text-sm sm:text-base text-zinc-500">
+                  Chat Model:{" "}
+                  <span className="font-semibold">
+                    {userMetadata.chatModel}
+                  </span>
+                </p>
+                <p className="text-sm sm:text-base text-zinc-500">
+                  Integrations:{" "}
+                  <span className="font-semibold">
+                    {userMetadata.integrations}
+                  </span>
+                </p>
+                <p className="text-sm sm:text-base text-zinc-500">
+                  Preferred Language:{" "}
+                  <span className="font-semibold">
+                    {userMetadata.preferredLanguage}
+                  </span>
+                </p>
+                <p className="text-sm sm:text-base text-zinc-500">
+                  Response Style:{" "}
+                  <span className="font-semibold">
+                    {userMetadata.responseStyle}
+                  </span>
+                </p>
+                <p className="text-sm sm:text-base text-zinc-500">
+                  Timezone:{" "}
+                  <span className="font-semibold">{userMetadata.timezone}</span>
+                </p>
+                <p className="text-sm sm:text-base text-zinc-500">
+                  Tone:{" "}
+                  <span className="font-semibold">{userMetadata.tone}</span>
+                </p>
+                </CardContent>
+              </Card>
             )}
 
             {/* Action Buttons */}
