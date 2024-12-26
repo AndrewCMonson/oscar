@@ -37,7 +37,10 @@ interface CreateProjectFormProps {
   setSelectedProject: (projectId: string | null) => void;
 }
 
-export const CreateProjectForm = ({ setOpen, setSelectedProject }: CreateProjectFormProps) => {
+export const CreateProjectForm = ({
+  setOpen,
+  setSelectedProject,
+}: CreateProjectFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

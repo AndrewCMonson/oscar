@@ -2,7 +2,7 @@ import { User } from "@prisma/client";
 import {
   ChatGPTMessage,
   ConversationWithMessages,
-  OpenAIStructuredOutput
+  OpenAIStructuredOutput,
 } from "../../../types/index.js";
 import { openAIClient, prismadb } from "../../config/index.js";
 import {
@@ -52,7 +52,9 @@ export const chatWithAssistant = async (
       ? await getContext(user.id, projectId)
       : await getContext(user.id);
     // check if the user has conversation history with the assistant for this project. If they don't, it means there is no project yet, and it will create a new project and corresponding conversation.
-    const conversationHistory = projectId ? await findConversation(user.id, projectId) : await assistantGeneratedProject(user, message);
+    const conversationHistory = projectId
+      ? await findConversation(user.id, projectId)
+      : await assistantGeneratedProject(user, message);
 
     // The new message is added to the conversation
     const updatedConversation = await addMessageToConversation(
@@ -90,7 +92,10 @@ export const chatWithAssistant = async (
         context,
         formattedMessages,
       );
-      return {...handledToolCallsResponse, projectId: conversationHistory.projectId ?? ""};
+      return {
+        ...handledToolCallsResponse,
+        projectId: conversationHistory.projectId ?? "",
+      };
     }
     // if the finish reason is "stop", we add the response to the conversation history and return it to the user.
     if (finishReason === "stop") {
@@ -105,9 +110,15 @@ export const chatWithAssistant = async (
         assistantResponse?.name,
       );
 
-      return {...assistantResponse, projectId: conversationHistory.projectId ?? ""};
+      return {
+        ...assistantResponse,
+        projectId: conversationHistory.projectId ?? "",
+      };
     }
-    return {...assistantFailureResponse, projectId: conversationHistory.projectId ?? ""};
+    return {
+      ...assistantFailureResponse,
+      projectId: conversationHistory.projectId ?? "",
+    };
   } catch (error) {
     console.error(error);
     throw new Error("An error occurred chatting with the assistant");
@@ -118,93 +129,94 @@ export const assistantGeneratedProject = async (
   user: User,
   message: ChatGPTMessage,
 ): Promise<ConversationWithMessages> => {
-  if(!user || !message) {
+  if (!user || !message) {
     throw new Error("Invalid input");
   }
 
   // this function is used to generate project details when a user interacts with the assistant without a specified project selected. The purpose is to take in the user's message, generate a new project AND generate a project title and description based on the user's message. This will then be used to create a new project and conversation.
   const systemContext = formatMessageForOpenAI({
-    role: "system", 
-    content: "You are an assistant tasked with generating a project title and a brief description based on a provided message. carefully analyze the incoming message to do this. Do not perform any other actions or provide any additional output. Focus only on creating A clear and concise project title, A detailed, one-sentence project description. Provide only the project title and description as your response. Your name is 'assistant'. Your response should be formatted JSON and include the following keys: projectTitle, projectDescription.",
-    name: "system"
+    role: "system",
+    content:
+      "You are an assistant tasked with generating a project title and a brief description based on a provided message. carefully analyze the incoming message to do this. Do not perform any other actions or provide any additional output. Focus only on creating A clear and concise project title, A detailed, one-sentence project description. Provide only the project title and description as your response. Your name is 'assistant'. Your response should be formatted JSON and include the following keys: projectTitle, projectDescription.",
+    name: "system",
   });
 
   const userMessage = formatMessageForOpenAI(message);
 
   try {
-
     const openAIResponse = await openAIClient.beta.chat.completions.parse({
       messages: [systemContext, userMessage],
       ...openAIApiOptions,
     });
 
+    const assistantResponse =
+      openAIResponse.choices[0].message.parsed ?? assistantFailureResponse;
 
-      const assistantResponse = openAIResponse.choices[0].message.parsed ?? assistantFailureResponse;
+    console.log(
+      "Assistant response for generated Project: ",
+      assistantResponse,
+    );
+    const assistantResponseContent = JSON.parse(assistantResponse.content);
+    const projectTitle = assistantResponseContent.projectTitle;
+    const projectDescription = assistantResponseContent.projectDescription;
+    console.log("Title: ", projectTitle);
 
-      console.log("Assistant response for generated Project: ", assistantResponse);
-      const assistantResponseContent = JSON.parse(assistantResponse.content);
-      const projectTitle = assistantResponseContent.projectTitle;
-      const projectDescription = assistantResponseContent.projectDescription;
-      console.log("Title: ", projectTitle);
-
-
-      const generatedProject = await prismadb.project.create({
-        data: {
-          name: projectTitle,
-          description: projectDescription,
-          userId: user.id,
-        },
-        include: {
-          conversation: {
-            include: {
-              messages: true,
-            },
+    const generatedProject = await prismadb.project.create({
+      data: {
+        name: projectTitle,
+        description: projectDescription,
+        userId: user.id,
+      },
+      include: {
+        conversation: {
+          include: {
+            messages: true,
           },
         },
-      });
+      },
+    });
 
-      const assistant = await prismadb.assistant.findFirst({
-        where: {
-          role: "assistant",
+    const assistant = await prismadb.assistant.findFirst({
+      where: {
+        role: "assistant",
+      },
+    });
+
+    if (!assistant) {
+      throw new Error("Assistant not found");
+    }
+
+    const generatedProjectConversation = await prismadb.conversation.create({
+      data: {
+        assistantId: assistant.id,
+        userId: user.id,
+        projectId: generatedProject.id,
+        messages: {
+          create: [
+            {
+              userId: user.id,
+              role: "system",
+              content: "This is a new conversation",
+              name: "system",
+            },
+            {
+              userId: user.id,
+              role: "system",
+              content: assistantResponse.content,
+              name: "system",
+            },
+          ],
         },
-      });
+      },
+      include: {
+        messages: true,
+      },
+    });
 
-      if(!assistant) {
-        throw new Error("Assistant not found");
-      }
-
-      const generatedProjectConversation = await prismadb.conversation.create({
-        data: {
-          assistantId: assistant.id,
-          userId: user.id,
-          projectId: generatedProject.id,
-          messages: {
-            create: [
-              {
-                userId: user.id,
-                role: "system",
-                content: "This is a new conversation",
-                name: "system",
-              },
-              {
-                userId: user.id,
-                role: "system",
-                content: assistantResponse.content,
-                name: "system",
-              },
-            ]
-          }
-        },
-        include: {
-          messages: true,
-        },
-      });
-
-      if (!generatedProjectConversation) {
-        throw new Error("Failed to generate conversation");
-      }
-      return generatedProjectConversation;
-
+    if (!generatedProjectConversation) {
+      throw new Error("Failed to generate conversation");
+    }
+    return generatedProjectConversation;
   } catch (error) {
     console.error(error);
     throw new Error("An error occurred generating the project");

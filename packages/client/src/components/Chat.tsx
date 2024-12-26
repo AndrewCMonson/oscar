@@ -50,7 +50,9 @@ export const Chat = () => {
       });
       if (selectedProject === null) {
         setSelectedProject(data.handleConversationMessage.projectId);
-        setSearchParams({ projectId: data.handleConversationMessage.projectId });
+        setSearchParams({
+          projectId: data.handleConversationMessage.projectId,
+        });
       }
     },
     onError: (error) => console.log(error),
@@ -165,7 +167,11 @@ export const Chat = () => {
             setOpen={setDialogOpen}
             setMessages={setMessages}
           />
-          <CreateProjectDialog open={dialogOpen} setOpen={setDialogOpen} setSelectedProject={setSelectedProject}/>
+          <CreateProjectDialog
+            open={dialogOpen}
+            setOpen={setDialogOpen}
+            setSelectedProject={setSelectedProject}
+          />
           <SidebarTrigger className="absolute top-2" />
           <motion.div
             initial={{ opacity: 0, y: -50 }}
