@@ -6,7 +6,7 @@ import {
   createTask,
   getProjects,
   updateProject,
-  updateUserPreferences
+  updateUserPreferences,
 } from "../../services/index.js";
 
 /**

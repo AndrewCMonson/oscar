@@ -3,7 +3,7 @@ import {
   GetTokenSilentlyOptions,
   AuthenticationError,
 } from "@auth0/auth0-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 type GetAccessTokenSilentlyType = (
   options?: GetTokenSilentlyOptions,
@@ -38,13 +38,8 @@ export const useUserMetadata = (
   });
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<AuthenticationError | null>(null);
-  const lastFetchedUser = useRef<User | undefined>(user);
 
   useEffect(() => {
-    if (lastFetchedUser.current?.sub === user?.sub) {
-      return;
-    }
-
     const getUserMetadata = async () => {
       const domain = `${import.meta.env.VITE_AUTH0_DOMAIN}`;
 

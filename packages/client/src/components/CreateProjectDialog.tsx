@@ -26,7 +26,10 @@ export const CreateProjectDialog = ({
           <DialogDescription>
             Create a new project to chat with Oscar
           </DialogDescription>
-          <CreateProjectForm setOpen={setOpen} setSelectedProject={setSelectedProject} />
+          <CreateProjectForm
+            setOpen={setOpen}
+            setSelectedProject={setSelectedProject}
+          />
         </DialogHeader>
       </DialogContent>
     </Dialog>

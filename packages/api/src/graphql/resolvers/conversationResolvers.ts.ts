@@ -74,11 +74,9 @@ export const conversationResolvers: Resolvers = {
           name: user.firstName ?? user.username ?? "",
         };
 
-        const conversationMessage = projectId ? await chatWithAssistant(
-          userMessage,
-          user,
-          projectId,
-        ) : await chatWithAssistant(userMessage, user);
+        const conversationMessage = projectId
+          ? await chatWithAssistant(userMessage, user, projectId)
+          : await chatWithAssistant(userMessage, user);
 
         if (!conversationMessage) {
           throw new Error("Error communicating with the assistant");
@@ -93,7 +91,9 @@ export const conversationResolvers: Resolvers = {
             console.log(e);
             throw new Error(e.message);
           } else {
-            throw new Error("An unknown error occurred while communicating with the assistant");
+            throw new Error(
+              "An unknown error occurred while communicating with the assistant",
+            );
           }
         }
       }

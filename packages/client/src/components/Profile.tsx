@@ -1,14 +1,26 @@
-import { Button } from "@/components/ui/button/button.tsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
-import { FC } from "react";
-import { useUserMetadata } from "@/hooks/useUserMetadata.tsx";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card.tsx";
+import { FC, useState } from "react";
+// import { useUserMetadata } from "@/hooks/useUserMetadata.tsx";
+import { SidebarNav } from "./ui/sidebar-nav.tsx";
+import { Separator } from "./ui/separator.tsx";
 
 export const Profile: FC = () => {
-  const { user, isAuthenticated, isLoading, logout, getAccessTokenSilently } = useAuth0();
+  const { user, isAuthenticated, isLoading } = useAuth0();
+  const [selectedSettings, setSelectedSettings] = useState<string>("profile");
 
-  const { userMetadata } = useUserMetadata(getAccessTokenSilently, user);
+  
+
+  const userMetadata = {
+    chatModel: "GPT-3",
+    integrations: "Slack, Discord",
+    preferredLanguage: "English",
+    responseStyle: "Professional",
+    timezone: "America/New_York",
+    tone: "Formal",
+  };
+
+  // const { userMetadata } = useUserMetadata(getAccessTokenSilently, user);
 
   if (isLoading) {
     return (
@@ -36,125 +48,95 @@ export const Profile: FC = () => {
     );
   }
 
+  const NavItems = [
+    {
+      selectedItem: "profile",
+      name: "profile",
+      title: "Profile Settings",
+    },
+    {
+      selectedItem: "assistant",
+      name: "assistant",
+      title: "Assistant Settings",
+    },
+  ]
+
   return (
     isAuthenticated && (
       <motion.main
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="relative text-white"
+        className="relative flex flex-col h-screen text-white container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 text-center h-[calc(100vh-4rem)]"
         aria-label="User Profile Page"
       >
-        {/* Subtle Grid Background */}
         <div
           className="absolute inset-0 bg-grid-white/5 opacity-20 pointer-events-none"
           aria-hidden="true"
         />
 
-        {/* Profile Section */}
-        <section
-          className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 text-center relative z-10"
-          aria-labelledby="profile-title"
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 100, damping: 20 }}
+          className="flex flex-col h-full"
         >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className="flex flex-col items-center justify-center space-y-6"
-          >
-            {/* User Avatar */}
-            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-500 shadow-lg">
-              <img
-                src={user?.picture}
-                alt={`${user?.name}'s avatar`}
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            {/* User Name */}
-            <motion.h1
-              id="profile-title"
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600"
-            >
-              {user?.name}
+          <div className="flex lg:flex-col items-start mb-6">
+            <motion.h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600 pb-2 mb-2">
+              Account Settings
             </motion.h1>
-
-            {/* User Email */}
-            <p className="text-lg sm:text-xl text-zinc-400">{user?.email}</p>
-
-            {/* User Metadata (Optional) */}
-            {user?.nickname && (
-              <p className="text-sm sm:text-base text-zinc-500">
-                Nickname:{" "}
-                <span className="font-semibold">{user?.nickname}</span>
-              </p>
-            )}
-            {userMetadata && (
-              <Card className="bg-zinc-900 border-zinc-800 hover:border-zinc-700 transition-colors duration-300 hover:bg-zinc-800/50 backdrop-blur-sm">
-                <CardHeader
-                  title="User Metadata"
-                  className="flex flex-col items-center"
-                >
-                  <CardTitle
-                    className="text-lg sm:text-xl text-center text-white"
-                    aria-hidden="true"
-                  >
-                    User Metadata
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-
-                <p className="text-sm sm:text-base text-zinc-500">
-                  Chat Model:{" "}
-                  <span className="font-semibold">
-                    {userMetadata.chatModel}
-                  </span>
-                </p>
-                <p className="text-sm sm:text-base text-zinc-500">
-                  Integrations:{" "}
-                  <span className="font-semibold">
-                    {userMetadata.integrations}
-                  </span>
-                </p>
-                <p className="text-sm sm:text-base text-zinc-500">
-                  Preferred Language:{" "}
-                  <span className="font-semibold">
-                    {userMetadata.preferredLanguage}
-                  </span>
-                </p>
-                <p className="text-sm sm:text-base text-zinc-500">
-                  Response Style:{" "}
-                  <span className="font-semibold">
-                    {userMetadata.responseStyle}
-                  </span>
-                </p>
-                <p className="text-sm sm:text-base text-zinc-500">
-                  Timezone:{" "}
-                  <span className="font-semibold">{userMetadata.timezone}</span>
-                </p>
-                <p className="text-sm sm:text-base text-zinc-500">
-                  Tone:{" "}
-                  <span className="font-semibold">{userMetadata.tone}</span>
-                </p>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-6">
-              <Button
-                size="lg"
-                onClick={() =>
-                  logout({ logoutParams: { returnTo: window.location.origin } })
-                }
-                className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white rounded shadow-lg transition-transform hover:scale-105"
-                aria-label="Logout"
-              >
-                Logout
-              </Button>
+            <motion.p className="text-lg sm:text-xl text-zinc-500">
+              Welcome back, <span className="font-semibold">{user?.name}</span>!
+            </motion.p>
+          </div>
+          <Separator />
+          <div className="flex flex-col lg:flex-row gap-4 lg:flex-1 lg:h-full">
+            <div className="flex flex-col flex-1 h-1/3 p-4 shadow-lg gap-2">
+              {/* <a className="flex border border-white rounded pl-2">
+                <span>Profile Settings</span>
+              </a>
+              <a className="flex border hover:bg-zinc-800 pointer-events-auto rounded pl-2">
+                <span>Assistant Settings</span>
+              </a> */}
+              <aside>
+                <SidebarNav
+                  items={NavItems}
+                  selectedItem={selectedSettings}
+                  setSelectedItem={setSelectedSettings}
+                ></SidebarNav>
+              </aside>
             </div>
-          </motion.div>
-        </section>
+
+            <div className="w-3/4 bg-transparent shadow-lg ">
+              {userMetadata && (
+                <div className="h-full bg-transparent transition-colors duration-300 backdrop-blur-sm p-4">
+                    {selectedSettings === "profile" && (
+                      <div className="text-start">
+
+                        <div className="text-lg sm:text-xl text-white font-semibold">
+                          Profile Settings
+                        </div>
+                        <div>
+                          This is where you can configure your profile settings.
+                        </div>
+                      </div>
+                    )}
+                    {selectedSettings === "assistant" && (
+                      <div className="text-start">
+                      <div className="text-lg sm:text-xl text-white font-semibold">
+                        Assistant Settings
+                      </div>
+                      <div>
+                        This is where you can configure your assistant's settings.
+                      </div>
+                      </div>
+                    )}
+                  <div>{/* Metadata content */}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.div>
 
         {/* Subtle Glow Effects */}
         <div

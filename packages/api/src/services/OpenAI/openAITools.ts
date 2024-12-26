@@ -4,7 +4,7 @@ import {
   ResponseStyle,
   TaskPriority,
   TaskStatus,
-  Tone
+  Tone,
 } from "@prisma/client";
 import { zodFunction } from "openai/helpers/zod.js";
 import { z } from "zod";

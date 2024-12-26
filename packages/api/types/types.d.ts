@@ -3,7 +3,7 @@ import {
   getProjectsParameters,
   openAIStructuredOutput,
   updateProjectParameters,
-  updateUserPreferenceParameters
+  updateUserPreferenceParameters,
 } from "@api/src/services/OpenAI/";
 import {
   Prisma,
