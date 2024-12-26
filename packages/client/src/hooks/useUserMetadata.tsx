@@ -1,3 +1,4 @@
+import { ResponseStyle, Tone } from "@/types.ts";
 import {
   User,
   GetTokenSilentlyOptions,
@@ -15,13 +16,13 @@ interface UseUserMetadataReturn {
   error: object | null;
 }
 
-interface UserMetadata {
+export interface UserMetadata {
   chatModel: string;
-  integrations: string;
+  integrations: string[];
   preferredLanguage: string;
-  responseStyle: string;
+  responseStyle: ResponseStyle;
   timezone: string;
-  tone: string;
+  tone: Tone;
 }
 
 export const useUserMetadata = (
@@ -30,11 +31,11 @@ export const useUserMetadata = (
 ): UseUserMetadataReturn => {
   const [userMetadata, setUserMetadata] = useState<UserMetadata>({
     chatModel: "",
-    integrations: "",
+    integrations: [],
     preferredLanguage: "",
-    responseStyle: "",
+    responseStyle: ResponseStyle.Conversational,
     timezone: "",
-    tone: "",
+    tone: Tone.Concise,
   });
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<AuthenticationError | null>(null);

@@ -4,23 +4,28 @@ import { FC, useState } from "react";
 // import { useUserMetadata } from "@/hooks/useUserMetadata.tsx";
 import { SidebarNav } from "./ui/sidebar-nav.tsx";
 import { Separator } from "./ui/separator.tsx";
+import { Form } from "./ui/form.tsx";
+import { ResponseStyle, Tone } from "@/types.js";
+import { UserMetadata } from "@/hooks/useUserMetadata.tsx";
+import { useUserMetadata } from "@/hooks/useUserMetadata.tsx";
+import { ProfileSettingsForm } from "./ProfileSettingsForm.tsx";
 
 export const Profile: FC = () => {
-  const { user, isAuthenticated, isLoading } = useAuth0();
+  const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
   const [selectedSettings, setSelectedSettings] = useState<string>("profile");
 
   
 
-  const userMetadata = {
-    chatModel: "GPT-3",
-    integrations: "Slack, Discord",
-    preferredLanguage: "English",
-    responseStyle: "Professional",
-    timezone: "America/New_York",
-    tone: "Formal",
-  };
+  // const userMetadata: UserMetadata = {
+  //   chatModel: "GPT-3",
+  //   integrations: ["Slack, Discord"],
+  //   preferredLanguage: "English",
+  //   responseStyle: ResponseStyle.Direct,
+  //   timezone: "America/New_York",
+  //   tone: Tone.Friendly,
+  // };
 
-  // const { userMetadata } = useUserMetadata(getAccessTokenSilently, user);
+  const { userMetadata } = useUserMetadata(getAccessTokenSilently, user);
 
   if (isLoading) {
     return (
@@ -85,52 +90,46 @@ export const Profile: FC = () => {
             <motion.h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600 pb-2 mb-2">
               Account Settings
             </motion.h1>
-            <motion.p className="text-lg sm:text-xl text-zinc-500">
+            <p className="text-lg sm:text-xl text-zinc-500">
               Welcome back, <span className="font-semibold">{user?.name}</span>!
-            </motion.p>
+            </p>
           </div>
           <Separator />
           <div className="flex flex-col lg:flex-row gap-4 lg:flex-1 lg:h-full">
             <div className="flex flex-col flex-1 h-1/3 p-4 shadow-lg gap-2">
-              {/* <a className="flex border border-white rounded pl-2">
-                <span>Profile Settings</span>
-              </a>
-              <a className="flex border hover:bg-zinc-800 pointer-events-auto rounded pl-2">
-                <span>Assistant Settings</span>
-              </a> */}
-              <aside>
-                <SidebarNav
-                  items={NavItems}
-                  selectedItem={selectedSettings}
-                  setSelectedItem={setSelectedSettings}
-                ></SidebarNav>
-              </aside>
+              <SidebarNav
+                items={NavItems}
+                selectedItem={selectedSettings}
+                setSelectedItem={setSelectedSettings}
+              ></SidebarNav>
             </div>
 
             <div className="w-3/4 bg-transparent shadow-lg ">
               {userMetadata && (
                 <div className="h-full bg-transparent transition-colors duration-300 backdrop-blur-sm p-4">
-                    {selectedSettings === "profile" && (
-                      <div className="text-start">
-
-                        <div className="text-lg sm:text-xl text-white font-semibold">
-                          Profile Settings
-                        </div>
-                        <div>
-                          This is where you can configure your profile settings.
-                        </div>
+                  {selectedSettings === "profile" && (
+                    <div className="text-start mb-6">
+                      <div className="text-lg sm:text-xl text-white font-semibold">
+                        Profile Settings
                       </div>
-                    )}
-                    {selectedSettings === "assistant" && (
-                      <div className="text-start">
+                      <div className="text-zinc-500">
+                        This is where you can configure your profile settings.
+                      </div>
+                    </div>
+                  )}
+                  {selectedSettings === "assistant" && (
+                    <div className="text-start mb-6">
                       <div className="text-lg sm:text-xl text-white font-semibold">
                         Assistant Settings
                       </div>
-                      <div>
-                        This is where you can configure your assistant's settings.
+                      <div className="text-zinc-500">
+                        This is where you can configure your assistant's
+                        settings.
                       </div>
-                      </div>
-                    )}
+                    </div>
+                  )}
+                  <Separator />
+                  <ProfileSettingsForm userMetadata={userMetadata} user={user} />
                   <div>{/* Metadata content */}</div>
                 </div>
               )}
