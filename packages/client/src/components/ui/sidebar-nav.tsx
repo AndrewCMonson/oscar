@@ -10,8 +10,13 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   }[];
 }
 
-export function SidebarNav({ selectedItem, setSelectedItem, className, items, ...props }: SidebarNavProps) {
-
+export function SidebarNav({
+  selectedItem,
+  setSelectedItem,
+  className,
+  items,
+  ...props
+}: SidebarNavProps) {
   return (
     <nav
       className={cn(
@@ -23,17 +28,14 @@ export function SidebarNav({ selectedItem, setSelectedItem, className, items, ..
       {items.map((item) => (
         <div
           key={item.name}
-          className={cn('text-white cursor-pointer flex p-2',
-            
-            selectedItem === item.name
-              ? "bg-white bg-opacity-10"
-              : "",
+          className={cn(
+            "text-white cursor-pointer flex p-2 rounded",
+
+            selectedItem === item.name ? "bg-white bg-opacity-10" : "",
           )}
           onClick={() => setSelectedItem(item.name)}
         >
-          <p className="text-sm font-semibold">
-            {item.title}
-          </p>
+          <p className="text-sm font-semibold">{item.title}</p>
         </div>
       ))}
     </nav>

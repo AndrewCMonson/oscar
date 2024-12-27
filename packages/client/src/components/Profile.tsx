@@ -1,29 +1,16 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
 import { FC, useState } from "react";
-// import { useUserMetadata } from "@/hooks/useUserMetadata.tsx";
 import { SidebarNav } from "./ui/sidebar-nav.tsx";
 import { Separator } from "./ui/separator.tsx";
-import { Form } from "./ui/form.tsx";
-import { ResponseStyle, Tone } from "@/types.js";
-import { UserMetadata } from "@/hooks/useUserMetadata.tsx";
 import { useUserMetadata } from "@/hooks/useUserMetadata.tsx";
 import { ProfileSettingsForm } from "./ProfileSettingsForm.tsx";
 
 export const Profile: FC = () => {
-  const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+  const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
+    useAuth0();
   const [selectedSettings, setSelectedSettings] = useState<string>("profile");
-
-  
-
-  // const userMetadata: UserMetadata = {
-  //   chatModel: "GPT-3",
-  //   integrations: ["Slack, Discord"],
-  //   preferredLanguage: "English",
-  //   responseStyle: ResponseStyle.Direct,
-  //   timezone: "America/New_York",
-  //   tone: Tone.Friendly,
-  // };
+  const [formEditable, setFormEditable] = useState<boolean>(false);
 
   const { userMetadata } = useUserMetadata(getAccessTokenSilently, user);
 
@@ -64,7 +51,7 @@ export const Profile: FC = () => {
       name: "assistant",
       title: "Assistant Settings",
     },
-  ]
+  ];
 
   return (
     isAuthenticated && (
@@ -86,7 +73,7 @@ export const Profile: FC = () => {
           transition={{ type: "spring", stiffness: 100, damping: 20 }}
           className="flex flex-col h-full"
         >
-          <div className="flex lg:flex-col items-start mb-6">
+          <div className="flex flex-col items-start mb-6">
             <motion.h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600 pb-2 mb-2">
               Account Settings
             </motion.h1>
@@ -96,7 +83,7 @@ export const Profile: FC = () => {
           </div>
           <Separator />
           <div className="flex flex-col lg:flex-row gap-4 lg:flex-1 lg:h-full">
-            <div className="flex flex-col flex-1 h-1/3 p-4 shadow-lg gap-2">
+            <div className="flex flex-col flex-1 h-1/3 pt-4 pr-4 gap-2">
               <SidebarNav
                 items={NavItems}
                 selectedItem={selectedSettings}
@@ -104,9 +91,8 @@ export const Profile: FC = () => {
               ></SidebarNav>
             </div>
 
-            <div className="w-3/4 bg-transparent shadow-lg ">
-              {userMetadata && (
-                <div className="h-full bg-transparent transition-colors duration-300 backdrop-blur-sm p-4">
+            <div className="lg:w-3/4 bg-transparent shadow-lg">
+                <div className="h-full bg-transparent transition-colors duration-300 backdrop-blur-sm pt-4">
                   {selectedSettings === "profile" && (
                     <div className="text-start mb-6">
                       <div className="text-lg sm:text-xl text-white font-semibold">
@@ -123,16 +109,23 @@ export const Profile: FC = () => {
                         Assistant Settings
                       </div>
                       <div className="text-zinc-500">
-                        This is where you can configure your assistant's
-                        settings.
+                        {`This is where you can configure your assistant's
+                        settings.`}
                       </div>
                     </div>
                   )}
                   <Separator />
-                  <ProfileSettingsForm userMetadata={userMetadata} user={user} />
-                  <div>{/* Metadata content */}</div>
+                  <div className="mt-2">
+                    {selectedSettings === "profile" && (
+                      <ProfileSettingsForm
+                        userMetadata={userMetadata}
+                        user={user}
+                        formEditable={formEditable}
+                        setFormEditable={setFormEditable}
+                      />
+                    )}
+                  </div>
                 </div>
-              )}
             </div>
           </div>
         </motion.div>
