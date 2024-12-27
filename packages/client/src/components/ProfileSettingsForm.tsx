@@ -22,11 +22,11 @@ import { User } from "@auth0/auth0-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   username: z.string().min(3),
   chatModel: z.string(),
-  integrations: z.array(z.string()),
   preferredLanguage: z.string(),
   responseStyle: z.enum([ResponseStyle.Conversational, ResponseStyle.Direct]),
   timezone: z.string(),
@@ -51,12 +51,25 @@ export const ProfileSettingsForm = ({
     defaultValues: {
       username: user?.nickname || "",
       chatModel: userMetadata?.chatModel || "",
-      integrations: userMetadata?.integrations || [],
       preferredLanguage: userMetadata?.preferredLanguage || "",
       responseStyle: userMetadata?.responseStyle || ResponseStyle.Conversational,
       timezone: userMetadata?.timezone || "",
     },
   });
+
+  useEffect(() => {
+    if (userMetadata) {
+      form.reset({
+        username: user?.nickname || "",
+        chatModel: userMetadata.chatModel || "",
+        preferredLanguage: userMetadata.preferredLanguage || "",
+        responseStyle:
+          userMetadata.responseStyle || ResponseStyle.Conversational,
+        timezone: userMetadata.timezone || "",
+        tone: userMetadata.tone || Tone.Friendly,
+      });
+    }
+  }, [userMetadata, user?.nickname, form]);
 
   return (
     <Form {...form}>
@@ -119,7 +132,10 @@ export const ProfileSettingsForm = ({
               <FormLabel htmlFor="timezone">Timezone</FormLabel>
               <FormControl>
                 {formEditable ? (
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    onValueChange={(value) => field.onChange(value)}
+                    value={field.value}
+                  >
                     <SelectTrigger>
                       <SelectValue>{field.value}</SelectValue>
                     </SelectTrigger>
@@ -138,31 +154,6 @@ export const ProfileSettingsForm = ({
                 ) : (
                   <Input disabled {...field} id="timezone" />
                 )}
-              </FormControl>
-              <FormDescription>Your current timezone</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name={"integrations"}
-          render={({ field }) => (
-            <FormItem className="text-start lg:w-1/2 mt-2">
-              <FormLabel htmlFor="integrations">Integrations</FormLabel>
-              <FormControl>
-                {userMetadata?.integrations?.length > 0 ? userMetadata?.integrations.map((integration, index) => (
-                  <>
-                  <div>{integration}</div>
-                  <Input
-                    key={index}
-                    disabled={!formEditable}
-                    {...field}
-                    id={`integrations.${index}`}
-                  />
-                  </>
-                )):
-                <Input disabled {...field} id="integrations" />}
               </FormControl>
               <FormDescription>Your current timezone</FormDescription>
               <FormMessage />
