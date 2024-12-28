@@ -54,6 +54,7 @@ export const ProfileSettingsForm = ({
       preferredLanguage: userMetadata?.preferredLanguage || "",
       responseStyle: userMetadata?.responseStyle || ResponseStyle.Conversational,
       timezone: userMetadata?.timezone || "",
+      tone: userMetadata?.tone || Tone.Friendly,
     },
   });
 
@@ -71,9 +72,15 @@ export const ProfileSettingsForm = ({
     }
   }, [userMetadata, user?.nickname, form]);
 
+  const handleFormSubmit = (data: z.infer<typeof formSchema>) => {
+    console.log(data);
+    setFormEditable(false);
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit((data) => console.log(data))}>
+      <form
+        onSubmit={form.handleSubmit((data) => handleFormSubmit(data))}>
         <FormField
           control={form.control}
           name={"username"}
@@ -160,19 +167,125 @@ export const ProfileSettingsForm = ({
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name={"preferredLanguage"}
+          render={({ field }) => (
+            <FormItem className="text-start lg:w-1/2 mt-2">
+              <FormLabel htmlFor="preferredLanguage">
+                Preferred Language
+              </FormLabel>
+              <FormControl>
+                {formEditable ? (
+                  <Select
+                    onValueChange={(value) => field.onChange(value)}
+                    value={field.value}
+                  >
+                    <SelectTrigger>
+                      <SelectValue>{field.value}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={"English"}>English</SelectItem>
+                      <SelectItem value={"Spanish"}>Spanish</SelectItem>
+                      <SelectItem value={"French"}>French</SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input disabled {...field} id="preferredLanguage" />
+                )}
+              </FormControl>
+              <FormDescription>
+                Your preferred language for responses
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name={"responseStyle"}
+          render={({ field }) => (
+            <FormItem className="text-start lg:w-1/2 mt-2">
+              <FormLabel htmlFor="responseStyle">Response Style</FormLabel>
+              <FormControl>
+                {formEditable ? (
+                  <Select
+                    onValueChange={(value) => field.onChange(value)}
+                    value={field.value}
+                  >
+                    <SelectTrigger>
+                      <SelectValue>{field.value}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={ResponseStyle.Conversational}>
+                        Conversational
+                      </SelectItem>
+                      <SelectItem value={ResponseStyle.Direct}>
+                        Direct
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input disabled {...field} id="responseStyle" />
+                )}
+              </FormControl>
+              <FormDescription>Your preferred response style</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name={"tone"}
+          render={({ field }) => (
+            <FormItem className="text-start lg:w-1/2 mt-2">
+              <FormLabel htmlFor="tone">Tone</FormLabel>
+              <FormControl>
+                {formEditable ? (
+                  <Select
+                    onValueChange={(value) => field.onChange(value)}
+                    value={field.value}
+                  >
+                    <SelectTrigger>
+                      <SelectValue>{field.value}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={Tone.Friendly}>Friendly</SelectItem>
+                      <SelectItem value={Tone.Concise}>Concise</SelectItem>
+                      <SelectItem value={Tone.Professional}>
+                        Professional
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input disabled {...field} id="tone" />
+                )}
+              </FormControl>
+              <FormDescription>
+                Your preferred tone for responses
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className="flex gap-2">
           <Button
             className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl hover:scale-105 transition-transform rounded-lg px-6 py-2 mt-4"
-            onClick={() => setFormEditable(!formEditable)}
+            onClick={(e) => {
+              e.preventDefault();
+              setFormEditable(!formEditable);
+            }}
           >
             {formEditable ? "Cancel" : "Edit Profile"}
           </Button>
-          <Button
-            type="submit"
-            className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl hover:scale-105 transition-transform rounded-lg px-6 py-2 mt-4"
-          >
-            {"Save Changes"}
-          </Button>
+          {formEditable && (
+            <Button
+              type="submit"
+              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white shadow-xl hover:scale-105 transition-transform rounded-lg px-6 py-2 mt-4"
+            >
+              {"Save Changes"}
+            </Button>
+          )}
         </div>
       </form>
     </Form>
