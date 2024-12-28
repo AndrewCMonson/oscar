@@ -1,10 +1,10 @@
 export enum ResponseStyle {
-  Conversational = "Conversational",
-  Direct = "Direct",
+  Conversational = "CONVERSATIONAL",
+  Direct = "DIRECT",
 }
 
 export enum Tone {
-  Friendly = "Friendly",
-  Concise = "Concise",
-  Professional = "Professional",
+  Friendly = "FRIENDLY",
+  Concise = "CONCISE",
+  Professional = "PROFESSIONAL",
 }
