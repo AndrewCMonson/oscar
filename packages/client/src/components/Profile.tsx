@@ -1,18 +1,15 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
 import { FC, useState } from "react";
-import { SidebarNav } from "./ui/sidebar-nav.tsx";
-import { Separator } from "./ui/separator.tsx";
-import { useUserMetadata } from "@/hooks/useUserMetadata.tsx";
 import { ProfileSettingsForm } from "./ProfileSettingsForm.tsx";
+import { Separator } from "./ui/separator.tsx";
+import { SidebarNav } from "./ui/sidebar-nav.tsx";
+import { Spinner } from "./ui/spinner.tsx";
 
 export const Profile: FC = () => {
-  const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
-    useAuth0();
+  const { user, isAuthenticated, isLoading } = useAuth0();
   const [selectedSettings, setSelectedSettings] = useState<string>("profile");
   const [formEditable, setFormEditable] = useState<boolean>(false);
-
-  const { userMetadata } = useUserMetadata(getAccessTokenSilently, user);
 
   if (isLoading) {
     return (
@@ -21,7 +18,7 @@ export const Profile: FC = () => {
         animate={{ opacity: 1 }}
         className="text-white relative flex items-center justify-center"
       >
-        <p className="text-2xl text-zinc-400">Loading profile...</p>
+        <Spinner />
       </motion.main>
     );
   }
@@ -92,40 +89,39 @@ export const Profile: FC = () => {
             </div>
 
             <div className="lg:w-3/4 bg-transparent shadow-lg">
-                <div className="h-full bg-transparent transition-colors duration-300 backdrop-blur-sm pt-4">
-                  {selectedSettings === "profile" && (
-                    <div className="text-start mb-6">
-                      <div className="text-lg sm:text-xl text-white font-semibold">
-                        Profile Settings
-                      </div>
-                      <div className="text-zinc-500">
-                        This is where you can configure your profile settings.
-                      </div>
+              <div className="h-full bg-transparent transition-colors duration-300 backdrop-blur-sm pt-4">
+                {selectedSettings === "profile" && (
+                  <div className="text-start mb-6">
+                    <div className="text-lg sm:text-xl text-white font-semibold">
+                      Profile Settings
                     </div>
-                  )}
-                  {selectedSettings === "assistant" && (
-                    <div className="text-start mb-6">
-                      <div className="text-lg sm:text-xl text-white font-semibold">
-                        Assistant Settings
-                      </div>
-                      <div className="text-zinc-500">
-                        {`This is where you can configure your assistant's
-                        settings.`}
-                      </div>
+                    <div className="text-zinc-500">
+                      This is where you can configure your profile settings.
                     </div>
-                  )}
-                  <Separator />
-                  <div className="mt-2">
-                    {selectedSettings === "profile" && (
-                      <ProfileSettingsForm
-                        userMetadata={userMetadata}
-                        user={user}
-                        formEditable={formEditable}
-                        setFormEditable={setFormEditable}
-                      />
-                    )}
                   </div>
+                )}
+                {selectedSettings === "assistant" && (
+                  <div className="text-start mb-6">
+                    <div className="text-lg sm:text-xl text-white font-semibold">
+                      Assistant Settings
+                    </div>
+                    <div className="text-zinc-500">
+                      {`This is where you can configure your assistant's
+                        settings.`}
+                    </div>
+                  </div>
+                )}
+                <Separator />
+                <div className="mt-2">
+                  {selectedSettings === "profile" && (
+                    <ProfileSettingsForm
+                      user={user}
+                      formEditable={formEditable}
+                      setFormEditable={setFormEditable}
+                    />
+                  )}
                 </div>
+              </div>
             </div>
           </div>
         </motion.div>

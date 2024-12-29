@@ -2,6 +2,7 @@ enum IntegrationType {
   JIRA
   MOTION
   NOTION
+  GITHUB
 }
 
 enum AssistantAction {
@@ -24,4 +25,15 @@ enum TaskStatus {
   IN_PROGRESS
   COMPLETED
   BLOCKED
+}
+
+enum Tone {
+  FRIENDLY
+  CONCISE
+  PROFESSIONAL
+}
+
+enum ResponseStyle {
+  CONVERSATIONAL
+  DIRECT
 }

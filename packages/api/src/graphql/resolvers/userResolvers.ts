@@ -1,4 +1,5 @@
 import { Resolvers } from "../../../types/index.js";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
 import { prismadb } from "../../config/index.js";
 
 export const userResolvers: Resolvers = {
@@ -51,6 +52,37 @@ export const userResolvers: Resolvers = {
       });
       return user;
     },
+    updateUserPreferences: async (_, { auth0sub, preferences }) => {
+      try {
+        const user = await prismadb.user.findUnique({
+          where: {
+            auth0sub: auth0sub,
+          },
+        });
+
+        if (!user) {
+          throw new Error("No user exists with that auth0sub");
+        }
+
+        const userPreferences = await prismadb.userPreferences.update({
+          where: {
+            userId: user.id,
+          },
+          data: {
+            ...preferences,
+          },
+        });
+
+        return userPreferences;
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          throw new Error("Prisma error fetching messages");
+        } else {
+          console.error(e);
+          throw new Error("Error updating user preferences");
+        }
+      }
+    },
     deleteUser: async (_, { id }) => {
       const user = await prismadb.user.delete({
         where: {
@@ -89,6 +121,9 @@ export const userResolvers: Resolvers = {
       const preferences = await prismadb.userPreferences.findUnique({
         where: {
           userId: parent.id,
+        },
+        include: {
+          integrations: true,
         },
       });
 

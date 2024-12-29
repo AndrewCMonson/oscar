@@ -16,13 +16,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UserMetadata } from "@/hooks/useUserMetadata.tsx";
 import { ResponseStyle, Tone } from "@/types.js";
+import { GetUser } from "@/utils/graphql/queries.ts";
+import { UpdateUserPreferences } from "@/utils/graphql/mutations.ts";
+import { useQuery, useMutation } from "@apollo/client";
 import { User } from "@auth0/auth0-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useEffect } from "react";
+import { Spinner } from "./ui/spinner.tsx";
 
 const formSchema = z.object({
   username: z.string().min(3),
@@ -35,52 +37,76 @@ const formSchema = z.object({
 
 interface ProfileSettingsFormProps {
   user: User | undefined;
-  userMetadata: UserMetadata | null;
   formEditable: boolean;
   setFormEditable: (editable: boolean) => void;
 }
 
 export const ProfileSettingsForm = ({
   user,
-  userMetadata,
   formEditable,
   setFormEditable,
 }: ProfileSettingsFormProps) => {
+  const { data, loading: userLoading, error: userError } = useQuery(GetUser, {
+    variables: { auth0Sub: user?.sub || "" },
+    onCompleted: (data) => {
+      form.reset({
+        username: user?.nickname ?? "",
+        chatModel: data.user.preferences?.chatModel ?? "",
+        preferredLanguage: data.user.preferences?.preferredLanguage ?? "",
+        responseStyle: data.user.preferences?.responseStyle ?? ResponseStyle.Conversational,
+        timezone: data.user.preferences?.timezone ?? "",
+        tone: data.user.preferences?.tone ?? Tone.Friendly,
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const [updateUserPreferences] = useMutation(UpdateUserPreferences);
+
+  const userPreferences = data?.user?.preferences;
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: user?.nickname || "",
-      chatModel: userMetadata?.chatModel || "",
-      preferredLanguage: userMetadata?.preferredLanguage || "",
-      responseStyle: userMetadata?.responseStyle || ResponseStyle.Conversational,
-      timezone: userMetadata?.timezone || "",
-      tone: userMetadata?.tone || Tone.Friendly,
+      chatModel: userPreferences?.chatModel || "",
+      preferredLanguage: userPreferences?.preferredLanguage || "",
+      responseStyle:
+        userPreferences?.responseStyle || ResponseStyle.Conversational,
+      timezone: userPreferences?.timezone || "",
+      tone: userPreferences?.tone || Tone.Friendly,
     },
   });
 
-  useEffect(() => {
-    if (userMetadata) {
-      form.reset({
-        username: user?.nickname || "",
-        chatModel: userMetadata.chatModel || "",
-        preferredLanguage: userMetadata.preferredLanguage || "",
-        responseStyle:
-          userMetadata.responseStyle || ResponseStyle.Conversational,
-        timezone: userMetadata.timezone || "",
-        tone: userMetadata.tone || Tone.Friendly,
-      });
-    }
-  }, [userMetadata, user?.nickname, form]);
-
   const handleFormSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+    updateUserPreferences({
+      variables: {
+        auth0sub: user?.sub,
+        preferences: {
+          chatModel: data.chatModel,
+          preferredLanguage: data.preferredLanguage,
+          responseStyle: data.responseStyle,
+          timezone: data.timezone,
+          tone: data.tone,
+        },
+      },
+    });
     setFormEditable(false);
   };
 
+  if (userLoading) {
+    return <Spinner size="large" />;
+  }
+
+  if (userError) {
+    return <div>Error loading user data</div>;
+  }
+
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit((data) => handleFormSubmit(data))}>
+      <form onSubmit={form.handleSubmit((data) => handleFormSubmit(data))}>
         <FormField
           control={form.control}
           name={"username"}

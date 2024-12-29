@@ -10,6 +10,19 @@ export const HandleConversationMessage = gql(`
   }
 `);
 
+export const UpdateUserPreferences = gql(`
+  mutation updateUserPreferences($auth0sub: String!, $preferences: UserPreferencesInput!) {
+  updateUserPreferences(auth0sub: $auth0sub, preferences: $preferences) {
+      userId
+      tone
+      responseStyle
+      preferredLanguage
+      chatModel
+      timezone
+  }
+  }
+`);
+
 export const CreateProject = gql(`
   mutation createProject($name: String!, $description: String!, $type: ProjectType!) {
   createProject(name: $name, description: $description, type: $type) {

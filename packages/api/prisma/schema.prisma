@@ -61,6 +61,7 @@ enum IntegrationType {
   JIRA
   MOTION
   NOTION
+  GITHUB
 }
 
 enum ReportingFrequency {
@@ -110,8 +111,9 @@ model UserPreferences {
   userId            String            @unique
   tone              Tone              @default(FRIENDLY)
   responseStyle     ResponseStyle     @default(CONVERSATIONAL)
-  preferredLanguage String            @default("en")
-  timeZone          String            @default("America/New_York")
+  preferredLanguage String            @default("English")
+  chatModel         String            @default("GPT-4o")
+  timezone          String            @default("America/New_York")
   integrations      UserIntegration[]
   user              User?             @relation(fields: [userId], references: [id])
 }
