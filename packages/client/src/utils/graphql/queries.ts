@@ -20,6 +20,20 @@ export const GetUser = gql(`
           }
         }
       }
+      preferences {
+        chatModel
+        tone
+        responseStyle
+        preferredLanguage
+        timezone
+        integrations {
+          type
+          enabled
+          apiToken
+          baseUrl
+          workspace
+        }
+      }
     }
   }
 `);

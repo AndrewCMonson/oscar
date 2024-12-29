@@ -24,12 +24,20 @@ type UserPreferences {
   createdAt: DateTime
   updatedAt: DateTime
   userId: String
-  tone: String
-  responseStyle: String
+  tone: Tone
+  responseStyle: ResponseStyle
   preferredLanguage: String
+  chatModel: String
   timezone: String
   integrations: [UserIntegration]
-  user: User
+}
+
+input UserPreferencesInput {
+  tone: Tone
+  responseStyle: ResponseStyle
+  preferredLanguage: String
+  chatModel: String
+  timezone: String
 }
 
 type UserIntegration {
@@ -94,5 +102,9 @@ type Mutation {
     username: String
     role: String
   ): User
+  updateUserPreferences(
+    auth0sub: String!
+    preferences: UserPreferencesInput    
+  ): UserPreferences
   deleteUser(id: ID!): User
 }

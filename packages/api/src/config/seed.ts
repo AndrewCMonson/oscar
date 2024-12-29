@@ -110,10 +110,10 @@ export const seed = async (): Promise<void> => {
         tone: Tone.CONCISE,
         responseStyle: ResponseStyle.CONVERSATIONAL,
         userId: user.id,
-        timeZone: "America/New York",
+        timezone: "America/New York",
         integrations: {
           create: {
-            type: IntegrationType.JIRA,
+            type: IntegrationType.GITHUB,
             enabled: true,
             apiToken: "jira-api",
             baseUrl: "https://jira.com",
