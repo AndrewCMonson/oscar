@@ -54,7 +54,7 @@ export const chatWithAssistant = async (
     // check if the user has conversation history with the assistant for this project. If they don't, it means there is no project yet, and it will create a new project and corresponding conversation.
     const conversationHistory = projectId
       ? await findConversation(user.id, projectId)
-      : await assistantGeneratedProject(user, message);
+      : await assistantGenerateProject(user, message);
 
     // The new message is added to the conversation
     const updatedConversation = await addMessageToConversation(
@@ -125,7 +125,7 @@ export const chatWithAssistant = async (
   }
 };
 
-export const assistantGeneratedProject = async (
+export const assistantGenerateProject = async (
   user: User,
   message: ChatGPTMessage,
 ): Promise<ConversationWithMessages> => {
