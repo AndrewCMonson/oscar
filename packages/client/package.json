@@ -8,8 +8,7 @@
     "build": "tsc -b && vite build",
     "lint:fix": "cd ../.. && yarn lint --fix",
     "preview": "vite preview",
-    "codegen": "graphql-codegen",
-    "codegen:watch": "graphql-codegen -w"
+    "codegen": "cd ../.. && yarn codegen"
   },
   "dependencies": {
     "@apollo/client": "^3.11.10",
