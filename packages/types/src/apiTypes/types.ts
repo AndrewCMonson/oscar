@@ -17,12 +17,12 @@ import { User as Auth0User } from "auth0";
 import { Request, Response } from "express";
 import { z } from "zod";
 
-type UpdateUserPreferenceParameters = z.infer<
+export type UpdateUserPreferenceParameters = z.infer<
   typeof updateUserPreferenceParameters
 >;
-type CreateTaskParameters = z.infer<typeof createTaskParameters>;
-type GetProjectsParameters = z.infer<typeof getProjectsParameters>;
-type UpdateProjectDataParameters = z.infer<typeof updateProjectParameters>;
+export type CreateTaskParameters = z.infer<typeof createTaskParameters>;
+export type GetProjectsParameters = z.infer<typeof getProjectsParameters>;
+export type UpdateProjectDataParameters = z.infer<typeof updateProjectParameters>;
 export type OpenAIStructuredOutput = z.infer<typeof openAIStructuredOutput>;
 
 export type ToolCallFunctions = {
