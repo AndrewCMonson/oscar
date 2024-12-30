@@ -4,11 +4,11 @@ import { SidebarNav } from "@/components/ui/sidebar-nav.tsx";
 import { Spinner } from "@/components/ui/spinner.tsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
-import { FC, useState } from "react";
+import { useState } from "react";
 
-export const Profile: FC = () => {
+export const Profile = () => {
   const { user, isAuthenticated, isLoading } = useAuth0();
-  const [selectedSettings, setSelectedSettings] = useState<string>("profile");
+  const [selectedSettings, setSelectedSettings] = useState<string>("user");
   const [formEditable, setFormEditable] = useState<boolean>(false);
 
   if (isLoading) {
@@ -40,14 +40,14 @@ export const Profile: FC = () => {
   const NavItems = [
     {
       selectedItem: "profile",
-      name: "profile",
-      title: "Profile Settings",
+      name: "user",
+      title: "User Settings",
     },
-    {
-      selectedItem: "assistant",
-      name: "assistant",
-      title: "Assistant Settings",
-    },
+    // {
+    //   selectedItem: "assistant",
+    //   name: "assistant",
+    //   title: "Assistant Settings",
+    // },
   ];
 
   return (
@@ -75,7 +75,7 @@ export const Profile: FC = () => {
               Account Settings
             </motion.h1>
             <p className="text-lg sm:text-xl text-zinc-500">
-              Welcome back, <span className="font-semibold">{user?.name}</span>!
+              Welcome back{user?.name && <span className="font-semibold"> {user?.name}</span>}!
             </p>
           </div>
           <Separator />
@@ -90,17 +90,17 @@ export const Profile: FC = () => {
 
             <div className="lg:w-3/4 bg-transparent shadow-lg">
               <div className="h-full bg-transparent transition-colors duration-300 backdrop-blur-sm pt-4">
-                {selectedSettings === "profile" && (
+                {selectedSettings === "user" && (
                   <div className="text-start mb-6">
                     <div className="text-lg sm:text-xl text-white font-semibold">
-                      Profile Settings
+                      User Settings
                     </div>
                     <div className="text-zinc-500">
                       This is where you can configure your profile settings.
                     </div>
                   </div>
                 )}
-                {selectedSettings === "assistant" && (
+                {/* {selectedSettings === "assistant" && (
                   <div className="text-start mb-6">
                     <div className="text-lg sm:text-xl text-white font-semibold">
                       Assistant Settings
@@ -110,10 +110,10 @@ export const Profile: FC = () => {
                         settings.`}
                     </div>
                   </div>
-                )}
+                )} */}
                 <Separator />
                 <div className="mt-2">
-                  {selectedSettings === "profile" && (
+                  {selectedSettings === "user" && (
                     <ProfileSettingsForm
                       user={user}
                       formEditable={formEditable}
