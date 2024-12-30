@@ -97,7 +97,7 @@ export const ProfileSettingsForm = ({
   };
 
   if (userLoading) {
-    return <Spinner size="large" />;
+    return <Spinner size="large"/>;
   }
 
   if (userError) {
@@ -114,11 +114,7 @@ export const ProfileSettingsForm = ({
             <FormItem className="text-start lg:w-1/2 mt-2">
               <FormLabel htmlFor="username">Username</FormLabel>
               <FormControl>
-                {formEditable ? (
-                  <Input {...field} id="username" />
-                ) : (
-                  <Input disabled {...field} id="username" />
-                )}
+                <Input disabled {...field} id="username" />
               </FormControl>
               <FormMessage />
             </FormItem>

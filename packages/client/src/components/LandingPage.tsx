@@ -3,10 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
 import { BookOpenIcon, CalendarIcon, CodeIcon, RocketIcon } from "lucide-react";
-import { FC } from "react";
 import { Link } from "react-router";
 
-export const OscarLandingPage: FC = () => {
+export const OscarLandingPage = () => {
   const { isAuthenticated, loginWithRedirect } = useAuth0();
 
   const features = [

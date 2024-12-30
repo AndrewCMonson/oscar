@@ -6,15 +6,28 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { useAuth0 } from "@auth0/auth0-react";
-import { FC, ReactNode } from "react";
+import { ReactNode } from "react";
 
 interface AuthorizedApolloProviderProps {
   children: ReactNode;
 }
 
-export const AuthorizedApolloProvider: FC<AuthorizedApolloProviderProps> = ({
+/**
+ * AuthorizedApolloProvider is a React component that sets up an Apollo Client
+ * with authentication and provides it to its children components.
+ *
+ * @param {AuthorizedApolloProviderProps} props - The props for the component.
+ * @param {React.ReactNode} props.children - The child components that will have access to the Apollo Client.
+ *
+ * @returns {JSX.Element} The ApolloProvider component with the configured Apollo Client.
+ *
+ * This component uses the useAuth0 hook to get the authenticated user and access token.
+ * It sets up an Apollo Client with an HTTP link to the GraphQL server and an authentication link
+ * that adds the access token and user information to the request headers.
+ */
+export const AuthorizedApolloProvider = ({
   children,
-}) => {
+}: AuthorizedApolloProviderProps): JSX.Element => {
   const { user, getAccessTokenSilently } = useAuth0();
 
   const httpLink = new HttpLink({
