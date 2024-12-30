@@ -16,15 +16,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ResponseStyle, Tone } from "@/types.js";
-import { GetUser } from "@/utils/graphql/queries.ts";
+import { Spinner } from "@/components/ui/spinner.tsx";
 import { UpdateUserPreferences } from "@/utils/graphql/mutations.ts";
-import { useQuery, useMutation } from "@apollo/client";
+import { GetUser } from "@/utils/graphql/queries.ts";
+import { useMutation, useQuery } from "@apollo/client";
 import { User } from "@auth0/auth0-react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ResponseStyle, Tone } from "@oscar/types/src/__generatedTypes__/graphql.ts";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Spinner } from "./ui/spinner.tsx";
 
 const formSchema = z.object({
   username: z.string().min(3),

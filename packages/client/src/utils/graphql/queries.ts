@@ -1,4 +1,4 @@
-import { gql } from "../../__generated__/gql";
+import { gql } from "@oscar/types/index.ts";
 
 export const GetUser = gql(`
   query GetUser($auth0Sub: String!){

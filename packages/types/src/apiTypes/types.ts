@@ -4,7 +4,7 @@ import {
   openAIStructuredOutput,
   updateProjectParameters,
   updateUserPreferenceParameters,
-} from "@api/src/services/OpenAI/";
+} from "@api/src/services/OpenAI/index.js";
 import {
   Prisma,
   Project,
@@ -12,18 +12,10 @@ import {
   Task,
   User,
   UserPreferences,
-} from "@prisma/client";
+} from "@api/node_modules/.prisma/client";
 import { User as Auth0User } from "auth0";
 import { Request, Response } from "express";
 import { z } from "zod";
-
-declare module "express" {
-  export interface Request {
-    headers: Request["headers"] & {
-      authorizeduser?: string | undefined;
-    };
-  }
-}
 
 type UpdateUserPreferenceParameters = z.infer<
   typeof updateUserPreferenceParameters
@@ -31,7 +23,7 @@ type UpdateUserPreferenceParameters = z.infer<
 type CreateTaskParameters = z.infer<typeof createTaskParameters>;
 type GetProjectsParameters = z.infer<typeof getProjectsParameters>;
 type UpdateProjectDataParameters = z.infer<typeof updateProjectParameters>;
-type OpenAIStructuredOutput = z.infer<typeof openAIStructuredOutput>;
+export type OpenAIStructuredOutput = z.infer<typeof openAIStructuredOutput>;
 
 export type ToolCallFunctions = {
   updateUserPreferences: UpdateUserPreferenceParameters;
@@ -72,7 +64,6 @@ export interface FormattedMessage {
 }
 
 export type ToolCallFunctionArgs =
-  | CreateProjectParameters
   | UpdateUserPreferenceParameters
   | CreateTaskParameters
   | GetProjectsParameters
@@ -122,7 +113,7 @@ export interface UserMemoryData {
   language: string;
 }
 
-interface IncomingUser extends Auth0User {
+export interface IncomingUser extends Auth0User {
   sub: string;
 }
 

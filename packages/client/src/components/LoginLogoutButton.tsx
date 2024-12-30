@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { forwardRef } from "react";
-import { Button, ButtonProps } from "./ui/button/button.tsx";
+import { Button, ButtonProps } from "@/components/ui/button/button.tsx";
 
 interface LoginLogoutButtonProps extends ButtonProps {
   variant: ButtonProps["variant"];

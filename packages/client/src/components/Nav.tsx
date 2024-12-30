@@ -1,9 +1,13 @@
+import { LoginLogoutButton } from "@/components/LoginLogoutButton.tsx";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar.tsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { MouseEvent } from "react";
 import { Link, useLocation } from "react-router";
-import { LoginLogoutButton } from "./LoginLogoutButton.tsx";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar.tsx";
-import { Button } from "./ui/button/button.tsx";
+import { Button } from "@/components/ui/button/button.tsx";
 
 export const Nav = () => {
   const location = useLocation();

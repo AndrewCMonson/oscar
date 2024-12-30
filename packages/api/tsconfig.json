@@ -2,8 +2,14 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": ".",
-    "types": ["node"]
+    "rootDir": "../",
+    "types": ["node"],
+    "baseUrl": "./",
+    "paths": {
+      "@api/*": ["./*"],
+      "@oscar/types/*": ["../types/src/*"],
+      "@client/*": ["../client/src/*"]
+    }
   },
   "exclude": ["dist", "node_modules", "types"],
   "include": ["src/**/*", "index.ts", "types/types.d.ts"]

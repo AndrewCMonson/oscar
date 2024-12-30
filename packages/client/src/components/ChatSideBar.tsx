@@ -1,4 +1,4 @@
-import { Project } from "@/__generated__/graphql.ts";
+import { Button } from "@/components/ui/button.tsx";
 import {
   Sidebar,
   SidebarContent,
@@ -14,10 +14,9 @@ import {
 } from "@/components/ui/sidebar";
 import { DeleteProject } from "@/utils/graphql/mutations.ts";
 import { useMutation } from "@apollo/client";
+import { ChatGPTMessage, Project } from "@oscar/types/index.ts";
 import { PlusCircleIcon, Trash } from "lucide-react";
 import { useNavigate } from "react-router";
-import { ChatGPTMessage } from "../../../api/types/index.ts";
-import { Button } from "./ui/button.tsx";
 
 interface ChatSidebarProps {
   projects: Project[];

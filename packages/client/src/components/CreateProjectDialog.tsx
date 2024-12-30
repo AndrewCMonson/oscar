@@ -1,3 +1,4 @@
+import { CreateProjectForm } from "@/components/CreateProjectForm.tsx";
 import {
   Dialog,
   DialogContent,
@@ -5,7 +6,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CreateProjectForm } from "./CreateProjectForm.tsx";
 
 type CreateProjectDialogProps = {
   open: boolean;

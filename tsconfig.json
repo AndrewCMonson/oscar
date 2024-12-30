@@ -10,7 +10,8 @@
     "baseUrl": ".",
     "paths": {
       "@api/*": ["packages/api/*"],
-      "@client/*": ["packages/client/src/*"]
+      "@client/*": ["packages/client/src/*"],
+      "@oscar/types": ["packages/types/src/index.ts"]
     }
   },
   "include": ["./packages/**/*"]

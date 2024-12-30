@@ -11,7 +11,8 @@
     "start:client": "cd packages/client && yarn start:dev",
     "spool": "yarn && cd packages/client && yarn && cd ../api && yarn",
     "start:dev": "concurrently -r --kill-others-on-fail \"yarn start:api\" \"yarn start:client\" ",
-    "build": "cd packages/client && yarn build && cd ../api && yarn build"
+    "build": "cd packages/client && yarn build && cd ../api && yarn build",
+    "codegen": "graphql-codegen"
   },
   "dependencies": {
     "jsonwebtoken": "^9.0.2",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
+    "@graphql-codegen/cli": "^5.0.3",
     "@types/eslint__js": "^8.42.3",
     "@typescript-eslint/eslint-plugin": "^8.14.0",
     "@typescript-eslint/parser": "^8.14.0",
@@ -28,6 +30,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-react": "^7.37.2",
     "globals": "^15.12.0",
+    "graphql": "^16.10.0",
     "prettier": "3.3.3",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.14.0"
