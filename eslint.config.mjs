@@ -28,7 +28,7 @@ export default [
       "**/prisma/*",
       "**/src/components/ui/**",
       "**/tailwind.config.js",
-      "**/src/__generated__/**",
+      "**/types/src/**",
     ],
   },
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },

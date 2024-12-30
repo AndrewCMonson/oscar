@@ -75,7 +75,11 @@ export const Profile = () => {
               Account Settings
             </motion.h1>
             <p className="text-lg sm:text-xl text-zinc-500">
-              Welcome back{user?.name && <span className="font-semibold"> {user?.name}</span>}!
+              Welcome back
+              {user?.name && (
+                <span className="font-semibold"> {user?.name}</span>
+              )}
+              !
             </p>
           </div>
           <Separator />

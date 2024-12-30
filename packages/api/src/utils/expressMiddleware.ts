@@ -1,6 +1,9 @@
 import { ContextFunction } from "@apollo/server";
 import { ExpressContextFunctionArgument } from "@apollo/server/express4";
-import { MiddlewareContext, IncomingUser } from "@oscar/types/apiTypes/types.js";
+import {
+  MiddlewareContext,
+  IncomingUser,
+} from "@oscar/types/apiTypes/types.js";
 import { prismadb } from "@api/src/config/index.js";
 
 /**
