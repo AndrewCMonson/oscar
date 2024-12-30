@@ -1,10 +1,10 @@
-import { ResponseStyle, Tone } from "@/types.ts";
 import {
-  User,
-  GetTokenSilentlyOptions,
   AuthenticationError,
+  GetTokenSilentlyOptions,
+  User,
 } from "@auth0/auth0-react";
-import { useState, useEffect } from "react";
+import { ResponseStyle, Tone } from "@oscar/types/index.ts";
+import { useEffect, useState } from "react";
 
 type GetAccessTokenSilentlyType = (
   options?: GetTokenSilentlyOptions,

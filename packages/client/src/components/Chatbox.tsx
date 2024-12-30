@@ -1,16 +1,16 @@
+import {
+  ChatBubble,
+  ChatBubbleAvatar,
+  ChatBubbleMessage,
+} from "@/components/ui/chat/chat-bubble.js";
+import { ChatMessageList } from "@/components/ui/chat/chat-message-list.js";
 import { containsMarkdown } from "@/utils/containsMarkdown.js";
+import { ChatGPTMessage } from "@oscar/types/index.js";
 import { debounce } from "lodash";
 import { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { materialDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { ChatGPTMessage } from "../../../api/types/index.js";
-import {
-  ChatBubble,
-  ChatBubbleAvatar,
-  ChatBubbleMessage,
-} from "./ui/chat/chat-bubble.js";
-import { ChatMessageList } from "./ui/chat/chat-message-list.js";
 
 interface ChatboxProps {
   messages: ChatGPTMessage[];

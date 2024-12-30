@@ -1,10 +1,10 @@
+import { ProfileSettingsForm } from "@/components/ProfileSettingsForm.tsx";
+import { Separator } from "@/components/ui/separator.tsx";
+import { SidebarNav } from "@/components/ui/sidebar-nav.tsx";
+import { Spinner } from "@/components/ui/spinner.tsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
 import { FC, useState } from "react";
-import { ProfileSettingsForm } from "./ProfileSettingsForm.tsx";
-import { Separator } from "./ui/separator.tsx";
-import { SidebarNav } from "./ui/sidebar-nav.tsx";
-import { Spinner } from "./ui/spinner.tsx";
 
 export const Profile: FC = () => {
   const { user, isAuthenticated, isLoading } = useAuth0();

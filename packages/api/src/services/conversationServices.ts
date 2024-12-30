@@ -1,6 +1,6 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
-import { ConversationWithMessages } from "@api/types";
-import { prismadb } from "../config/index.js";
+import { ConversationWithMessages } from "@oscar/types/apiTypes/types.js";
+import { prismadb } from "@api/src/config/index.js";
 
 export const addMessageToConversation = async (
   conversationId: string,

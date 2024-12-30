@@ -1,7 +1,3 @@
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ProjectType } from "@/__generated__/graphql.ts";
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button.tsx";
 import {
   Form,
@@ -20,8 +16,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useMutation } from "@apollo/client";
 import { CreateProject } from "@/utils/graphql/mutations.ts";
+import { useMutation } from "@apollo/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ProjectType } from "@oscar/types/index.ts";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { Spinner } from "./ui/spinner.tsx";
 
 const formSchema = z.object({

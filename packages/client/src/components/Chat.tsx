@@ -1,6 +1,11 @@
-import { Project } from "@/__generated__/graphql.js";
+import { Chatbox, ChatSidebar, CreateProjectDialog, LoadingScreen } from "@/components";
+import { Button } from "@/components/ui/button/button.js";
+import { SidebarTrigger } from "@/components/ui/sidebar.js";
+import { Textarea } from "@/components/ui/textarea.js";
+import { GetUser, HandleConversationMessage } from "@/utils/graphql/index.js";
 import { useMutation, useQuery } from "@apollo/client";
 import { useAuth0 } from "@auth0/auth0-react";
+import { ChatGPTMessage, Project } from "@oscar/types/index.js";
 import { motion } from "framer-motion";
 import {
   ChangeEvent,
@@ -11,15 +16,6 @@ import {
   useState,
 } from "react";
 import { useSearchParams } from "react-router";
-import { ChatGPTMessage } from "../../../api/types/index.js";
-import { GetUser, HandleConversationMessage } from "../utils/graphql/index.js";
-import { Chatbox } from "./Chatbox.js";
-import { ChatSidebar } from "./ChatSideBar.js";
-import { CreateProjectDialog } from "./CreateProjectDialog.js";
-import { LoadingScreen } from "./LoadingScreen.js";
-import { Button } from "./ui/button/button.js";
-import { SidebarTrigger } from "./ui/sidebar.js";
-import { Textarea } from "./ui/textarea.js";
 
 export const Chat = () => {
   const { user, isLoading, isAuthenticated } = useAuth0();

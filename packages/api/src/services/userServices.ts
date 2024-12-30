@@ -1,7 +1,7 @@
 import { UserPreferences } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
 import { UpdateUserPreferenceParameters } from "@api/types";
-import { prismadb } from "../config/index.js";
+import { prismadb } from "@api/src/config/index.js";
 
 export const getUserByRole = async (role: string) => {
   if (!role) {
@@ -73,7 +73,7 @@ export const updateUserPreferences = async (
         tone: tone,
         responseStyle: responseStyle,
         preferredLanguage: preferredLanguage,
-        timeZone: timeZone,
+        timezone: timeZone,
       },
     });
 
