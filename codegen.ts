@@ -1,5 +1,4 @@
 import { CodegenConfig } from "@graphql-codegen/cli";
-import {} from "./packages/api/node_modules/@prisma/client/index.d";
 
 const config: CodegenConfig = {
   schema: "http://localhost:3005/graphql",
@@ -23,7 +22,7 @@ const config: CodegenConfig = {
       ProjectContext:
         "./packages/api/node_modules/@prisma/client/index.d#ProjectContext as ProjectContextModel",
       ProjectMetadata:
-        "./packages/api/node_modules/@prisma/client/index.dProjectMetadata as ProjectMetadataModel",
+        "./packages/api/node_modules/@prisma/client/index.d#ProjectMetadata as ProjectMetadataModel",
       ProjectGoal:
         "./packages/api/node_modules/@prisma/client/index.d#ProjectGoal as ProjectGoalModel",
       ProjectPreferences:
