@@ -22,7 +22,10 @@ import { GetUser } from "@/utils/graphql/queries.ts";
 import { useMutation, useQuery } from "@apollo/client";
 import { User } from "@auth0/auth0-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ResponseStyle, Tone } from "@oscar/types/src/__generatedTypes__/graphql.ts";
+import {
+  ResponseStyle,
+  Tone,
+} from "@oscar/types/src/__generatedTypes__/graphql.ts";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -46,14 +49,19 @@ export const ProfileSettingsForm = ({
   formEditable,
   setFormEditable,
 }: ProfileSettingsFormProps) => {
-  const { data, loading: userLoading, error: userError } = useQuery(GetUser, {
+  const {
+    data,
+    loading: userLoading,
+    error: userError,
+  } = useQuery(GetUser, {
     variables: { auth0Sub: user?.sub || "" },
     onCompleted: (data) => {
       form.reset({
         username: user?.nickname ?? "",
         chatModel: data.user.preferences?.chatModel ?? "",
         preferredLanguage: data.user.preferences?.preferredLanguage ?? "",
-        responseStyle: data.user.preferences?.responseStyle ?? ResponseStyle.Conversational,
+        responseStyle:
+          data.user.preferences?.responseStyle ?? ResponseStyle.Conversational,
         timezone: data.user.preferences?.timezone ?? "",
         tone: data.user.preferences?.tone ?? Tone.Friendly,
       });
@@ -97,7 +105,7 @@ export const ProfileSettingsForm = ({
   };
 
   if (userLoading) {
-    return <Spinner size="large"/>;
+    return <Spinner size="large" />;
   }
 
   if (userError) {

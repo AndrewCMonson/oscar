@@ -1,4 +1,9 @@
-import { Chatbox, ChatSidebar, CreateProjectDialog, LoadingScreen } from "@/components";
+import {
+  Chatbox,
+  ChatSidebar,
+  CreateProjectDialog,
+  LoadingScreen,
+} from "@/components";
 import { Button } from "@/components/ui/button/button.js";
 import { SidebarTrigger } from "@/components/ui/sidebar.js";
 import { Textarea } from "@/components/ui/textarea.js";

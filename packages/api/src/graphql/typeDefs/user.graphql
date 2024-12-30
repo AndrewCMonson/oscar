@@ -104,7 +104,7 @@ type Mutation {
   ): User
   updateUserPreferences(
     auth0sub: String!
-    preferences: UserPreferencesInput    
+    preferences: UserPreferencesInput
   ): UserPreferences
   deleteUser(id: ID!): User
 }

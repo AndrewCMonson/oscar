@@ -8,9 +8,8 @@
     "paths": {
       "@/*": ["src/*"],
       "@api/*": ["../api/*"],
-      "@client/*": ["../client/*"],
-  
+      "@client/*": ["../client/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src"]
 }
