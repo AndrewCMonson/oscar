@@ -1,5 +1,6 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
-import { ChatGPTMessage, Resolvers } from "../../../types/index.js";
+import { Resolvers } from "@oscar/types/apiTypes/generated/graphql.js";
+import { ChatGPTMessage } from "@oscar/types/apiTypes/index.js";
 import { prismadb } from "../../config/index.js";
 import { chatWithAssistant } from "../../services/index.js";
 

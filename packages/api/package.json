@@ -7,7 +7,7 @@
   "scripts": {
     "start:dev": "tsx watch --include ./src index.ts",
     "build": "rm -rf dist && tsc -b && cp -r ./src/graphql/typeDefs/ ./dist/src/graphql",
-    "codegen": "cd ../.. && yarn codegen",
+    "codegen": "graphql-codegen && cd ../client && yarn graphql-codegen",
     "lint:fix": "cd ../.. && yarn lint --fix",
     "db:reset": "prisma db push --force-reset && prisma db seed",
     "start": "node dist/index.js"

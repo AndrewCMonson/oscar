@@ -1,5 +1,5 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
-import { Resolvers } from "../../../types/index.js";
+import { Resolvers } from "@oscar/types/apiTypes/generated/graphql.js";
 import { prismadb } from "../../config/index.js";
 
 export const messageResolvers: Resolvers = {
@@ -48,6 +48,10 @@ export const messageResolvers: Resolvers = {
       { conversationId, content, role, name },
       { user },
     ) => {
+      if(!user) {
+        throw new Error("User not authenticated");
+      }
+      
       try {
         const message = await prismadb.message.create({
           data: {
