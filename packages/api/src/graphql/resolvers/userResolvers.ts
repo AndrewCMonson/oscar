@@ -1,4 +1,4 @@
-import { Resolvers } from "../../../types/index.js";
+import { Resolvers } from "@oscar/types/apiTypes/generated/graphql.js";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
 import { prismadb } from "../../config/index.js";
 
