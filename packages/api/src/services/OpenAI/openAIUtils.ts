@@ -4,7 +4,7 @@ import {
   handleToolCallFunction,
   openAIStructuredOutput,
   openAITools,
-  openAIStructuredOutputProjectCreation
+  openAIStructuredOutputProjectCreation,
 } from "@api/src/services/index.js";
 import {
   OpenAIStructuredOutput,

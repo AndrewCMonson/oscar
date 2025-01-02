@@ -123,3 +123,11 @@ export interface AWSSecrets {
   username: string;
   password: string;
 }
+
+export interface Auth0Identity {
+  provider: string;
+  user_id: string;
+  connection: string;
+  isSocial: boolean;
+  access_token: string;
+}

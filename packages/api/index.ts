@@ -5,6 +5,9 @@ import express, { Response } from "express";
 import { connectDB } from "./src/config/index.js";
 import { schema } from "./src/graphql/schema.js";
 import { middlewareContext } from "./src/utils/index.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const PORT = process.env.PORT || 3005;
 

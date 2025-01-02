@@ -129,11 +129,11 @@ export const chatWithAssistant = async (
 
 /**
  * Generates a new project and conversation based on the user's first message to the assistant.
- * 
- * This function is used to generate project details when a user interacts with the assistant without a specified project selected. 
- * It takes in the user's message, generates a new project, and creates a project title and description based on the user's message. 
+ *
+ * This function is used to generate project details when a user interacts with the assistant without a specified project selected.
+ * It takes in the user's message, generates a new project, and creates a project title and description based on the user's message.
  * The generated project and conversation are then saved to the database.
- * 
+ *
  * @param user - The user object containing user details.
  * @param message - The message object containing the user's message.
  * @returns A promise that resolves to a conversation with messages.
@@ -170,10 +170,12 @@ export const assistantGenerateProject = async (
     const projectCreationResponse = z.object({
       projectTitle: z.string(),
       projectDescription: z.string(),
-    })
+    });
 
     // parse and validate the assistant response based on above schema
-    const assistantResponseContent = projectCreationResponse.parse(JSON.parse(assistantResponse.content));
+    const assistantResponseContent = projectCreationResponse.parse(
+      JSON.parse(assistantResponse.content),
+    );
     const projectTitle = assistantResponseContent.projectTitle;
     const projectDescription = assistantResponseContent.projectDescription;
 
@@ -235,10 +237,10 @@ export const assistantGenerateProject = async (
     return generatedProjectConversation;
   } catch (error) {
     console.error(error);
-    if(error instanceof ZodError) {
+    if (error instanceof ZodError) {
       console.error(error.errors, "Assistant Response is not valid JSON");
       // if the assistant response is not valid JSON, we will attempt to run the function again
-      await assistantGenerateProject(user, message);   
+      await assistantGenerateProject(user, message);
     }
     throw new Error("An error occurred generating the project");
   }
