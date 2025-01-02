@@ -7,11 +7,11 @@ import {
 import { Button } from "@/components/ui/button/button.js";
 import { SidebarTrigger } from "@/components/ui/sidebar.js";
 import { Textarea } from "@/components/ui/textarea.js";
+import { Project } from "@/gql/graphql.ts";
 import { GetUser, HandleConversationMessage } from "@/utils/graphql/index.js";
+import { ChatGPTMessage } from "@api/types/types.ts";
 import { useMutation, useQuery } from "@apollo/client";
 import { useAuth0 } from "@auth0/auth0-react";
-import { ChatGPTMessage } from "@oscar/types/index.js";
-import { Project } from "@oscar/types/src/clientTypes/generated/graphql.ts";
 import { motion } from "framer-motion";
 import {
   ChangeEvent,
@@ -51,10 +51,12 @@ export const Chat = () => {
         name: "assistant",
       });
       if (selectedProject === null) {
-        setSelectedProject(data.handleConversationMessage.projectId);
-        setSearchParams({
-          projectId: data.handleConversationMessage.projectId,
-        });
+        if (data.handleConversationMessage) {
+          setSelectedProject(data.handleConversationMessage.projectId ?? null);
+          setSearchParams({
+            projectId: data.handleConversationMessage.projectId ?? "",
+          });
+        }
       }
     },
     onError: (error) => console.log(error),

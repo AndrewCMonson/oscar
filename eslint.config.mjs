@@ -8,6 +8,22 @@ import tseslint from "typescript-eslint";
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   {
+    ignores: ["**/gql/**"],
+  },
+  {
+    ignores: [
+      "node_modules",
+      "**/gql/**",
+      "**/dist/*",
+      "**/build/*",
+      "**/tsconfig.json",
+      "**/generated/",
+      "**/prisma/*",
+      "**/src/components/ui/**",
+      "**/tailwind.config.js",
+    ],
+  },
+  {
     files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
     plugins: {
       react,
@@ -17,20 +33,6 @@ export default [
         version: "detect",
       },
     },
-  },
-  {
-    ignores: [
-      "node_modules",
-      "**/dist/*",
-      "**/build/*",
-      "**/tsconfig.json",
-      "**/generated/*",
-      "**/prisma/*",
-      "**/src/components/ui/**",
-      "**/tailwind.config.js",
-      "**/types/src/**",
-      "**/gql/**",
-    ],
   },
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
   pluginJs.configs.recommended,
