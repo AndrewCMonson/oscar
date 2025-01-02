@@ -4,6 +4,7 @@ import {
   handleToolCallFunction,
   openAIStructuredOutput,
   openAITools,
+  openAIStructuredOutputProjectCreation
 } from "@api/src/services/index.js";
 import {
   OpenAIStructuredOutput,
@@ -26,6 +27,20 @@ export const openAIApiOptions = {
   presence_penalty: 0.3,
   frequency_penalty: 0.1,
   response_format: zodResponseFormat(openAIStructuredOutput, "assistant"),
+  tools: openAITools,
+};
+
+export const openAIApiOptionsProjectCreation = {
+  model: "gpt-4o-mini",
+  max_tokens: 1000,
+  temperature: 0.5,
+  top_p: 0.95,
+  presence_penalty: 0.3,
+  frequency_penalty: 0.1,
+  response_format: zodResponseFormat(
+    openAIStructuredOutputProjectCreation,
+    "assistant",
+  ),
   tools: openAITools,
 };
 

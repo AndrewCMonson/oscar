@@ -17,6 +17,7 @@ import { DeleteProject } from "@/utils/graphql/mutations.ts";
 import { ChatGPTMessage } from "@api/types/types.ts";
 import { useMutation } from "@apollo/client";
 import { PlusCircleIcon, Trash } from "lucide-react";
+import { MouseEvent } from "react";
 import { useNavigate } from "react-router";
 
 interface ChatSidebarProps {
@@ -49,7 +50,8 @@ export const ChatSidebar = ({
     },
   });
 
-  const handleDeleteProject = (projectId: string) => {
+  const handleDeleteProject = (e: MouseEvent<HTMLButtonElement>, projectId: string) => {
+    e.stopPropagation();
     deleteProject({
       variables: {
         id: projectId,
@@ -85,7 +87,7 @@ export const ChatSidebar = ({
                     <p className="truncate">{project.name}</p>
                     <Button
                       className="bg-transparent hover:bg-red-500 text-white font-semibold hover:text-white py-1 px-2 border border-transparent rounded"
-                      onClick={() => handleDeleteProject(project.id)}
+                      onClick={(e) => handleDeleteProject(e, project.id)}
                     >
                       <Trash size={18} className="cursor-pointer" />
                     </Button>

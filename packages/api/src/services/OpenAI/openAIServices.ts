@@ -7,6 +7,7 @@ import {
   getContext,
   handleResponseToolCalls,
   openAIApiOptions,
+  openAIApiOptionsProjectCreation,
 } from "@api/src/services/index.js";
 import {
   ChatGPTMessage,
@@ -14,6 +15,7 @@ import {
   OpenAIStructuredOutput,
 } from "@api/types/types.js";
 import { User } from "@prisma/client";
+import { z, ZodError } from "zod";
 
 /**
  * Communicates with the assistant using the provided message and user information.
@@ -137,7 +139,7 @@ export const assistantGenerateProject = async (
   const systemContext = formatMessageForOpenAI({
     role: "system",
     content:
-      "You are an assistant tasked with generating a project title and a brief description based on a provided message. carefully analyze the incoming message to do this. Do not perform any other actions or provide any additional output. Focus only on creating A clear and concise project title, A detailed, one-sentence project description. Provide only the project title and description as your response. Your name is 'assistant'. Your response should be formatted JSON and include the following keys: projectTitle, projectDescription.",
+      "You are an assistant tasked with generating a project title and a brief description based on a provided message. carefully analyze the incoming message to do this. Do not perform any other actions or provide any additional output. Focus only on creating A clear and concise project title, A detailed, one-sentence project description. Provide only the project title and description as your response. Your name is 'assistant'. Your response should be always be formatted JSON and include the following keys: projectTitle, projectDescription.",
     name: "system",
   });
 
@@ -146,20 +148,22 @@ export const assistantGenerateProject = async (
   try {
     const openAIResponse = await openAIClient.beta.chat.completions.parse({
       messages: [systemContext, userMessage],
-      ...openAIApiOptions,
+      ...openAIApiOptionsProjectCreation,
     });
 
     const assistantResponse =
       openAIResponse.choices[0].message.parsed ?? assistantFailureResponse;
 
-    console.log(
-      "Assistant response for generated Project: ",
-      assistantResponse,
-    );
-    const assistantResponseContent = JSON.parse(assistantResponse.content);
+    // define the response schema for the assistant's response
+    const projectCreationResponse = z.object({
+      projectTitle: z.string(),
+      projectDescription: z.string(),
+    })
+
+    // parse and validate the assistant response based on above schema
+    const assistantResponseContent = projectCreationResponse.parse(JSON.parse(assistantResponse.content));
     const projectTitle = assistantResponseContent.projectTitle;
     const projectDescription = assistantResponseContent.projectDescription;
-    console.log("Title: ", projectTitle);
 
     const generatedProject = await prismadb.project.create({
       data: {
@@ -219,6 +223,11 @@ export const assistantGenerateProject = async (
     return generatedProjectConversation;
   } catch (error) {
     console.error(error);
+    if(error instanceof ZodError) {
+      console.error(error.errors, "Assistant Response is not valid JSON");
+      // if the assistant response is not valid JSON, we will attempt to run the function again
+      assistantGenerateProject(user, message);   
+    }
     throw new Error("An error occurred generating the project");
   }
 };
