@@ -127,6 +127,18 @@ export const chatWithAssistant = async (
   }
 };
 
+/**
+ * Generates a new project and conversation based on the user's first message to the assistant.
+ * 
+ * This function is used to generate project details when a user interacts with the assistant without a specified project selected. 
+ * It takes in the user's message, generates a new project, and creates a project title and description based on the user's message. 
+ * The generated project and conversation are then saved to the database.
+ * 
+ * @param user - The user object containing user details.
+ * @param message - The message object containing the user's message.
+ * @returns A promise that resolves to a conversation with messages.
+ * @throws Will throw an error if the input is invalid, if the assistant is not found, if the conversation generation fails, or if there is an error during project generation.
+ */
 export const assistantGenerateProject = async (
   user: User,
   message: ChatGPTMessage,
