@@ -238,7 +238,7 @@ export const assistantGenerateProject = async (
     if(error instanceof ZodError) {
       console.error(error.errors, "Assistant Response is not valid JSON");
       // if the assistant response is not valid JSON, we will attempt to run the function again
-      assistantGenerateProject(user, message);   
+      await assistantGenerateProject(user, message);   
     }
     throw new Error("An error occurred generating the project");
   }
