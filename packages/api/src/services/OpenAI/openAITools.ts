@@ -20,6 +20,12 @@ export const openAIStructuredOutput = z.object({
   projectId: z.string().optional(),
 });
 
+export const openAIStructuredOutputProjectCreation = z.object({
+  role: z.string(),
+  name: z.string(),
+  content: z.string(),
+});
+
 /*
   Each of the below parameters objects follow OpenAI's suggested method for
   function calling with structured outputs found here: https://platform.openai.com/docs/guides/function-calling 
