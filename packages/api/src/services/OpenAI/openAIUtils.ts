@@ -1,20 +1,20 @@
-import { Conversation, User } from "@prisma/client";
-import OpenAI from "openai";
-import { zodResponseFormat } from "openai/helpers/zod.js";
-import { ParsedChatCompletion } from "openai/resources/beta/chat/completions.js";
-import { ChatCompletionMessageParam } from "openai/resources/index.js";
-import {
-  OpenAIStructuredOutput,
-  ToolCallFunctionArgs,
-  ToolCallFunctions,
-} from "../../../types/index.js";
-import { openAIClient } from "../../config/index.js";
+import { openAIClient } from "@api/src/config/index.js";
 import {
   addMessageToConversation,
   handleToolCallFunction,
   openAIStructuredOutput,
   openAITools,
-} from "../../services/index.js";
+} from "@api/src/services/index.js";
+import {
+  OpenAIStructuredOutput,
+  ToolCallFunctionArgs,
+  ToolCallFunctions,
+} from "@api/types/types.js";
+import { Conversation, User } from "@prisma/client";
+import OpenAI from "openai";
+import { zodResponseFormat } from "openai/helpers/zod.js";
+import { ParsedChatCompletion } from "openai/resources/beta/chat/completions.js";
+import { ChatCompletionMessageParam } from "openai/resources/index.js";
 
 // Current default settings for the openAI api call
 // TODO: incorporate this into the db so multiple assistants can be used based on user preferences i.e. more creativity, different model, etc...

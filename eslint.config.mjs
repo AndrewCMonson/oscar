@@ -29,6 +29,7 @@ export default [
       "**/src/components/ui/**",
       "**/tailwind.config.js",
       "**/types/src/**",
+      "**/gql/**",
     ],
   },
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },

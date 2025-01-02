@@ -22,7 +22,9 @@ export type UpdateUserPreferenceParameters = z.infer<
 >;
 export type CreateTaskParameters = z.infer<typeof createTaskParameters>;
 export type GetProjectsParameters = z.infer<typeof getProjectsParameters>;
-export type UpdateProjectDataParameters = z.infer<typeof updateProjectParameters>;
+export type UpdateProjectDataParameters = z.infer<
+  typeof updateProjectParameters
+>;
 export type OpenAIStructuredOutput = z.infer<typeof openAIStructuredOutput>;
 
 export type ToolCallFunctions = {

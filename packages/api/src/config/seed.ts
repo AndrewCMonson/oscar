@@ -1,13 +1,13 @@
-import { prismadb } from "./db.js";
+import { prismadb } from "@api/src/config/db.js";
+import { initialLLMPrompt } from "@api/src/utils/index.js";
 import {
-  Tone,
-  ResponseStyle,
   IntegrationType,
-  ProjectStatus,
   ProjectPriority,
+  ProjectStatus,
   ReportingFrequency,
+  ResponseStyle,
+  Tone,
 } from "@prisma/client";
-import { initialLLMPrompt } from "../utils/index.js";
 
 export const seed = async (): Promise<void> => {
   try {

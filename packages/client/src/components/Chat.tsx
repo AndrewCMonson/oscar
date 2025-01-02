@@ -10,7 +10,8 @@ import { Textarea } from "@/components/ui/textarea.js";
 import { GetUser, HandleConversationMessage } from "@/utils/graphql/index.js";
 import { useMutation, useQuery } from "@apollo/client";
 import { useAuth0 } from "@auth0/auth0-react";
-import { ChatGPTMessage, Project } from "@oscar/types/index.js";
+import { ChatGPTMessage } from "@oscar/types/index.js";
+import { Project } from "@oscar/types/src/clientTypes/generated/graphql.ts";
 import { motion } from "framer-motion";
 import {
   ChangeEvent,
@@ -45,7 +46,7 @@ export const Chat = () => {
     onCompleted: (data) => {
       console.log(data);
       updateMessages({
-        content: data.handleConversationMessage.content,
+        content: data.handleConversationMessage?.content ?? "",
         role: "assistant",
         name: "assistant",
       });

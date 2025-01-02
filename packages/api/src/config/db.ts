@@ -1,6 +1,6 @@
+import { AWSSecretsRetrieval } from "@api/src/services/AWS/secretsManager.js";
+import { escapeForPrisma } from "@api/src/utils/escapePrismaPw.js";
 import { PrismaClient } from "@prisma/client";
-import { AWSSecretsRetrieval } from "../services/AWS/secretsManager.js";
-import { escapeForPrisma } from "../utils/escapePrismaPw.js";
 
 const { username, password } = await AWSSecretsRetrieval();
 

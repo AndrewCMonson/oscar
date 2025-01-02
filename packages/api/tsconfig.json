@@ -7,7 +7,6 @@
     "baseUrl": "./",
     "paths": {
       "@api/*": ["./*"],
-      "@oscar/types/*": ["../types/src/*"],
       "@client/*": ["../client/src/*"]
     }
   },

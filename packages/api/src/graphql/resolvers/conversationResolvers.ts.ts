@@ -1,8 +1,8 @@
+import { prismadb } from "@api/src/config/index.js";
+import { chatWithAssistant } from "@api/src/services/index.js";
+import { Resolvers } from "@api/types/generated/graphql.js";
+import { ChatGPTMessage } from "@api/types/types.js";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
-import { Resolvers } from "@oscar/types/apiTypes/generated/graphql.js";
-import { ChatGPTMessage } from "@oscar/types/apiTypes/index.js";
-import { prismadb } from "../../config/index.js";
-import { chatWithAssistant } from "../../services/index.js";
 
 export const conversationResolvers: Resolvers = {
   Query: {

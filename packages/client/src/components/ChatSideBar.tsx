@@ -12,9 +12,10 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Project } from "@/gql/graphql.ts";
 import { DeleteProject } from "@/utils/graphql/mutations.ts";
+import { ChatGPTMessage } from "@api/types/types.ts";
 import { useMutation } from "@apollo/client";
-import { ChatGPTMessage, Project } from "@oscar/types/index.ts";
 import { PlusCircleIcon, Trash } from "lucide-react";
 import { useNavigate } from "react-router";
 

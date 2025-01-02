@@ -1,10 +1,7 @@
+import { prismadb } from "@api/src/config/index.js";
+import { IncomingUser, MiddlewareContext } from "@api/types/types.js";
 import { ContextFunction } from "@apollo/server";
 import { ExpressContextFunctionArgument } from "@apollo/server/express4";
-import {
-  MiddlewareContext,
-  IncomingUser,
-} from "@oscar/types/apiTypes/types.js";
-import { prismadb } from "@api/src/config/index.js";
 
 /**
  * Middleware context function to handle user authentication and context creation.

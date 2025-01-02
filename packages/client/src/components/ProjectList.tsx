@@ -1,4 +1,4 @@
-import { Project } from "@oscar/types/index.ts";
+import { Project } from "@/gql/graphql.ts";
 
 interface ProjectListProps {
   projects: Project[];
