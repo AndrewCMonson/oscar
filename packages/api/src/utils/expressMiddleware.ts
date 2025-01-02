@@ -2,6 +2,8 @@ import { prismadb } from "@api/src/config/index.js";
 import { IncomingUser, MiddlewareContext } from "@api/types/types.js";
 import { ContextFunction } from "@apollo/server";
 import { ExpressContextFunctionArgument } from "@apollo/server/express4";
+import { getUserGithubAccessToken } from "../services/Github/githubService.js";
+import { ResponseStyle, Tone } from "@prisma/client";
 
 /**
  * Middleware context function to handle user authentication and context creation.
@@ -46,6 +48,8 @@ export const middlewareContext: ContextFunction<
 
     const authUser: IncomingUser = JSON.parse(incomingUser);
 
+    const userGithubAccessToken = await getUserGithubAccessToken(authUser.sub);
+
     const dbUser = await prismadb.user.findUnique({
       where: {
         auth0sub: authUser.sub,
@@ -55,10 +59,22 @@ export const middlewareContext: ContextFunction<
     if (!dbUser) {
       const createdDBUser = await prismadb.user.create({
         data: {
-          auth0sub: authUser.sub,
+          auth0sub: authUser.sub ?? "",
           firstName: authUser.given_name || authUser.name?.split(" ")[0],
           lastName: authUser.family_name || authUser.name?.split(" ")[1],
           username: authUser.nickname || authUser.username,
+          githubAccessToken: userGithubAccessToken ?? "",
+          email: authUser.email,
+          preferences: {
+            create: {
+              chatModel: authUser.user_metadata?.chatModel || "gpt-4o",
+              tone: Tone.FRIENDLY,
+              responseStyle: ResponseStyle.CONVERSATIONAL,
+              preferredLanguage:
+                authUser.user_metadata?.preferredLanguage || "English",
+              timezone: authUser.user_metadata?.timezone || "America/New_York",
+            },
+          },
         },
       });
 
@@ -67,6 +83,17 @@ export const middlewareContext: ContextFunction<
         res,
         user: createdDBUser,
       };
+    }
+
+    if (userGithubAccessToken !== dbUser.githubAccessToken) {
+      await prismadb.user.update({
+        where: {
+          auth0sub: authUser.sub,
+        },
+        data: {
+          githubAccessToken: userGithubAccessToken,
+        },
+      });
     }
 
     return {

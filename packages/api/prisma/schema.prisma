@@ -92,6 +92,7 @@ model User {
   lastName             String?
   username             String?
   role                 String                @default("user")
+  githubAccessToken    String?
   conversations        Conversation[]
   projects             Project[]
   tasks                Task[]

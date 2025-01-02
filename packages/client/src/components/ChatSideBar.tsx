@@ -39,7 +39,6 @@ export const ChatSidebar = ({
 
   const [deleteProject] = useMutation(DeleteProject, {
     onCompleted: () => {
-      console.log("Project deleted");
       handleProjectSelection(null);
       setMessages([]);
       navigate("/chat");
@@ -50,7 +49,10 @@ export const ChatSidebar = ({
     },
   });
 
-  const handleDeleteProject = (e: MouseEvent<HTMLButtonElement>, projectId: string) => {
+  const handleDeleteProject = (
+    e: MouseEvent<HTMLButtonElement>,
+    projectId: string,
+  ) => {
     e.stopPropagation();
     deleteProject({
       variables: {
