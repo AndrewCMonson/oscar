@@ -1,10 +1,4 @@
-import { User } from "@prisma/client";
-import {
-  ChatGPTMessage,
-  ConversationWithMessages,
-  OpenAIStructuredOutput,
-} from "../../../types/index.js";
-import { openAIClient, prismadb } from "../../config/index.js";
+import { openAIClient, prismadb } from "@api/src/config/index.js";
 import {
   addMessageToConversation,
   assistantFailureResponse,
@@ -13,7 +7,13 @@ import {
   getContext,
   handleResponseToolCalls,
   openAIApiOptions,
-} from "../../services/index.js";
+} from "@api/src/services/index.js";
+import {
+  ChatGPTMessage,
+  ConversationWithMessages,
+  OpenAIStructuredOutput,
+} from "@api/types/types.js";
+import { User } from "@prisma/client";
 
 /**
  * Communicates with the assistant using the provided message and user information.

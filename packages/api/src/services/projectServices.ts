@@ -1,10 +1,10 @@
-import { Project, ProjectMetadata } from "@prisma/client";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
+import { prismadb } from "@api/src/config/index.js";
 import {
   GetProjectsParameters,
   UpdateProjectDataParameters,
-} from "@oscar/types/apiTypes/types.js";
-import { prismadb } from "@api/src/config/index.js";
+} from "@api/types/types.js";
+import { Project, ProjectMetadata } from "@prisma/client";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
 
 export const getProjects = async (
   getProjectParams: GetProjectsParameters,

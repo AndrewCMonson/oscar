@@ -17,15 +17,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner.tsx";
-import { UpdateUserPreferences } from "@/utils/graphql/mutations.ts";
-import { GetUser } from "@/utils/graphql/queries.ts";
+import { ResponseStyle, Tone } from "@/gql/graphql.ts";
+import { GetUser, UpdateUserPreferences } from "@/utils/graphql/index.ts";
 import { useMutation, useQuery } from "@apollo/client";
 import { User } from "@auth0/auth0-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  ResponseStyle,
-  Tone,
-} from "@oscar/types/src/__generatedTypes__/graphql.ts";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -91,7 +87,7 @@ export const ProfileSettingsForm = ({
   const handleFormSubmit = (data: z.infer<typeof formSchema>) => {
     updateUserPreferences({
       variables: {
-        auth0sub: user?.sub,
+        auth0sub: user?.sub ?? "",
         preferences: {
           chatModel: data.chatModel,
           preferredLanguage: data.preferredLanguage,

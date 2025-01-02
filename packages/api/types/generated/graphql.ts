@@ -1,7 +1,6 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { User as UserModel, Project as ProjectModel, ProjectContext as ProjectContextModel, ProjectMetadata as ProjectMetadataModel, ProjectGoal as ProjectGoalModel, ProjectPreferences as ProjectPreferencesModel, Assistant as AssistantModel, GlobalContext as GlobalContextModel, GlobalContextMessage as GlobalContextMessageModel, Task as TaskModel, Message as MessageModel, UserPreferences as UserPreferencesModel, UserIntegration as UserIntegrationsModel, NotificationSettings as NotificationSettingsModel, UserMemory as UserMemoryModel, Memory as MemoryModel, Conversation as ConversationModel, AssistantResponse as AssistantResponseModel } from '@prisma';
-import { MiddlewareContext } from '../index';
-import gql from 'graphql-tag';
+import { User as UserModel, Project as ProjectModel, ProjectContext as ProjectContextModel, ProjectMetadata as ProjectMetadataModel, ProjectGoal as ProjectGoalModel, ProjectPreferences as ProjectPreferencesModel, Assistant as AssistantModel, GlobalContext as GlobalContextModel, GlobalContextMessage as GlobalContextMessageModel, Task as TaskModel, Message as MessageModel, UserPreferences as UserPreferencesModel, UserIntegration as UserIntegrationsModel, NotificationSettings as NotificationSettingsModel, UserMemory as UserMemoryModel, Memory as MemoryModel, Conversation as ConversationModel, AssistantResponse as AssistantResponseModel } from '@prisma/client';
+import { MiddlewareContext } from '../types';
 export type Maybe<T> = T | undefined;
 export type InputMaybe<T> = T | undefined;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };

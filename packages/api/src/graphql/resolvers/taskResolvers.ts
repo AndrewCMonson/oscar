@@ -1,6 +1,6 @@
+import { prismadb } from "@api/src/config/index.js";
+import { Resolvers } from "@api/types/generated/graphql.js";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
-import { Resolvers } from "@oscar/types/apiTypes/generated/graphql.js";
-import { prismadb } from "../../config/index.js";
 
 export const taskResolvers: Resolvers = {
   Query: {
@@ -88,6 +88,10 @@ export const taskResolvers: Resolvers = {
       { id, title, description, status, priority, dueDate, projectId },
       { user },
     ) => {
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
       const task = await prismadb.task.update({
         where: {
           id: id,

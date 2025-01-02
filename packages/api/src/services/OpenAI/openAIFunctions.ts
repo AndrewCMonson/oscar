@@ -1,13 +1,10 @@
 import {
-  ToolCallFunctionReturn,
-  ToolCallFunctions,
-} from "../../../types/index.js";
-import {
   createTask,
   getProjects,
   updateProject,
   updateUserPreferences,
-} from "../../services/index.js";
+} from "@api/src/services/index.js";
+import { ToolCallFunctionReturn, ToolCallFunctions } from "@api/types/types.js";
 
 /**
  * Handles the execution of various tool call functions based on the provided function name and arguments.

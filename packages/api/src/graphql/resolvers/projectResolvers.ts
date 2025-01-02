@@ -1,6 +1,6 @@
+import { prismadb } from "@api/src/config/index.js";
+import { Resolvers } from "@api/types/generated/graphql.js";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
-import { Resolvers } from "@oscar/types/apiTypes/generated/graphql.js";
-import { prismadb } from "../../config/index.js";
 
 export const projectResolvers: Resolvers = {
   Query: {
@@ -185,12 +185,16 @@ export const projectResolvers: Resolvers = {
           },
         });
 
+        if (!conversation) {
+          throw new Error("Conversation not found");
+        }
+
         return conversation;
       } catch (e) {
         if (e instanceof PrismaClientKnownRequestError) {
           throw new Error(e.message);
         } else {
-          return e;
+          throw new Error("An error occurred while fetching the conversation");
         }
       }
     },

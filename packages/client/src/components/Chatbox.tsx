@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/chat/chat-bubble.js";
 import { ChatMessageList } from "@/components/ui/chat/chat-message-list.js";
 import { containsMarkdown } from "@/utils/containsMarkdown.js";
-import { ChatGPTMessage } from "@oscar/types/index.js";
+import { ChatGPTMessage } from "@api/types/types.ts";
 import { debounce } from "lodash";
 import { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";

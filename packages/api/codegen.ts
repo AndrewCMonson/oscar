@@ -4,48 +4,40 @@ const config: CodegenConfig = {
   overwrite: true,
   schema: "http://localhost:3005/graphql",
   generates: {
-    "../types/src/apiTypes/generated/graphql.ts": {
-      plugins: [
-        "typescript",
-        "typescript-resolvers",
-        "typescript-document-nodes",
-      ],
+    "./types/generated/graphql.ts": {
+      plugins: ["typescript", "typescript-resolvers"],
       config: {
         useIndexSignature: true,
-        contextType: "../index#MiddlewareContext",
+        contextType: "../types#MiddlewareContext",
       },
     },
   },
   config: {
     maybeValue: "T | undefined",
     mappers: {
-      User: "@prisma#User as UserModel",
-      Project: "@prisma#Project as ProjectModel",
-      ProjectContext:
-        "@prisma#ProjectContext as ProjectContextModel",
-      ProjectMetadata:
-        "@prisma#ProjectMetadata as ProjectMetadataModel",
-      ProjectGoal: "@prisma#ProjectGoal as ProjectGoalModel",
+      User: "@prisma/client#User as UserModel",
+      Project: "@prisma/client#Project as ProjectModel",
+      ProjectContext: "@prisma/client#ProjectContext as ProjectContextModel",
+      ProjectMetadata: "@prisma/client#ProjectMetadata as ProjectMetadataModel",
+      ProjectGoal: "@prisma/client#ProjectGoal as ProjectGoalModel",
       ProjectPreferences:
-        "@prisma#ProjectPreferences as ProjectPreferencesModel",
-      Assistant: "@prisma#Assistant as AssistantModel",
-      GlobalContext:
-        "@prisma#GlobalContext as GlobalContextModel",
+        "@prisma/client#ProjectPreferences as ProjectPreferencesModel",
+      Assistant: "@prisma/client#Assistant as AssistantModel",
+      GlobalContext: "@prisma/client#GlobalContext as GlobalContextModel",
       GlobalContextMessage:
-        "@prisma#GlobalContextMessage as GlobalContextMessageModel",
-      Task: "@prisma#Task as TaskModel",
-      Message: "@prisma#Message as MessageModel",
-      UserPreferences:
-        "@prisma#UserPreferences as UserPreferencesModel",
+        "@prisma/client#GlobalContextMessage as GlobalContextMessageModel",
+      Task: "@prisma/client#Task as TaskModel",
+      Message: "@prisma/client#Message as MessageModel",
+      UserPreferences: "@prisma/client#UserPreferences as UserPreferencesModel",
       UserIntegration:
-        "@prisma#UserIntegration as UserIntegrationsModel",
+        "@prisma/client#UserIntegration as UserIntegrationsModel",
       NotificationSettings:
-        "@prisma#NotificationSettings as NotificationSettingsModel",
-      UserMemory: "@prisma#UserMemory as UserMemoryModel",
-      Memory: "@prisma#Memory as MemoryModel",
-      Conversation: "@prisma#Conversation as ConversationModel",
+        "@prisma/client#NotificationSettings as NotificationSettingsModel",
+      UserMemory: "@prisma/client#UserMemory as UserMemoryModel",
+      Memory: "@prisma/client#Memory as MemoryModel",
+      Conversation: "@prisma/client#Conversation as ConversationModel",
       AssistantResponse:
-        "@prisma#AssistantResponse as AssistantResponseModel",
+        "@prisma/client#AssistantResponse as AssistantResponseModel",
     },
   },
 };

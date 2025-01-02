@@ -16,13 +16,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
+import { ProjectType } from "@/gql/graphql.ts";
 import { CreateProject } from "@/utils/graphql/mutations.ts";
 import { useMutation } from "@apollo/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ProjectType } from "@oscar/types/index.ts";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Spinner } from "./ui/spinner.tsx";
 
 const formSchema = z.object({
   projectName: z.string().min(3),
@@ -53,7 +53,9 @@ export const CreateProjectForm = ({
   const [createProject, { loading }] = useMutation(CreateProject, {
     onCompleted: (data) => {
       setOpen(false);
-      setSelectedProject(data.createProject.id);
+      if (data.createProject) {
+        setSelectedProject(data.createProject.id);
+      }
       console.log(data);
     },
     onError: (error) => {

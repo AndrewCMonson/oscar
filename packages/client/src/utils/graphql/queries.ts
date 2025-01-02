@@ -1,8 +1,8 @@
-import { gql } from "@oscar/types/index.ts";
+import { graphql } from "../../gql";
 
-export const GetUser = gql(`
-  query GetUser($auth0Sub: String!){
-    user(auth0Sub: $auth0Sub){
+export const GetUser = graphql(`
+  query GetUser($auth0Sub: String!) {
+    user(auth0Sub: $auth0Sub) {
       id
       username
       email
@@ -38,9 +38,9 @@ export const GetUser = gql(`
   }
 `);
 
-export const GetProjectsByUserId = gql(`
-  query GetProjectsByUserId($auth0Sub: String!){
-    getProjectsByUserId(auth0Sub: $auth0Sub){
+export const GetProjectsByUserId = graphql(`
+  query GetProjectsByUserId($auth0Sub: String!) {
+    getProjectsByUserId(auth0Sub: $auth0Sub) {
       id
       name
       description
@@ -62,9 +62,9 @@ export const GetProjectsByUserId = gql(`
   }
 `);
 
-export const GetProject = gql(`
-  query GetProject($projectId: ID!){
-    project(id: $projectId){
+export const GetProject = graphql(`
+  query GetProject($projectId: ID!) {
+    project(id: $projectId) {
       id
       name
       description
