@@ -1,10 +1,10 @@
 import { prismadb } from "@api/src/config/index.js";
-import { IncomingUser, MiddlewareContext } from "@api/types/types.js";
+import { getAuth0User } from "@api/src/services/Auth0/auth0Services.js";
+import { auth0UserSchema } from "@api/src/utils/Zod/schemas.js";
+import { MiddlewareContext } from "@api/types/types.js";
 import { ContextFunction } from "@apollo/server";
 import { ExpressContextFunctionArgument } from "@apollo/server/express4";
-import { getUserGithubAccessToken } from "../services/Github/githubService.js";
-import { ResponseStyle, Tone } from "@prisma/client";
-
+import { createUserInitialLogin } from "../services/userServices.js";
 /**
  * Middleware context function to handle user authentication and context creation.
  *
@@ -24,6 +24,8 @@ import { ResponseStyle, Tone } from "@prisma/client";
  *   }
  * });
  */
+
+
 export const middlewareContext: ContextFunction<
   [ExpressContextFunctionArgument],
   MiddlewareContext
@@ -33,67 +35,58 @@ export const middlewareContext: ContextFunction<
 }: ExpressContextFunctionArgument): Promise<MiddlewareContext> => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    const incomingUser = req.headers.authorizeduser as string | undefined;
-
-    if (!incomingUser || incomingUser === "undefined") {
-      return {
-        req,
-        res,
-      };
-    }
-
+    const auth0UserJSON = req.headers.authorizeduser as string | null;
+    
     if (!token) {
       throw new Error("User not authorized");
     }
 
-    const authUser: IncomingUser = JSON.parse(incomingUser);
+    if (!auth0UserJSON) {
+      throw new Error("No authorized user found");
+    }
 
-    const userGithubAccessToken = await getUserGithubAccessToken(authUser.sub);
+    const authorizedUser = auth0UserSchema.parse(auth0UserJSON ? JSON.parse(auth0UserJSON) : null);
+
+    if(!authorizedUser.sub) {
+      throw new Error("User not authorized");
+    }
+
+    const { githubAccessToken } = await getAuth0User(authorizedUser.sub);
 
     const dbUser = await prismadb.user.findUnique({
       where: {
-        auth0sub: authUser.sub,
+        auth0sub: authorizedUser.sub,
       },
     });
 
     if (!dbUser) {
-      const createdDBUser = await prismadb.user.create({
+      const createdUser = await createUserInitialLogin({
+        ...authorizedUser,
+        githubAccessToken,
+      });
+
+      return {
+        req,
+        res,
+        user: createdUser,
+      };
+    }
+
+    if (githubAccessToken !== dbUser.githubAccessToken) {
+      const updatedUser = await prismadb.user.update({
+        where: {
+          auth0sub: authorizedUser.sub,
+        },
         data: {
-          auth0sub: authUser.sub ?? "",
-          firstName: authUser.given_name || authUser.name?.split(" ")[0],
-          lastName: authUser.family_name || authUser.name?.split(" ")[1],
-          username: authUser.nickname || authUser.username,
-          githubAccessToken: userGithubAccessToken ?? "",
-          email: authUser.email,
-          preferences: {
-            create: {
-              chatModel: authUser.user_metadata?.chatModel || "gpt-4o",
-              tone: Tone.FRIENDLY,
-              responseStyle: ResponseStyle.CONVERSATIONAL,
-              preferredLanguage:
-                authUser.user_metadata?.preferredLanguage || "English",
-              timezone: authUser.user_metadata?.timezone || "America/New_York",
-            },
-          },
+          githubAccessToken,
         },
       });
 
       return {
         req,
         res,
-        user: createdDBUser,
+        user: updatedUser,
       };
-    }
-
-    if (userGithubAccessToken !== dbUser.githubAccessToken) {
-      await prismadb.user.update({
-        where: {
-          auth0sub: authUser.sub,
-        },
-        data: {
-          githubAccessToken: userGithubAccessToken,
-        },
-      });
     }
 
     return {

@@ -1,2 +1,2 @@
-export * from "./expressMiddleware.js";
+export * from "../middlewares/expressMiddleware.js";
 export * from "./initialPrompt.js";

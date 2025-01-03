@@ -125,13 +125,14 @@ export interface AWSSecrets {
   password: string;
 }
 
-export interface Auth0UserWithAccessToken extends Auth0User {
-  access_token: string;
+export interface Auth0APIUserWithAccessToken extends Auth0User {
+  githubAccessToken: string;
 }
 
 // Github API types
-
 export type CreateNewRepositoryParameters =
   Endpoints["POST /user/repos"]["parameters"];
 export type CreateNewIssueParameters =
   Endpoints["POST /repos/{owner}/{repo}/issues"]["parameters"];
+export type GetRepositoriesResponse = Endpoints["GET /user/repos"]["response"];
+export type GetRepositoryResponse = Endpoints["GET /repos/{owner}/{repo}"]["response"];
