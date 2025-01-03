@@ -10,17 +10,16 @@ type Conversation {
   project: Project
   messages: [Message]
 }
-
-type Query {
-  conversations: [Conversation]
-  conversation(id: ID!): Conversation
-}
-
 type ConversationResponse {
   role: String
   name: String
   content: String
   projectId: String
+}
+
+type Query {
+  conversations: [Conversation]
+  conversation(id: ID!): Conversation
 }
 
 type Mutation {

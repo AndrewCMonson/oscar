@@ -2,6 +2,9 @@ import { prismadb } from "@api/src/config/index.js";
 import { UpdateUserPreferenceParameters } from "@api/types/types.js";
 import { UserPreferences } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js";
+import { ResponseStyle, Tone } from "@prisma/client";
+import { User } from "@client/node_modules/@auth0/auth0-spa-js";
+
 
 export const getUserByRole = async (role: string) => {
   if (!role) {
@@ -53,6 +56,52 @@ export const getUserById = async (userId: string) => {
     }
   }
 };
+
+interface Auth0ClientUserWithAccessToken extends User {
+  githubAccessToken: string;
+}
+
+type CreateUserInitialLoginParameters = Pick<Auth0ClientUserWithAccessToken, "sub" | "githubAccessToken" | "email" | "nickname">;
+
+
+
+export const createUserInitialLogin = async ({sub, nickname, githubAccessToken, email}: CreateUserInitialLoginParameters) => {
+  if (!sub || !nickname || !githubAccessToken || !email) {
+    throw new Error("Invalid parameters provided to create user");
+  }
+
+  try {
+    const user = await prismadb.user.create({
+      data: {
+        auth0sub: sub,
+        username: nickname,
+        githubAccessToken,
+        email,
+        preferences: {
+          create: {
+            chatModel: "gpt-4o",
+            tone: Tone.FRIENDLY,
+            responseStyle: ResponseStyle.CONVERSATIONAL,
+            preferredLanguage: "English",
+            timezone: "America/New_York",
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new Error("An error occurred creating the user");
+    }
+
+    return user;
+  } catch (e) {
+    if (e instanceof PrismaClientKnownRequestError) {
+      throw new Error("Prisma error when creating user");
+    } else {
+      throw new Error("Error creating user");
+    }
+  }
+}
 
 export const updateUserPreferences = async (
   preferences: UpdateUserPreferenceParameters,

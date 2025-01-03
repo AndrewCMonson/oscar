@@ -1,6 +1,6 @@
 import { User } from "auth0";
 import axios from "axios";
-import { Auth0UserWithAccessToken } from "@api/types/types.js";
+import { Auth0APIUserWithAccessToken } from "@api/types/types.js";
 
 /**
  * Fetches an Auth0 user by their user ID and retrieves their GitHub access token.
@@ -11,7 +11,7 @@ import { Auth0UserWithAccessToken } from "@api/types/types.js";
  */
 export const getAuth0User = async (
   userId: string,
-): Promise<Auth0UserWithAccessToken> => {
+): Promise<Auth0APIUserWithAccessToken> => {
   const domain = process.env.AUTH0_DOMAIN;
   const token = process.env.AUTH0_MANAGEMENT_API_TOKEN;
   const trimmedToken = token?.trim();
@@ -31,17 +31,17 @@ export const getAuth0User = async (
       throw new Error("No Auth0 user associated with user ID");
     }
 
-    const access_token = userData.identities?.find(
+    const githubAccessToken = userData.identities?.find(
       (identity) => identity.provider === "github",
     )?.access_token;
 
-    if (!access_token) {
+    if (!githubAccessToken) {
       throw new Error("No github access token associated with user");
     }
 
     return {
       ...userData,
-      access_token,
+      githubAccessToken,
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {
