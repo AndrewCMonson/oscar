@@ -1,11 +1,4 @@
 import {
-  createTaskParameters,
-  getProjectsParameters,
-  openAIStructuredOutput,
-  updateProjectParameters,
-  updateUserPreferenceParameters,
-} from "@api/src/services/OpenAI/index.js";
-import {
   Prisma,
   Project,
   ProjectMetadata,
@@ -13,6 +6,14 @@ import {
   User,
   UserPreferences,
 } from "@api/node_modules/.prisma/client";
+import {
+  createTaskParameters,
+  getProjectsParameters,
+  openAIStructuredOutput,
+  updateProjectParameters,
+  updateUserPreferenceParameters,
+} from "@api/src/services/OpenAI/index.js";
+import { Endpoints } from "@octokit/types";
 import { User as Auth0User } from "auth0";
 import { Request, Response } from "express";
 import { z } from "zod";
@@ -128,3 +129,9 @@ export interface Auth0UserWithAccessToken extends Auth0User {
   access_token: string;
 }
 
+// Github API types
+
+export type CreateNewRepositoryParameters =
+  Endpoints["POST /user/repos"]["parameters"];
+export type CreateNewIssueParameters =
+  Endpoints["POST /repos/{owner}/{repo}/issues"]["parameters"];
