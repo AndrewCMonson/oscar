@@ -124,10 +124,7 @@ export interface AWSSecrets {
   password: string;
 }
 
-export interface Auth0Identity {
-  provider: string;
-  user_id: string;
-  connection: string;
-  isSocial: boolean;
+export interface Auth0UserWithAccessToken extends Auth0User {
   access_token: string;
 }
+
