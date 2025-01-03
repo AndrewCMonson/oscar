@@ -2,6 +2,13 @@ import { User } from "auth0";
 import axios from "axios";
 import { Auth0UserWithAccessToken } from "@api/types/types.js";
 
+/**
+ * Fetches an Auth0 user by their user ID and retrieves their GitHub access token.
+ *
+ * @param userId - The ID of the user to fetch.
+ * @returns A promise that resolves to an Auth0 user object with an access token.
+ * @throws Will throw an error if no user is found, if no GitHub access token is found, or if there is an error during the request.
+ */
 export const getAuth0User = async (
   userId: string,
 ): Promise<Auth0UserWithAccessToken> => {
