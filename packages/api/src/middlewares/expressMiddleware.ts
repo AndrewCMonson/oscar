@@ -38,7 +38,10 @@ export const middlewareContext: ContextFunction<
     const auth0UserJSON = req.headers.authorizeduser as string | null;
     
     if (!token) {
-      throw new Error("User not authorized");
+      return {
+        req,
+        res,
+      };
     }
 
     if (!auth0UserJSON) {

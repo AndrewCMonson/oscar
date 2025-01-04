@@ -38,7 +38,6 @@ const config: CodegenConfig = {
       Conversation: "@prisma/client#Conversation as ConversationModel",
       AssistantResponse:
         "@prisma/client#AssistantResponse as AssistantResponseModel",
-      Repository: "@api/types/types#GetRepositoryResponse"  
     },
   },
 };
