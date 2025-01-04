@@ -9,34 +9,36 @@ export const githubResolvers: Resolvers = {
         throw new Error("User not authenticated");
       }
 
-      const githubService = new GithubService(user.sub)
+      if(!user.username) {
+        throw new Error("Username required to fetch repository");
+      }
 
-      const { name, description, html_url } = await githubService.getRepository(repositoryName, user.nickname);
+      const githubService = new GithubService(user.auth0sub)
+
+      const { name, description, url } = await githubService.getRepository(repositoryName, user.username);
 
       return {
         name,
-        description,
-        url: html_url,
-      }
+        description: description ?? undefined,
+        url,
+      };
     },
     getRepositories: async (_, __, { user }) => {
       if (!user) {
         throw new Error("User not authenticated");
       }
 
-      const githubService = new GithubService(user.sub)
+      const githubService = new GithubService(user.auth0sub)
 
-      const repositoryData = await githubService.getRepositories();
+      const repositories = await githubService.getRepositories();
 
-      const strippedRepositoryData = repositoryData.map((repository) => {
-        return {
-          name: repository.name,
-          description: repository.description,
-          url: repository.html_url,
-        };
-      });
+      const strippedRepositories = repositories.map(({ name, description, url }) => ({
+        name,
+        description: description ?? undefined,
+        url,
+      }));
 
-      return strippedRepositoryData;
+      return strippedRepositories;
     },
   },
   Mutation: {
@@ -45,9 +47,11 @@ export const githubResolvers: Resolvers = {
         throw new Error("User not authenticated");
       }
 
-      const githubService = new GithubService(user.sub)
+      const githubService = new GithubService(user.auth0sub)
 
-      return githubService.createNewRepository(repositoryName);
+      const repo = githubService.createNewRepository(repositoryName);
+
+      return repo;
     },
     createNewIssue: async (_, { repositoryName, issueTitle, issueBody }, { user }) => {
       if (!user) {

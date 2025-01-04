@@ -176,6 +176,13 @@ export enum IntegrationType {
   Notion = 'NOTION'
 }
 
+export type Issue = {
+  __typename?: 'Issue';
+  body?: Maybe<Scalars['String']['output']>;
+  owner?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
 export type Memory = {
   __typename?: 'Memory';
   createdAt?: Maybe<Scalars['DateTime']['output']>;
@@ -218,6 +225,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   createConversation?: Maybe<Conversation>;
   createMessage?: Maybe<Message>;
+  createNewIssue?: Maybe<Issue>;
+  createNewRepository?: Maybe<Repository>;
   createProject?: Maybe<Project>;
   createTask?: Maybe<Task>;
   createUser?: Maybe<User>;
@@ -242,6 +251,18 @@ export type MutationCreateMessageArgs = {
   conversationId: Scalars['String']['input'];
   name: Scalars['String']['input'];
   role: Scalars['String']['input'];
+};
+
+
+export type MutationCreateNewIssueArgs = {
+  body?: InputMaybe<Scalars['String']['input']>;
+  repositoryId: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+};
+
+
+export type MutationCreateNewRepositoryArgs = {
+  repositoryName: Scalars['String']['input'];
 };
 
 
@@ -379,6 +400,8 @@ export type Query = {
   conversations?: Maybe<Array<Maybe<Conversation>>>;
   getAssistant?: Maybe<Assistant>;
   getProjectsByUserId: Array<Project>;
+  getRepositories: Array<Maybe<Repository>>;
+  getRepository?: Maybe<Repository>;
   message?: Maybe<Message>;
   messages?: Maybe<Array<Maybe<Message>>>;
   project?: Maybe<Project>;
@@ -405,6 +428,11 @@ export type QueryGetProjectsByUserIdArgs = {
 };
 
 
+export type QueryGetRepositoryArgs = {
+  repositoryName: Scalars['String']['input'];
+};
+
+
 export type QueryMessageArgs = {
   id: Scalars['ID']['input'];
 };
@@ -422,6 +450,13 @@ export type QueryTaskArgs = {
 
 export type QueryUserArgs = {
   auth0Sub: Scalars['String']['input'];
+};
+
+export type Repository = {
+  __typename?: 'Repository';
+  description?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
 };
 
 export enum ResponseStyle {
@@ -659,6 +694,7 @@ export type ResolversTypes = ResolversObject<{
   ISO8601Duration: ResolverTypeWrapper<Scalars['ISO8601Duration']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   IntegrationType: IntegrationType;
+  Issue: ResolverTypeWrapper<Issue>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   JSONObject: ResolverTypeWrapper<Scalars['JSONObject']['output']>;
   JWT: ResolverTypeWrapper<Scalars['JWT']['output']>;
@@ -695,6 +731,7 @@ export type ResolversTypes = ResolversObject<{
   Query: ResolverTypeWrapper<{}>;
   RGB: ResolverTypeWrapper<Scalars['RGB']['output']>;
   RGBA: ResolverTypeWrapper<Scalars['RGBA']['output']>;
+  Repository: ResolverTypeWrapper<Repository>;
   ResponseStyle: ResponseStyle;
   RoutingNumber: ResolverTypeWrapper<Scalars['RoutingNumber']['output']>;
   SESSN: ResolverTypeWrapper<Scalars['SESSN']['output']>;
@@ -761,6 +798,7 @@ export type ResolversParentTypes = ResolversObject<{
   ISBN: Scalars['ISBN']['output'];
   ISO8601Duration: Scalars['ISO8601Duration']['output'];
   Int: Scalars['Int']['output'];
+  Issue: Issue;
   JSON: Scalars['JSON']['output'];
   JSONObject: Scalars['JSONObject']['output'];
   JWT: Scalars['JWT']['output'];
@@ -796,6 +834,7 @@ export type ResolversParentTypes = ResolversObject<{
   Query: {};
   RGB: Scalars['RGB']['output'];
   RGBA: Scalars['RGBA']['output'];
+  Repository: Repository;
   RoutingNumber: Scalars['RoutingNumber']['output'];
   SESSN: Scalars['SESSN']['output'];
   SafeInt: Scalars['SafeInt']['output'];
@@ -989,6 +1028,13 @@ export interface Iso8601DurationScalarConfig extends GraphQLScalarTypeConfig<Res
   name: 'ISO8601Duration';
 }
 
+export type IssueResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['Issue'] = ResolversParentTypes['Issue']> = ResolversObject<{
+  body?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  owner?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
   name: 'JSON';
 }
@@ -1076,6 +1122,8 @@ export type MessageSubDataResolvers<ContextType = MiddlewareContext, ParentType 
 export type MutationResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   createConversation?: Resolver<Maybe<ResolversTypes['Conversation']>, ParentType, ContextType>;
   createMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<MutationCreateMessageArgs, 'content' | 'conversationId' | 'name' | 'role'>>;
+  createNewIssue?: Resolver<Maybe<ResolversTypes['Issue']>, ParentType, ContextType, RequireFields<MutationCreateNewIssueArgs, 'repositoryId' | 'title'>>;
+  createNewRepository?: Resolver<Maybe<ResolversTypes['Repository']>, ParentType, ContextType, RequireFields<MutationCreateNewRepositoryArgs, 'repositoryName'>>;
   createProject?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'name' | 'type'>>;
   createTask?: Resolver<Maybe<ResolversTypes['Task']>, ParentType, ContextType, RequireFields<MutationCreateTaskArgs, 'description' | 'priority' | 'projectId' | 'status' | 'title'>>;
   createUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'auth0sub' | 'email' | 'username'>>;
@@ -1165,6 +1213,8 @@ export type QueryResolvers<ContextType = MiddlewareContext, ParentType extends R
   conversations?: Resolver<Maybe<Array<Maybe<ResolversTypes['Conversation']>>>, ParentType, ContextType>;
   getAssistant?: Resolver<Maybe<ResolversTypes['Assistant']>, ParentType, ContextType, Partial<QueryGetAssistantArgs>>;
   getProjectsByUserId?: Resolver<Array<ResolversTypes['Project']>, ParentType, ContextType, Partial<QueryGetProjectsByUserIdArgs>>;
+  getRepositories?: Resolver<Array<Maybe<ResolversTypes['Repository']>>, ParentType, ContextType>;
+  getRepository?: Resolver<Maybe<ResolversTypes['Repository']>, ParentType, ContextType, RequireFields<QueryGetRepositoryArgs, 'repositoryName'>>;
   message?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryMessageArgs, 'id'>>;
   messages?: Resolver<Maybe<Array<Maybe<ResolversTypes['Message']>>>, ParentType, ContextType>;
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectArgs, 'id'>>;
@@ -1182,6 +1232,13 @@ export interface RgbScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes[
 export interface RgbaScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['RGBA'], any> {
   name: 'RGBA';
 }
+
+export type RepositoryResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['Repository'] = ResolversParentTypes['Repository']> = ResolversObject<{
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
 
 export interface RoutingNumberScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['RoutingNumber'], any> {
   name: 'RoutingNumber';
@@ -1364,6 +1421,7 @@ export type Resolvers<ContextType = MiddlewareContext> = ResolversObject<{
   IPv6?: GraphQLScalarType;
   ISBN?: GraphQLScalarType;
   ISO8601Duration?: GraphQLScalarType;
+  Issue?: IssueResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   JSONObject?: GraphQLScalarType;
   JWT?: GraphQLScalarType;
@@ -1398,6 +1456,7 @@ export type Resolvers<ContextType = MiddlewareContext> = ResolversObject<{
   Query?: QueryResolvers<ContextType>;
   RGB?: GraphQLScalarType;
   RGBA?: GraphQLScalarType;
+  Repository?: RepositoryResolvers<ContextType>;
   RoutingNumber?: GraphQLScalarType;
   SESSN?: GraphQLScalarType;
   SafeInt?: GraphQLScalarType;

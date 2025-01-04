@@ -1,63 +1,23 @@
-type CreateNewRepositoryResponse {
+type Repository {
   name: String
   description: String
-  homepage: String
-  private: Boolean
-  has_issues: Boolean
-  has_projects: Boolean
-  has_wiki: Boolean
-  has_discussions: Boolean
-  team_id: Number
-  auto_init: Boolean
-  gitignore_template: String
-  license_template: String
-  allow_squash_merge: Boolean
-  allow_merge_commit: Boolean
-  allow_rebase_merge: Boolean
-  allow_auto_merge: Boolean
-  delete_branch_on_merge: Boolean
-  squash_merge_commit_title: SquashMergeCommitTitle
-  squash_merge_commit_message: SquashMergeCommitMessage
-  merge_commit_title: MergeCommitTitle
-  merge_commit_message: MergeCommitMessage
-  has_downloads: Boolean
-  is_template: Boolean
+  url: String
 }
 
-type GetRespositoryResponse {
-  
-}
-
-
-enum SquashMergeCommitTitle {
-  PR_TITLE
-  COMMIT_OR_PR_TITLE
-}
-
-enum SquashMergeCommitMessage {
-  PR_BODY
-  COMMIT_MESSAGES
-  BLANK
-}
-
-enum MergeCommitTitle {
-  PR_TITLE
-  MERGE_MESSAGE
-}
-
-enum MergeCommitMessage {
-  PR_TITLE
-  PR_BODY
-  BLANK
+type Issue {
+  title: String
+  owner: String
+  body: String
 }
 
 type Query {
-  getRepositories: [Repository]
+  getRepository(repositoryName: String!): Repository
+  getRepositories: [Repository]!
 }
 type Mutation {
   createNewRepository(
     repositoryName: String!
-  ): CreateNewRepositoryResponse
+  ): Repository
   createNewIssue(
     repositoryId: String!
     title: String!
