@@ -42,6 +42,7 @@
     "@graphql-tools/load-files": "^7.0.0",
     "@graphql-tools/merge": "^9.0.9",
     "@graphql-tools/schema": "^10.0.8",
+    "@octokit/rest": "^21.0.2",
     "@octokit/types": "^13.6.2",
     "@types/auth0": "^3.3.10",
     "@types/cors": "^2.8.17",

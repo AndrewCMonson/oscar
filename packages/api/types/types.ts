@@ -145,3 +145,5 @@ export type GetRepositoryResponse =
   Endpoints["GET /repos/{owner}/{repo}"]["response"];
 export type GetRepositoryData =
   Endpoints["GET /repos/{owner}/{repo}"]["response"]["data"];
+
+export type RepositoryData = GetRepositoriesData | GetRepositoryData;
