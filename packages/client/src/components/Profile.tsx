@@ -5,11 +5,27 @@ import { Spinner } from "@/components/ui/spinner.tsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import Github from "./Github.tsx";
+import { useSearchParams } from "react-router";
 
 export const Profile = () => {
   const { user, isAuthenticated, isLoading } = useAuth0();
-  const [selectedSettings, setSelectedSettings] = useState<string>("user");
+
   const [formEditable, setFormEditable] = useState<boolean>(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [selectedSettings, setSelectedSettings] = useState<string>(() => {
+    const settings = searchParams.get("settings");
+    return settings ? settings : "user";
+  });
+
+  const handleSelectedSettings = (selectedItem: string) => {
+    setSelectedSettings(selectedItem);
+    if(selectedItem) {
+      setSearchParams({ settings: selectedItem });
+    } else {
+      setSearchParams({});
+    }
+  }
 
   if (isLoading) {
     return (
@@ -42,6 +58,11 @@ export const Profile = () => {
       selectedItem: "profile",
       name: "user",
       title: "User Settings",
+    },
+    {
+      selectedItem: "github",
+      name: "github",
+      title: "GitHub",
     },
     // {
     //   selectedItem: "assistant",
@@ -88,7 +109,7 @@ export const Profile = () => {
               <SidebarNav
                 items={NavItems}
                 selectedItem={selectedSettings}
-                setSelectedItem={setSelectedSettings}
+                setSelectedItem={handleSelectedSettings}
               ></SidebarNav>
             </div>
 
@@ -115,6 +136,16 @@ export const Profile = () => {
                     </div>
                   </div>
                 )} */}
+                {selectedSettings === "github" && (
+                  <div className="text-start mb-6">
+                    <div className="text-lg sm:text-xl text-white font-semibold">
+                      GitHub
+                    </div>
+                    <div className="text-zinc-500">
+                      {`Manage and view your GitHub repositories`}
+                    </div>
+                  </div>
+                )}
                 <Separator />
                 <div className="mt-2">
                   {selectedSettings === "user" && (
@@ -124,6 +155,14 @@ export const Profile = () => {
                       setFormEditable={setFormEditable}
                     />
                   )}
+                  {/* {selectedSettings === "assistant" && (
+                    <AssistantSettingsForm
+                      user={user}
+                      formEditable={formEditable}
+                      setFormEditable={setFormEditable}
+                    />
+                  )} */}
+                  {selectedSettings === "github" && <Github user={user} />}
                 </div>
               </div>
             </div>

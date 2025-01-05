@@ -1,7 +1,7 @@
 import { graphql } from "../../gql";
 
 export const GetUser = graphql(`
-  query GetUser($auth0Sub: String!) {
+  query user($auth0Sub: String!) {
     user(auth0Sub: $auth0Sub) {
       id
       username
@@ -63,7 +63,7 @@ export const GetProjectsByUserId = graphql(`
 `);
 
 export const GetProject = graphql(`
-  query GetProject($projectId: ID!) {
+  query getProject($projectId: ID!) {
     project(id: $projectId) {
       id
       name
@@ -81,6 +81,18 @@ export const GetProject = graphql(`
             username
           }
         }
+      }
+    }
+  }
+`);
+
+export const GetRepositories = graphql(`
+  query getRepositories {
+    getRepositories {
+      repositories {
+        name
+        description
+        url
       }
     }
   }

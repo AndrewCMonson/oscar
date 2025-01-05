@@ -12,7 +12,7 @@ export const githubResolvers: Resolvers = {
         throw new Error("Username required to fetch repository");
       }
 
-      const githubService = new GithubService(user.auth0sub);
+      const githubService = await GithubService.create(user.auth0sub);
 
       const repository = await githubService.getRepository(
         repositoryName,
@@ -26,11 +26,11 @@ export const githubResolvers: Resolvers = {
         throw new Error("User not authenticated");
       }
 
-      const githubService = new GithubService(user.auth0sub);
+      const githubService = await GithubService.create(user.auth0sub);
 
       const repositories = await githubService.getRepositories();
 
-      return repositories;
+      return { repositories };
     },
   },
   Mutation: {
@@ -39,7 +39,7 @@ export const githubResolvers: Resolvers = {
         throw new Error("User not authenticated");
       }
 
-      const githubService = new GithubService(user.auth0sub);
+      const githubService = await GithubService.create(user.auth0sub);
 
       const createdNewRepository =
         await githubService.createNewRepository(repositoryName);
@@ -55,7 +55,7 @@ export const githubResolvers: Resolvers = {
         throw new Error("User not authenticated");
       }
 
-      const githubService = new GithubService(user.auth0sub);
+      const githubService = await GithubService.create(user.auth0sub);
 
       if (!user.username) {
         throw new Error("Username required to create issue");
