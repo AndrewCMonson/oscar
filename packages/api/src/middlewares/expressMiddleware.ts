@@ -25,7 +25,6 @@ import { createUserInitialLogin } from "../services/userServices.js";
  * });
  */
 
-
 export const middlewareContext: ContextFunction<
   [ExpressContextFunctionArgument],
   MiddlewareContext
@@ -36,7 +35,7 @@ export const middlewareContext: ContextFunction<
   try {
     const token = req.headers.authorization?.split(" ")[1];
     const auth0UserJSON = req.headers.authorizeduser as string | null;
-    
+
     if (!token) {
       return {
         req,
@@ -48,9 +47,11 @@ export const middlewareContext: ContextFunction<
       throw new Error("No authorized user found");
     }
 
-    const authorizedUser = auth0UserSchema.parse(auth0UserJSON ? JSON.parse(auth0UserJSON) : null);
+    const authorizedUser = auth0UserSchema.parse(
+      auth0UserJSON ? JSON.parse(auth0UserJSON) : null,
+    );
 
-    if(!authorizedUser.sub) {
+    if (!authorizedUser.sub) {
       throw new Error("User not authorized");
     }
 

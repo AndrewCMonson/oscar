@@ -1,5 +1,14 @@
 // import axios from "axios";
-import { CreateNewIssueParameters, CreateNewRepositoryParameters, GetRepositoriesResponse, GetRepositoryResponse } from "@api/types/types";
+import {
+  CreateNewIssueData,
+  CreateNewIssueResponse,
+  CreateNewRepositoryData,
+  CreateNewRepositoryResponse,
+  GetRepositoriesData,
+  GetRepositoriesResponse,
+  GetRepositoryData,
+  GetRepositoryResponse,
+} from "@api/types/types";
 import dotenv from "dotenv";
 import { Octokit } from "octokit";
 import { getAuth0User } from "../Auth0/auth0Services.js";
@@ -72,7 +81,6 @@ dotenv.config();
 //   }
 // };
 
-
 export class GithubService {
   private octokit: Octokit;
 
@@ -86,56 +94,74 @@ export class GithubService {
     this.octokit = new Octokit({
       auth: githubAccessToken,
     });
-  }
-  
-  getRepositories = async (): Promise<GetRepositoriesResponse["data"]> => {
+  };
+
+  getRepository = async (
+    repositoryName: string,
+    nickname: string,
+  ): Promise<GetRepositoryData> => {
     try {
-      const response: GetRepositoriesResponse = this.octokit.request("GET /user/repos");
+      const response: GetRepositoryResponse = await this.octokit(
+        "GET /repos/{owner}/{repo}",
+        {
+          owner: nickname,
+          repo: repositoryName,
+        },
+      );
 
-      if(response.status !== 200) {
-        throw new Error("Repositories not found");
-      }
-
-      const repositoriesWithData: GetRepositoriesResponse["data"] = response.data;
-
-      return repositoriesWithData;
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error("Error fetching repositories:", error.message);
-      }
-      throw new Error("Error fetching repositories");
-    }
-  }
-
-  getRepository = async (repositoryName: string, nickname: string): Promise<GetRepositoryResponse["data"]> => {
-    try {
-      const response: GetRepositoryResponse = await this.octokit('GET /repos/{owner}/{repo}', {
-        owner: nickname,
-        repo: repositoryName,
-      });
-
-      if(response.status !== 200) {
+      if (response.status !== 200) {
         throw new Error("Repository not found");
       }
 
-      const repository: GetRepositoryResponse["data"] = response.data;
+      const { data } = response;
 
-      return repository;
+      return data;
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error fetching repository:", error.message);
       }
       throw new Error("Error fetching repository");
     }
-  }
+  };
+
+  getRepositories = async (): Promise<GetRepositoriesData> => {
+    try {
+      const response: GetRepositoriesResponse =
+        this.octokit.request("GET /user/repos");
+
+      if (response.status !== 200) {
+        throw new Error("Repositories not found");
+      }
+
+      const { data } = response;
+
+      return data;
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Error fetching repositories:", error.message);
+      }
+      throw new Error("Error fetching repositories");
+    }
+  };
 
   createNewRepository = async (
     repositoryName: string,
-  ): Promise<CreateNewRepositoryParameters> => {
+  ): Promise<CreateNewRepositoryData> => {
     try {
-      return await this.octokit.request("POST /user/repos", {
-        name: repositoryName,
-      });
+      const response: CreateNewRepositoryResponse = await this.octokit.request(
+        "POST /user/repos",
+        {
+          name: repositoryName,
+        },
+      );
+
+      if (response.status !== 201) {
+        throw new Error("Repository not created");
+      }
+
+      const { data } = response;
+
+      return data;
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error creating repository:", error.message);
@@ -149,14 +175,25 @@ export class GithubService {
     repositoryName: string,
     issueTitle: string,
     issueBody: string,
-  ): Promise<CreateNewIssueParameters> => {
+  ): Promise<CreateNewIssueData> => {
     try {
-      return await this.octokit.request("POST /repos/{owner}/{repo}/issues", {
-        owner: nickname,
-        repo: repositoryName,
-        title: issueTitle,
-        body: issueBody,
-      });
+      const response: CreateNewIssueResponse = await this.octokit.request(
+        "POST /repos/{owner}/{repo}/issues",
+        {
+          owner: nickname,
+          repo: repositoryName,
+          title: issueTitle,
+          body: issueBody,
+        },
+      );
+
+      if (response.status !== 201) {
+        throw new Error("Issue not created");
+      }
+
+      const { data } = response;
+
+      return data;
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error creating issue:", error.message);
