@@ -1,6 +1,5 @@
-import { Resolvers } from "@api/types/generated/graphql.js";
 import { GithubService } from "@api/src/services/Github/githubService.js";
-import { getAuth0User } from "@api/src/services/Auth0/auth0Services.js";
+import { Resolvers } from "@api/types/generated/graphql.js";
 
 export const githubResolvers: Resolvers = {
   Query: {
@@ -9,36 +8,29 @@ export const githubResolvers: Resolvers = {
         throw new Error("User not authenticated");
       }
 
-      if(!user.username) {
+      if (!user.username) {
         throw new Error("Username required to fetch repository");
       }
 
-      const githubService = new GithubService(user.auth0sub)
+      const githubService = new GithubService(user.auth0sub);
 
-      const { name, description, url } = await githubService.getRepository(repositoryName, user.username);
+      const repository = await githubService.getRepository(
+        repositoryName,
+        user.username,
+      );
 
-      return {
-        name,
-        description: description ?? undefined,
-        url,
-      };
+      return repository;
     },
     getRepositories: async (_, __, { user }) => {
       if (!user) {
         throw new Error("User not authenticated");
       }
 
-      const githubService = new GithubService(user.auth0sub)
+      const githubService = new GithubService(user.auth0sub);
 
       const repositories = await githubService.getRepositories();
 
-      const strippedRepositories = repositories.map(({ name, description, url }) => ({
-        name,
-        description: description ?? undefined,
-        url,
-      }));
-
-      return strippedRepositories;
+      return repositories;
     },
   },
   Mutation: {
@@ -47,26 +39,36 @@ export const githubResolvers: Resolvers = {
         throw new Error("User not authenticated");
       }
 
-      const githubService = new GithubService(user.auth0sub)
+      const githubService = new GithubService(user.auth0sub);
 
-      const repo = githubService.createNewRepository(repositoryName);
+      const createdNewRepository =
+        await githubService.createNewRepository(repositoryName);
 
-      return repo;
+      return createdNewRepository;
     },
-    createNewIssue: async (_, { repositoryName, issueTitle, issueBody }, { user }) => {
+    createNewIssue: async (
+      _,
+      { repositoryName, issueTitle, issueBody },
+      { user },
+    ) => {
       if (!user) {
         throw new Error("User not authenticated");
       }
 
-      const { nickname } = await getAuth0User(user)
+      const githubService = new GithubService(user.auth0sub);
 
-      if (!nickname) {
-        throw new Error("User not found");
+      if (!user.username) {
+        throw new Error("Username required to create issue");
       }
 
-      const githubService = new GithubService(user.sub)
+      const createdNewIssue = await githubService.createNewIssue(
+        user.username,
+        repositoryName,
+        issueTitle,
+        issueBody,
+      );
 
-      return githubService.createNewIssue(user.username, repositoryName, issueTitle, issueBody);
+      return createdNewIssue;
     },
-  }
+  },
 };

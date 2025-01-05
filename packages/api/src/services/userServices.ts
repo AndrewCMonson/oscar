@@ -5,7 +5,6 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library.js
 import { ResponseStyle, Tone } from "@prisma/client";
 import { User } from "@client/node_modules/@auth0/auth0-spa-js";
 
-
 export const getUserByRole = async (role: string) => {
   if (!role) {
     throw new Error("No role provided");
@@ -61,11 +60,17 @@ interface Auth0ClientUserWithAccessToken extends User {
   githubAccessToken: string;
 }
 
-type CreateUserInitialLoginParameters = Pick<Auth0ClientUserWithAccessToken, "sub" | "githubAccessToken" | "email" | "nickname">;
+type CreateUserInitialLoginParameters = Pick<
+  Auth0ClientUserWithAccessToken,
+  "sub" | "githubAccessToken" | "email" | "nickname"
+>;
 
-
-
-export const createUserInitialLogin = async ({sub, nickname, githubAccessToken, email}: CreateUserInitialLoginParameters) => {
+export const createUserInitialLogin = async ({
+  sub,
+  nickname,
+  githubAccessToken,
+  email,
+}: CreateUserInitialLoginParameters) => {
   if (!sub || !nickname || !githubAccessToken || !email) {
     throw new Error("Invalid parameters provided to create user");
   }
@@ -101,7 +106,7 @@ export const createUserInitialLogin = async ({sub, nickname, githubAccessToken, 
       throw new Error("Error creating user");
     }
   }
-}
+};
 
 export const updateUserPreferences = async (
   preferences: UpdateUserPreferenceParameters,

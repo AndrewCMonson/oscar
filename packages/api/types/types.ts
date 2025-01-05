@@ -130,9 +130,18 @@ export interface Auth0APIUserWithAccessToken extends Auth0User {
 }
 
 // Github API types
-export type CreateNewRepositoryParameters =
-  Endpoints["POST /user/repos"]["parameters"];
-export type CreateNewIssueParameters =
-  Endpoints["POST /repos/{owner}/{repo}/issues"]["parameters"];
+export type CreateNewRepositoryResponse =
+  Endpoints["POST /user/repos"]["response"];
+export type CreateNewRepositoryData =
+  Endpoints["POST /user/repos"]["response"]["data"];
+export type CreateNewIssueResponse =
+  Endpoints["POST /repos/{owner}/{repo}/issues"]["response"];
+export type CreateNewIssueData =
+  Endpoints["POST /repos/{owner}/{repo}/issues"]["response"]["data"];
 export type GetRepositoriesResponse = Endpoints["GET /user/repos"]["response"];
-export type GetRepositoryResponse = Endpoints["GET /repos/{owner}/{repo}"]["response"];
+export type GetRepositoriesData =
+  Endpoints["GET /user/repos"]["response"]["data"];
+export type GetRepositoryResponse =
+  Endpoints["GET /repos/{owner}/{repo}"]["response"];
+export type GetRepositoryData =
+  Endpoints["GET /repos/{owner}/{repo}"]["response"]["data"];

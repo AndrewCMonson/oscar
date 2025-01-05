@@ -1,26 +1,34 @@
+# Overridden by codegen type "Repository"
 type Repository {
   name: String
   description: String
   url: String
 }
 
-type Issue {
+# Overridden by codegen type "CreatedNewIssue"
+type CreatedNewIssue {
   title: String
-  owner: String
-  body: String
+}
+
+# overridden by codegen type "Respositories"
+type Repositories {
+  repositories: [Repository]
+}
+
+# Overridden by codegen type "CreatedNewRepository"
+type CreatedNewRepository {
+  repositoryName: String
 }
 
 type Query {
   getRepository(repositoryName: String!): Repository
-  getRepositories: [Repository]!
+  getRepositories: Repositories
 }
 type Mutation {
-  createNewRepository(
-    repositoryName: String!
-  ): Repository
+  createNewRepository(repositoryName: String!): CreatedNewRepository
   createNewIssue(
-    repositoryId: String!
-    title: String!
-    body: String
-  ): Issue
+    repositoryName: String!
+    issueTitle: String!
+    issueBody: String!
+  ): CreatedNewIssue
 }
