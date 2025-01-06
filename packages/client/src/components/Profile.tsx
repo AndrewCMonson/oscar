@@ -20,12 +20,12 @@ export const Profile = () => {
 
   const handleSelectedSettings = (selectedItem: string) => {
     setSelectedSettings(selectedItem);
-    if(selectedItem) {
+    if (selectedItem) {
       setSearchParams({ settings: selectedItem });
     } else {
       setSearchParams({});
     }
-  }
+  };
 
   if (isLoading) {
     return (
