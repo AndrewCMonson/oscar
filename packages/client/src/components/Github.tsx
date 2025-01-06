@@ -16,7 +16,9 @@ const Github = ({ user }: GithubProps) => {
   const repoData = data?.getRepositories?.repositories?.map((repo) => {
     return (
       <div key={repo?.name}>
-        <a href={repo?.url} target="_blank">{repo?.name}</a>
+        <a href={repo?.url} target="_blank" rel="noreferrer">
+          {repo?.name}
+        </a>
         <p>{repo?.description}</p>
         <p>{user?.email}</p>
       </div>
