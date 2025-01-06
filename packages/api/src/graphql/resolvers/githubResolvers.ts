@@ -1,4 +1,4 @@
-import { GithubService } from "@api/src/services/Github/githubService.js";
+import { GithubService } from "@api/src/services/Github/githubServiceCopy.js";
 import { Resolvers } from "@api/types/generated/graphql.js";
 
 export const githubResolvers: Resolvers = {

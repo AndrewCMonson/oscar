@@ -1,10 +1,10 @@
 import { prismadb } from "@api/src/config/index.js";
 import { getAuth0User } from "@api/src/services/Auth0/auth0Services.js";
-import { auth0UserSchema } from "@api/src/utils/Zod/schemas.js";
 import { MiddlewareContext } from "@api/types/types.js";
 import { ContextFunction } from "@apollo/server";
 import { ExpressContextFunctionArgument } from "@apollo/server/express4";
-import { createUserInitialLogin } from "../services/userServices.js";
+import { verifyToken } from "@api/src/utils/index.js";
+import { createUserInitialLogin } from "@api/src/services/index.js";
 /**
  * Middleware context function to handle user authentication and context creation.
  *
@@ -34,7 +34,6 @@ export const middlewareContext: ContextFunction<
 }: ExpressContextFunctionArgument): Promise<MiddlewareContext> => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    const auth0UserJSON = req.headers.authorizeduser as string | null;
 
     if (!token) {
       return {
@@ -43,30 +42,32 @@ export const middlewareContext: ContextFunction<
       };
     }
 
-    if (!auth0UserJSON) {
-      throw new Error("No authorized user found");
-    }
+    const decodedToken = await verifyToken(token);
 
-    const authorizedUser = auth0UserSchema.parse(
-      auth0UserJSON ? JSON.parse(auth0UserJSON) : null,
-    );
-
-    if (!authorizedUser.sub) {
+    if (!decodedToken) {
       throw new Error("User not authorized");
     }
 
-    const { githubAccessToken } = await getAuth0User(authorizedUser.sub);
+    if (!decodedToken?.sub) {
+      throw new Error("No authorized user found");
+    }
+
+    const { githubAccessToken, nickname, email } = await getAuth0User(
+      decodedToken.sub,
+    );
 
     const dbUser = await prismadb.user.findUnique({
       where: {
-        auth0sub: authorizedUser.sub,
+        auth0sub: decodedToken.sub,
       },
     });
 
     if (!dbUser) {
       const createdUser = await createUserInitialLogin({
-        ...authorizedUser,
+        email,
         githubAccessToken,
+        nickname,
+        sub: decodedToken.sub,
       });
 
       return {
@@ -79,7 +80,7 @@ export const middlewareContext: ContextFunction<
     if (githubAccessToken !== dbUser.githubAccessToken) {
       const updatedUser = await prismadb.user.update({
         where: {
-          auth0sub: authorizedUser.sub,
+          auth0sub: decodedToken.sub,
         },
         data: {
           githubAccessToken,
