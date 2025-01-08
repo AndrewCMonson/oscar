@@ -1,37 +1,65 @@
 // import axios from "axios";
-import { CreateNewIssueData } from "@api/types/types";
-import dotenv from "dotenv";
-// import { Octokit } from "octokit";
 import { getAuth0User } from "@api/src/services/Auth0/auth0Services.js";
-import { Octokit } from "@octokit/rest";
+import {
+  CreateNewIssueData,
+  CreateNewRepositoryData,
+  GetRepositoryData,
+} from "@api/types/types";
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import dotenv from "dotenv";
 dotenv.config();
 
-export class GithubService {
-  private octokit!: Octokit;
+export class OscarGit {
+  private githubAccessToken!: string;
+  private client!: AxiosInstance;
 
-  constructor(private auth0Sub: string) {}
+  constructor(
+    private auth0Sub: string,
+    private githubServiceURL = process.env.OSCAR_GITHUB_SERVICE_URL!,
+  ) {}
 
   static create = async (auth0Sub: string) => {
-    const githubService = new GithubService(auth0Sub);
-
+    const githubService = new OscarGit(auth0Sub);
     await githubService.initialize();
-
     return githubService;
   };
 
   private initialize = async () => {
     const { githubAccessToken } = await getAuth0User(this.auth0Sub);
+    this.githubAccessToken = githubAccessToken;
 
-    this.octokit = new Octokit({
-      auth: githubAccessToken,
+    this.client = axios.create({
+      baseURL: this.githubServiceURL,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.githubAccessToken}`,
+        "OSCAR-API-KEY": process.env.OSCAR_GITHUB_SERVICE_API_KEY,
+      },
+    });
+  };
+
+  private request = async <T>(
+    method: "get" | "post" | "put" | "delete",
+    endpoint: string,
+    config: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> => {
+    const { data, ...restConfig } = config;
+
+    return this.client.request<T>({
+      ...restConfig,
+      ...(data !== undefined && { data }),
+      method,
+      url: `${this.githubServiceURL}/${endpoint}`,
     });
   };
 
   getRepository = async (repositoryName: string, nickname: string) => {
     try {
-      const response = await this.octokit.rest.repos.get({
-        owner: nickname,
-        repo: repositoryName,
+      const response = await this.request<GetRepositoryData>("get", "repo", {
+        data: {
+          repo: repositoryName,
+          repo_owner: nickname,
+        },
       });
 
       if (response.status !== 200) {
@@ -55,13 +83,17 @@ export class GithubService {
 
   getRepositories = async () => {
     try {
-      const response = await this.octokit.rest.repos.listForAuthenticatedUser();
+      const response = await this.request<GetRepositoryData[]>("get", "repos", {
+        data: {},
+      });
 
       if (response.status !== 200) {
         throw new Error("Repositories not found");
       }
 
-      const repositories = response.data.map((repo) => ({
+      const { data } = response;
+
+      const repositories = data.map((repo) => ({
         name: repo.name,
         description: repo.description ?? "",
         url: repo.html_url,
@@ -76,11 +108,21 @@ export class GithubService {
     }
   };
 
-  createNewRepository = async (repositoryName: string) => {
+  createNewRepository = async (
+    repositoryName: string,
+    description: string,
+    privateRepo: boolean,
+  ) => {
     try {
-      const response = await this.octokit.rest.repos.createForAuthenticatedUser(
+      const response = await this.request<CreateNewRepositoryData>(
+        "post",
+        "/create-repo",
         {
-          name: repositoryName,
+          data: {
+            name: repositoryName,
+            description,
+            private: privateRepo,
+          },
         },
       );
 
@@ -99,25 +141,32 @@ export class GithubService {
       if (error instanceof Error) {
         console.error("Error creating repository:", error.message);
       }
+      console.error(error);
       throw new Error("Error creating repository");
     }
   };
 
   createNewIssue = async (
-    nickname: string,
     repositoryName: string,
+    nickname: string,
     issueTitle: string,
     issueBody: string,
-  ): Promise<CreateNewIssueData> => {
+  ) => {
     try {
-      const response = await this.octokit.rest.issues.create({
-        owner: nickname,
-        repo: repositoryName,
-        title: issueTitle,
-        body: issueBody,
-      });
+      const response = await this.request<CreateNewIssueData>(
+        "post",
+        "create-issue",
+        {
+          data: {
+            repo: repositoryName,
+            repo_owner: nickname,
+            title: issueTitle,
+            body: issueBody,
+          },
+        },
+      );
 
-      if (response.status !== 201) {
+      if (response.status !== 200) {
         throw new Error("Issue not created");
       }
 
@@ -132,3 +181,7 @@ export class GithubService {
     }
   };
 }
+
+// const githubService = await GithubService.create("github|139920681");
+
+// githubService.createNewIssue("test-new-repository", "AndrewCMonson", "Test from node", "test body");
