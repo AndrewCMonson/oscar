@@ -260,6 +260,8 @@ export type MutationCreateNewIssueArgs = {
 
 
 export type MutationCreateNewRepositoryArgs = {
+  description: Scalars['String']['input'];
+  privateRepo: Scalars['Boolean']['input'];
   repositoryName: Scalars['String']['input'];
 };
 
@@ -1126,7 +1128,7 @@ export type MutationResolvers<ContextType = MiddlewareContext, ParentType extend
   createConversation?: Resolver<Maybe<ResolversTypes['Conversation']>, ParentType, ContextType>;
   createMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<MutationCreateMessageArgs, 'content' | 'conversationId' | 'name' | 'role'>>;
   createNewIssue?: Resolver<Maybe<ResolversTypes['Issue']>, ParentType, ContextType, RequireFields<MutationCreateNewIssueArgs, 'issueBody' | 'issueTitle' | 'repositoryName'>>;
-  createNewRepository?: Resolver<Maybe<ResolversTypes['Repository']>, ParentType, ContextType, RequireFields<MutationCreateNewRepositoryArgs, 'repositoryName'>>;
+  createNewRepository?: Resolver<Maybe<ResolversTypes['Repository']>, ParentType, ContextType, RequireFields<MutationCreateNewRepositoryArgs, 'description' | 'privateRepo' | 'repositoryName'>>;
   createProject?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'name' | 'type'>>;
   createTask?: Resolver<Maybe<ResolversTypes['Task']>, ParentType, ContextType, RequireFields<MutationCreateTaskArgs, 'description' | 'priority' | 'projectId' | 'status' | 'title'>>;
   createUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'auth0sub' | 'email' | 'username'>>;

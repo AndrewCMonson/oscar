@@ -1,4 +1,4 @@
-import { GithubService } from "@api/src/services/Github/githubServiceCopy.js";
+import { OscarGit } from "@api/src/services/Github/githubService.js";
 import { Resolvers } from "@api/types/generated/graphql.js";
 
 export const githubResolvers: Resolvers = {
@@ -12,12 +12,9 @@ export const githubResolvers: Resolvers = {
         throw new Error("Username required to fetch repository");
       }
 
-      const githubService = await GithubService.create(user.auth0sub);
+      const og = await OscarGit.create(user.auth0sub);
 
-      const repository = await githubService.getRepository(
-        repositoryName,
-        user.username,
-      );
+      const repository = await og.getRepository(repositoryName, user.username);
 
       return repository;
     },
@@ -26,9 +23,9 @@ export const githubResolvers: Resolvers = {
         throw new Error("User not authenticated");
       }
 
-      const githubService = await GithubService.create(user.auth0sub);
+      const og = await OscarGit.create(user.auth0sub);
 
-      const repositories = await githubService.getRepositories();
+      const repositories = await og.getRepositories();
 
       return { repositories };
     },
@@ -43,9 +40,9 @@ export const githubResolvers: Resolvers = {
         throw new Error("User not authenticated");
       }
 
-      const githubService = await GithubService.create(user.auth0sub);
+      const og = await OscarGit.create(user.auth0sub);
 
-      const createdNewRepository = await githubService.createNewRepository(
+      const createdNewRepository = await og.createNewRepository(
         repositoryName,
         description,
         privateRepo,
@@ -62,13 +59,13 @@ export const githubResolvers: Resolvers = {
         throw new Error("User not authenticated");
       }
 
-      const githubService = await GithubService.create(user.auth0sub);
+      const og = await OscarGit.create(user.auth0sub);
 
       if (!user.username) {
         throw new Error("Username required to create issue");
       }
 
-      const createdNewIssue = await githubService.createNewIssue(
+      const createdNewIssue = await og.createNewIssue(
         user.username,
         repositoryName,
         issueTitle,

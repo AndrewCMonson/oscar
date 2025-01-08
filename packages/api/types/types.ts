@@ -15,7 +15,6 @@ import {
 } from "@api/src/services/OpenAI/index.js";
 import { Endpoints } from "@octokit/types";
 import { User as Auth0User } from "auth0";
-import { AxiosHeaders } from "axios";
 import { Request, Response } from "express";
 import { z } from "zod";
 
@@ -131,26 +130,18 @@ export interface Auth0APIUserWithAccessToken extends Auth0User {
 }
 
 // Response types from Github Service
-export interface GithubServiceResponse<T = unknown> {
-  headers: AxiosHeaders;
-  status: number;
-  data: T;
-}
+// export interface GithubServiceResponse<T = unknown> {
+//   headers: AxiosHeaders;
+//   status: number;
+//   data: T;
+// }
 
 // Github API types
 export type CreateNewRepositoryData =
   Endpoints["POST /user/repos"]["response"]["data"];
-export type CreateNewRepositoryResponse =
-  GithubServiceResponse<CreateNewRepositoryData>;
-export type CreateNewIssueResponse = GithubServiceResponse<CreateNewIssueData>;
 export type CreateNewIssueData =
   Endpoints["POST /repos/{owner}/{repo}/issues"]["response"]["data"];
-export type GetRepositoriesResponse =
-  GithubServiceResponse<GetRepositoriesData>;
 export type GetRepositoriesData =
   Endpoints["GET /user/repos"]["response"]["data"];
-export type GetRepositoryResponse = GithubServiceResponse<GetRepositoryData>;
 export type GetRepositoryData =
   Endpoints["GET /repos/{owner}/{repo}"]["response"]["data"];
-
-export type RepositoryData = GetRepositoriesData | GetRepositoryData;
