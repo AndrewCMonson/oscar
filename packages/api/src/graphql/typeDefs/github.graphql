@@ -17,7 +17,11 @@ type Query {
   getRepositories: Repositories
 }
 type Mutation {
-  createNewRepository(repositoryName: String!): Repository
+  createNewRepository(
+    repositoryName: String!
+    description: String
+    privateRepo: Boolean
+  ): Repository
   createNewIssue(
     repositoryName: String!
     issueTitle: String!
