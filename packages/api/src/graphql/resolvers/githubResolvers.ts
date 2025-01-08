@@ -34,15 +34,22 @@ export const githubResolvers: Resolvers = {
     },
   },
   Mutation: {
-    createNewRepository: async (_, { repositoryName }, { user }) => {
+    createNewRepository: async (
+      _,
+      { repositoryName, description, privateRepo },
+      { user },
+    ) => {
       if (!user) {
         throw new Error("User not authenticated");
       }
 
       const githubService = await GithubService.create(user.auth0sub);
 
-      const createdNewRepository =
-        await githubService.createNewRepository(repositoryName);
+      const createdNewRepository = await githubService.createNewRepository(
+        repositoryName,
+        description,
+        privateRepo,
+      );
 
       return createdNewRepository;
     },
