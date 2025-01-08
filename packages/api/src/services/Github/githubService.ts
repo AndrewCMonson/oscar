@@ -1,5 +1,6 @@
 // import axios from "axios";
 import { getAuth0User } from "@api/src/services/Auth0/auth0Services.js";
+import { Issue, Repository } from "@api/types/generated/graphql.js";
 import {
   CreateNewIssueData,
   CreateNewRepositoryData,
@@ -53,7 +54,10 @@ export class OscarGit {
     });
   };
 
-  getRepository = async (repositoryName: string, nickname: string) => {
+  getRepository = async (
+    repositoryName: string,
+    nickname: string,
+  ): Promise<Repository> => {
     try {
       const response = await this.request<GetRepositoryData>("get", "repo", {
         data: {
@@ -81,7 +85,7 @@ export class OscarGit {
     }
   };
 
-  getRepositories = async () => {
+  getRepositories = async (): Promise<Repository[]> => {
     try {
       const response = await this.request<GetRepositoryData[]>("get", "repos", {
         data: {},
@@ -112,7 +116,7 @@ export class OscarGit {
     repositoryName: string,
     description: string,
     privateRepo: boolean,
-  ) => {
+  ): Promise<Repository> => {
     try {
       const response = await this.request<CreateNewRepositoryData>(
         "post",
@@ -151,7 +155,7 @@ export class OscarGit {
     nickname: string,
     issueTitle: string,
     issueBody: string,
-  ) => {
+  ): Promise<Issue> => {
     try {
       const response = await this.request<CreateNewIssueData>(
         "post",
@@ -172,7 +176,9 @@ export class OscarGit {
 
       const { data } = response;
 
-      return data;
+      return {
+        title: data.title,
+      };
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error creating issue:", error.message);
