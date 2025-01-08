@@ -67,7 +67,9 @@ export class OscarGit {
       });
 
       if (response.status !== 200) {
-        throw new Error("Repository not found");
+        throw new Error(
+          `Error fetching repository ${repositoryName}. Response status ${response.status}: ${response.statusText}`,
+        );
       }
 
       const { data } = response;
@@ -79,9 +81,12 @@ export class OscarGit {
       };
     } catch (error) {
       if (error instanceof Error) {
-        console.error("Error fetching repository:", error.message);
+        console.error(
+          `Error fetching repository ${repositoryName}`,
+          error.message,
+        );
       }
-      throw new Error("Error fetching repository");
+      throw new Error(`Error fetching repository ${repositoryName}`);
     }
   };
 
@@ -92,7 +97,9 @@ export class OscarGit {
       });
 
       if (response.status !== 200) {
-        throw new Error("Repositories not found");
+        throw new Error(
+          `Error fetching repositories. Response status ${response.status}: ${response.statusText}`,
+        );
       }
 
       const { data } = response;
@@ -120,7 +127,7 @@ export class OscarGit {
     try {
       const response = await this.request<CreateNewRepositoryData>(
         "post",
-        "/create-repo",
+        "create-repo",
         {
           data: {
             name: repositoryName,
@@ -130,8 +137,10 @@ export class OscarGit {
         },
       );
 
-      if (response.status !== 201) {
-        throw new Error("Repository not created");
+      if (response.status !== 200) {
+        throw new Error(
+          `Error creating repository ${repositoryName}. Response status: ${response.status}: ${response.statusText}`,
+        );
       }
 
       const { data } = response;
@@ -143,10 +152,12 @@ export class OscarGit {
       };
     } catch (error) {
       if (error instanceof Error) {
-        console.error("Error creating repository:", error.message);
+        console.error(
+          `Error creating repository ${repositoryName}`,
+          error.message,
+        );
       }
-      console.error(error);
-      throw new Error("Error creating repository");
+      throw new Error(`Error creating repository ${repositoryName}`);
     }
   };
 
@@ -171,7 +182,9 @@ export class OscarGit {
       );
 
       if (response.status !== 200) {
-        throw new Error("Issue not created");
+        throw new Error(
+          `Error creating issue in repository ${repositoryName}. Response status ${response.status}: ${response.statusText}`,
+        );
       }
 
       const { data } = response;
@@ -181,13 +194,16 @@ export class OscarGit {
       };
     } catch (error) {
       if (error instanceof Error) {
-        console.error("Error creating issue:", error.message);
+        console.error(
+          `Error creating issue in repository ${repositoryName}`,
+          error.message,
+        );
       }
-      throw new Error("Error creating issue");
+      throw new Error(`Error creating issue in repository ${repositoryName}`);
     }
   };
 }
 
-// const githubService = await GithubService.create("github|139920681");
+// const og = await OscarGit.create("github|139920681");
 
-// githubService.createNewIssue("test-new-repository", "AndrewCMonson", "Test from node", "test body");
+// og.createNewRepository("test-oscar-repo", "this is a test repo", true)
