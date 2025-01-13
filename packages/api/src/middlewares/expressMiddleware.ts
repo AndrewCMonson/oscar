@@ -64,10 +64,10 @@ export const middlewareContext: ContextFunction<
 
     if (!dbUser) {
       const createdUser = await createUserInitialLogin({
-        email,
-        githubAccessToken,
-        nickname,
         sub: decodedToken.sub,
+        nickname,
+        githubAccessToken,
+        email: email ?? "",
       });
 
       return {
