@@ -15,8 +15,8 @@ const corsOptions = {
   origin: ["http://localhost:5173"],
   credentials: true,
 };
-
 const startServer = async () => {
+
   const app = express();
 
   const server = new ApolloServer<BaseContext>({
