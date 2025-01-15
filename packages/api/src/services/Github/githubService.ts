@@ -81,6 +81,11 @@ export class OscarGit {
         url: data.html_url,
         language: data.language ?? "",
         isPrivate: data.private,
+        // lastPush is a placeholder until API updated
+        topics: data.topics ?? [],
+        forks: data.forks_count,
+        lastPush: "",
+        stars: data.stargazers_count
       };
     } catch (error) {
       if (error instanceof Error) {
@@ -114,6 +119,11 @@ export class OscarGit {
         url: repo.html_url,
         language: repo.language ?? "",
         isPrivate: repo.private,
+        topics: repo.topics ?? [],
+        forks: repo.forks_count,
+        // lastPush is a placehoder until API updated
+        lastPush: "",
+        stars: repo.stargazers_count
       }));
 
       return repositories;
