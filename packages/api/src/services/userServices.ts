@@ -71,7 +71,7 @@ export const createUserInitialLogin = async ({
   githubAccessToken,
   email,
 }: CreateUserInitialLoginParameters) => {
-  if (!sub || !nickname || !githubAccessToken || !email) {
+  if (!sub || !nickname || !githubAccessToken) {
     throw new Error("Invalid parameters provided to create user");
   }
 
