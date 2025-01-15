@@ -460,6 +460,9 @@ export type Repositories = {
 export type Repository = {
   __typename?: 'Repository';
   description: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  isPrivate?: Maybe<Scalars['Boolean']['output']>;
+  language?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   url: Scalars['String']['output'];
 };
@@ -1245,6 +1248,9 @@ export type RepositoriesResolvers<ContextType = MiddlewareContext, ParentType ex
 
 export type RepositoryResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['Repository'] = ResolversParentTypes['Repository']> = ResolversObject<{
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  isPrivate?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  language?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
