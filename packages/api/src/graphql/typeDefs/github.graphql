@@ -5,6 +5,10 @@ type Repository {
   url: String!
   language: String
   isPrivate: Boolean
+  forks: Int
+  topics: [String]
+  lastPush: String
+  stars: Int
 }
 
 type Issue {

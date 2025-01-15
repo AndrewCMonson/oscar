@@ -5,7 +5,7 @@ import { Spinner } from "@/components/ui/spinner.tsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import Github from "./Github.tsx";
+import { Github } from "./Github.tsx";
 import { useSearchParams } from "react-router";
 
 export const Profile = () => {
@@ -77,7 +77,7 @@ export const Profile = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="relative flex flex-col h-screen text-white container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 text-center h-[calc(100vh-4rem)]"
+        className="relative flex flex-col text-white container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 text-center h-[calc(100vh-4rem)] overflow-y-auto no-scrollbar"
         aria-label="User Profile Page"
       >
         <div
@@ -93,7 +93,7 @@ export const Profile = () => {
         >
           <div className="flex flex-col items-start mb-6">
             <motion.h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600 pb-2 mb-2">
-              Account Settings
+              Account
             </motion.h1>
             <p className="text-lg sm:text-xl text-zinc-500">
               Welcome back
@@ -113,8 +113,8 @@ export const Profile = () => {
               ></SidebarNav>
             </div>
 
-            <div className="lg:w-3/4 bg-transparent shadow-lg">
-              <div className="h-full bg-transparent transition-colors duration-300 backdrop-blur-sm pt-4">
+            <div className="lg:w-3/4 bg-transparent shadow-lg ">
+              <div className="h-full bg-transparent transition-colors duration-300 backdrop-blur-sm pt-4 ">
                 {selectedSettings === "user" && (
                   <div className="text-start mb-6">
                     <div className="text-lg sm:text-xl text-white font-semibold">
@@ -147,7 +147,7 @@ export const Profile = () => {
                   </div>
                 )}
                 <Separator />
-                <div className="mt-2">
+                <div className="mt-2 h-[calc(100vh-4rem)]">
                   {selectedSettings === "user" && (
                     <ProfileSettingsForm
                       user={user}
@@ -162,7 +162,9 @@ export const Profile = () => {
                       setFormEditable={setFormEditable}
                     />
                   )} */}
-                  {selectedSettings === "github" && <Github user={user} />}
+                  {selectedSettings === "github" && (
+                    <div className="mt-2 h-full overflow-y-auto no-scrollbar">{user && <Github user={user} />}</div>
+                  )}
                 </div>
               </div>
             </div>

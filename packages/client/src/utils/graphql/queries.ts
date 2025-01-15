@@ -90,9 +90,16 @@ export const GetRepositories = graphql(`
   query getRepositories {
     getRepositories {
       repositories {
+        id
         name
         description
         url
+        language
+        isPrivate
+        forks
+        topics
+        lastPush
+        stars
       }
     }
   }
