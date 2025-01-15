@@ -1,7 +1,10 @@
 type Repository {
+  id: Int!
   name: String!
   description: String!
   url: String!
+  language: String
+  isPrivate: Boolean
 }
 
 type Issue {

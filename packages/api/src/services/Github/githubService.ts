@@ -59,7 +59,7 @@ export class OscarGit {
     nickname: string,
   ): Promise<Repository> => {
     try {
-      const response = await this.request<GetRepositoryData>("get", "repo", {
+      const response = await this.request<GetRepositoryData>("get", `repos/${nickname}/${repositoryName}`, {
         data: {
           repo: repositoryName,
           repo_owner: nickname,
@@ -75,9 +75,12 @@ export class OscarGit {
       const { data } = response;
 
       return {
+        id: data.id,
         name: data.name,
         description: data.description ?? "",
         url: data.html_url,
+        language: data.language ?? "",
+        isPrivate: data.private,
       };
     } catch (error) {
       if (error instanceof Error) {
@@ -105,9 +108,12 @@ export class OscarGit {
       const { data } = response;
 
       const repositories = data.map((repo) => ({
+        id: repo.id,
         name: repo.name,
         description: repo.description ?? "",
         url: repo.html_url,
+        language: repo.language ?? "",
+        isPrivate: repo.private,
       }));
 
       return repositories;
@@ -127,7 +133,7 @@ export class OscarGit {
     try {
       const response = await this.request<CreateNewRepositoryData>(
         "post",
-        "create-repo",
+        "repos",
         {
           data: {
             name: repositoryName,
@@ -146,6 +152,7 @@ export class OscarGit {
       const { data } = response;
 
       return {
+        id: data.id,
         name: data.name,
         description: data.description ?? "",
         url: data.html_url,
