@@ -257,6 +257,8 @@ export type MutationCreateNewIssueArgs = {
 
 
 export type MutationCreateNewRepositoryArgs = {
+  description: Scalars['String']['input'];
+  privateRepo: Scalars['Boolean']['input'];
   repositoryName: Scalars['String']['input'];
 };
 
@@ -455,6 +457,9 @@ export type Repositories = {
 export type Repository = {
   __typename?: 'Repository';
   description: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  isPrivate?: Maybe<Scalars['Boolean']['output']>;
+  language?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   url: Scalars['String']['output'];
 };

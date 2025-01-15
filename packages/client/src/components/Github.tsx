@@ -5,26 +5,23 @@ import { User } from "@auth0/auth0-react";
 interface GithubProps {
   user: User | undefined;
 }
-const Github = ({ user }: GithubProps) => {
+export const Github = ({ user }: GithubProps) => {
   const { data, error } = useQuery(GetRepositories);
 
   if (error) {
     console.error(error);
-    return <div>Error fetching repositories</div>;
+    return <div>Error fetching repositories, {user?.name}</div>;
   }
 
   const repoData = data?.getRepositories?.repositories?.map((repo) => {
     return (
-      <div key={repo?.name}>
+      <div className="flex " key={repo?.name}>
         <a href={repo?.url} target="_blank" rel="noreferrer">
-          {repo?.name}
+          <p>{repo?.name}</p>
         </a>
-        <p>{repo?.description}</p>
-        <p>{user?.email}</p>
       </div>
     );
   });
 
-  return <div>{repoData}</div>;
+  return <div className="flex flex-col gap-4 flex-wrap">{repoData}</div>;
 };
-export default Github;
