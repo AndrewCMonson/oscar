@@ -16,7 +16,6 @@ const corsOptions = {
   credentials: true,
 };
 const startServer = async () => {
-
   const app = express();
 
   const server = new ApolloServer<BaseContext>({

@@ -59,12 +59,16 @@ export class OscarGit {
     nickname: string,
   ): Promise<Repository> => {
     try {
-      const response = await this.request<GetRepositoryData>("get", `repos/${nickname}/${repositoryName}`, {
-        data: {
-          repo: repositoryName,
-          repo_owner: nickname,
+      const response = await this.request<GetRepositoryData>(
+        "get",
+        `repos/${nickname}/${repositoryName}`,
+        {
+          data: {
+            repo: repositoryName,
+            repo_owner: nickname,
+          },
         },
-      });
+      );
 
       if (response.status !== 200) {
         throw new Error(
@@ -85,7 +89,7 @@ export class OscarGit {
         topics: data.topics ?? [],
         forks: data.forks_count,
         lastPush: "",
-        stars: data.stargazers_count
+        stars: data.stargazers_count,
       };
     } catch (error) {
       if (error instanceof Error) {
@@ -123,7 +127,7 @@ export class OscarGit {
         forks: repo.forks_count,
         // lastPush is a placehoder until API updated
         lastPush: "",
-        stars: repo.stargazers_count
+        stars: repo.stargazers_count,
       }));
 
       return repositories;
