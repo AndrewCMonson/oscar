@@ -163,7 +163,9 @@ export const Profile = () => {
                     />
                   )} */}
                   {selectedSettings === "github" && (
-                    <div className="mt-2 h-full overflow-y-auto no-scrollbar">{user && <Github user={user} />}</div>
+                    <div className="mt-2 h-full overflow-y-auto no-scrollbar">
+                      {user && <Github user={user} />}
+                    </div>
                   )}
                 </div>
               </div>

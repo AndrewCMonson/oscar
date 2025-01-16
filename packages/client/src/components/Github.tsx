@@ -2,7 +2,7 @@ import colors from "@/utils/ghcolors.json";
 import { GetRepositories } from "@/utils/graphql/queries.ts";
 import { useQuery } from "@apollo/client";
 import { User } from "@auth0/auth0-react";
-import { Circle, GitBranch, Star, Search } from 'lucide-react';
+import { Circle, GitBranch, Star, Search } from "lucide-react";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card.tsx";
 
@@ -19,14 +19,12 @@ interface ColorData {
   [key: string]: LanguageColor;
 }
 
-
-
 export const Github = ({ user }: GithubProps) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const { data, loading, error } = useQuery(GetRepositories);
 
   const filteredRepos = data?.getRepositories?.repositories?.filter((repo) =>
-    repo?.name.toLowerCase().includes(searchQuery.toLowerCase())
+    repo?.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   if (loading) {
@@ -58,7 +56,10 @@ export const Github = ({ user }: GithubProps) => {
       </div>
       <div className="h-full flex flex-wrap gap-4 mt-4 content-start ">
         {(filteredRepos ?? []).map((repo) => (
-          <Card key={repo?.id} className="w-full bg-transparent shadow-none max-h-28">
+          <Card
+            key={repo?.id}
+            className="w-full bg-transparent shadow-none max-h-28"
+          >
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
