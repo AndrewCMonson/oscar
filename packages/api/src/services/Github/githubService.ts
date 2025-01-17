@@ -4,7 +4,7 @@ import { Issue, Repository } from "@api/types/generated/graphql.js";
 import {
   CreateNewIssueData,
   CreateNewRepositoryData,
-  GetRepositoryData,
+  OGGetRepositoryData,
 } from "@api/types/types";
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import dotenv from "dotenv";
@@ -50,7 +50,11 @@ export class OscarGit {
       ...restConfig,
       ...(data !== undefined && { data }),
       method,
-      url: `${this.githubServiceURL}/${endpoint}`,
+      url:
+        process.env.NODE_ENV === "Production"
+          ? `${this.githubServiceURL}/${endpoint}`
+          : `http://localhost:8080/${endpoint}`,
+      // url: `http://localhost:8080/${endpoint}`
     });
   };
 
@@ -59,7 +63,7 @@ export class OscarGit {
     nickname: string,
   ): Promise<Repository> => {
     try {
-      const response = await this.request<GetRepositoryData>(
+      const response = await this.request<OGGetRepositoryData>(
         "get",
         `repos/${nickname}/${repositoryName}`,
         {
@@ -85,10 +89,10 @@ export class OscarGit {
         url: data.html_url,
         language: data.language ?? "",
         isPrivate: data.private,
-        // lastPush is a placeholder until API updated
         topics: data.topics ?? [],
         forks: data.forks_count,
-        lastPush: "",
+        latestActivityDate: data.latest_event_date,
+        latestActivityBranch: data.latest_event_ref,
         stars: data.stargazers_count,
       };
     } catch (error) {
@@ -102,11 +106,17 @@ export class OscarGit {
     }
   };
 
-  getRepositories = async (): Promise<Repository[]> => {
+  getRepositories = async (username: string): Promise<Repository[]> => {
     try {
-      const response = await this.request<GetRepositoryData[]>("get", "repos", {
-        data: {},
-      });
+      const response = await this.request<OGGetRepositoryData[]>(
+        "get",
+        "repos",
+        {
+          data: {
+            username: username,
+          },
+        },
+      );
 
       if (response.status !== 200) {
         throw new Error(
@@ -126,7 +136,8 @@ export class OscarGit {
         topics: repo.topics ?? [],
         forks: repo.forks_count,
         // lastPush is a placehoder until API updated
-        lastPush: "",
+        latestActivityDate: repo.latest_event_date,
+        latestActivityBranch: repo.latest_event_ref,
         stars: repo.stargazers_count,
       }));
 

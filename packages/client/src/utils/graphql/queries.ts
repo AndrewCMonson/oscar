@@ -100,6 +100,8 @@ export const GetRepositories = graphql(`
         topics
         lastPush
         stars
+        latestActivityDate
+        latestActivityBranch
       }
     }
   }

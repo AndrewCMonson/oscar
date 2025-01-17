@@ -9,6 +9,8 @@ type Repository {
   topics: [String]
   lastPush: String
   stars: Int
+  latestActivityDate: String
+  latestActivityBranch: String
 }
 
 type Issue {
