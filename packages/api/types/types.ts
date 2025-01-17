@@ -145,3 +145,8 @@ export type GetRepositoriesData =
   Endpoints["GET /user/repos"]["response"]["data"];
 export type GetRepositoryData =
   Endpoints["GET /repos/{owner}/{repo}"]["response"]["data"];
+
+export interface OGGetRepositoryData extends GetRepositoryData {
+  latest_event_date: string;
+  latest_event_ref: string;
+}

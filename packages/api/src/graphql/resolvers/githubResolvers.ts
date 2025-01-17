@@ -23,9 +23,13 @@ export const githubResolvers: Resolvers = {
         throw new Error("User not authenticated");
       }
 
+      if (!user.username) {
+        throw new Error("Username required to fetch repositories");
+      }
+
       const og = await OscarGit.create(user.auth0sub);
 
-      const repositories = await og.getRepositories();
+      const repositories = await og.getRepositories(user.username);
 
       return { repositories };
     },

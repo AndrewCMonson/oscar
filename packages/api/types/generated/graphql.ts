@@ -465,6 +465,8 @@ export type Repository = {
   isPrivate?: Maybe<Scalars['Boolean']['output']>;
   language?: Maybe<Scalars['String']['output']>;
   lastPush?: Maybe<Scalars['String']['output']>;
+  latestActivityBranch?: Maybe<Scalars['String']['output']>;
+  latestActivityDate?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   stars?: Maybe<Scalars['Int']['output']>;
   topics?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -1257,6 +1259,8 @@ export type RepositoryResolvers<ContextType = MiddlewareContext, ParentType exte
   isPrivate?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   language?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastPush?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  latestActivityBranch?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  latestActivityDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   stars?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   topics?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
