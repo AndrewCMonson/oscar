@@ -21,8 +21,6 @@ export const Profile = () => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [repositoryId, setRepositoryId] = useState<number | null>(null)
 
-  console.log(repositoryId)
-
   const handleSelectedSettings = (selectedItem: string) => {
     setSelectedSettings(selectedItem);
     if (selectedItem) {
