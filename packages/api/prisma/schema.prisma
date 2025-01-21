@@ -218,6 +218,7 @@ model Project {
   name           String
   description    String?
   type           ProjectType     @default(PERSONAL)
+  repositoryId   Int?
   userId         String
   user           User            @relation(fields: [userId], references: [id])
   tasks          Task[]
