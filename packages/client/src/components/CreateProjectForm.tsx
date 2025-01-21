@@ -30,16 +30,19 @@ const formSchema = z.object({
   type: z
     .enum([ProjectType.Client, ProjectType.Internal, ProjectType.Personal])
     .describe("The type of project"),
+  repositoryId: z.number()
 });
 
 interface CreateProjectFormProps {
   setOpen: (open: boolean) => void;
-  setSelectedProject: (projectId: string | null) => void;
+  setSelectedProject?: (projectId: string | null) => void;
+  repositoryId?: number | null
 }
 
 export const CreateProjectForm = ({
   setOpen,
   setSelectedProject,
+  repositoryId
 }: CreateProjectFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,16 +50,16 @@ export const CreateProjectForm = ({
       projectName: "",
       description: "",
       type: ProjectType.Client,
+      repositoryId: repositoryId ?? undefined
     },
   });
 
   const [createProject, { loading }] = useMutation(CreateProject, {
     onCompleted: (data) => {
       setOpen(false);
-      if (data.createProject) {
+      if (data.createProject && setSelectedProject) {
         setSelectedProject(data.createProject.id);
       }
-      console.log(data);
     },
     onError: (error) => {
       console.error(error);
@@ -69,6 +72,7 @@ export const CreateProjectForm = ({
         name: values.projectName,
         description: values.description,
         type: values.type,
+        repositoryId: repositoryId
       },
     });
   };
@@ -129,6 +133,22 @@ export const CreateProjectForm = ({
                 </Select>
               </FormControl>
               <FormDescription>The type of project</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name={"repositoryId"}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel htmlFor="repositoryId">Repository Id</FormLabel>
+              <FormControl>
+                <Input {...field} id="repositoryId" disabled />
+              </FormControl>
+              <FormDescription>
+                Associated Repository Id
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

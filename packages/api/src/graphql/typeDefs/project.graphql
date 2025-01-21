@@ -24,7 +24,7 @@ type Query {
 }
 
 type Mutation {
-  createProject(name: String!, description: String, type: ProjectType!): Project
+  createProject(name: String!, description: String, type: ProjectType!, repositoryId: Int): Project
   updateProject(
     id: ID!
     name: String

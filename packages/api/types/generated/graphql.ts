@@ -269,6 +269,7 @@ export type MutationCreateNewRepositoryArgs = {
 export type MutationCreateProjectArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
+  repositoryId?: InputMaybe<Scalars['Int']['input']>;
   type: ProjectType;
 };
 

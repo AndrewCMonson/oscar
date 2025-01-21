@@ -3,8 +3,9 @@ import colors from "@/utils/ghcolors.json";
 import { GetRepositories } from "@/utils/graphql/queries.ts";
 import { useQuery } from "@apollo/client";
 import { User } from "@auth0/auth0-react";
-import { Circle, GitBranch, Search, Star, CircleCheckBig, CirclePlus } from "lucide-react";
+import { Circle, CircleCheckBig, CirclePlus, GitBranch, Search, Star } from "lucide-react";
 import { useCallback, useState } from "react";
+import { Link } from "react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card.tsx";
 import {
   Select,
@@ -18,6 +19,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 
 interface GithubProps {
   user: User | undefined;
+  setDialogOpen: (open: boolean) => void
+  setRepositoryId: (id: number) => void
 }
 
 interface LanguageColor {
@@ -29,11 +32,10 @@ interface ColorData {
   [key: string]: LanguageColor;
 }
 
-export const Github = ({ user }: GithubProps) => {
+export const Github = ({ user, setDialogOpen, setRepositoryId }: GithubProps) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sort, setSort] = useState<string>("latestActivity");
   const { data, loading, error } = useQuery(GetRepositories);
-
   const filteredRepos = data?.getRepositories?.repositories?.filter((repo) =>
     repo?.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
@@ -68,6 +70,11 @@ export const Github = ({ user }: GithubProps) => {
     },
     [sort],
   );
+
+  const handleOpenDialog = (id: number) => {
+    setRepositoryId(id);
+    setDialogOpen(true)
+  }
 
   const handleSortChange = (value: string) => {
     setSort(value);
@@ -162,7 +169,9 @@ export const Github = ({ user }: GithubProps) => {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger>
-                            <CircleCheckBig height={16}/>
+                            <Link to={`/chat?projectId=${repo.projectId}`}>
+                              <CircleCheckBig height={16} />
+                            </Link>
                           </TooltipTrigger>
                           <TooltipContent>Chat exists</TooltipContent>
                         </Tooltip>
@@ -174,6 +183,7 @@ export const Github = ({ user }: GithubProps) => {
                             <CirclePlus
                               height={16}
                               className="cursor-pointer"
+                              onClick={() => handleOpenDialog(repo.id)}
                             />
                           </TooltipTrigger>
                           <TooltipContent>Create Chat</TooltipContent>
