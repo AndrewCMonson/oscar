@@ -85,7 +85,7 @@ export const CreateProjectForm = ({
           name={"projectName"}
           render={({ field }) => (
             <FormItem>
-              <FormLabel htmlFor="name">Name</FormLabel>
+              <FormLabel htmlFor="name">Project Name</FormLabel>
               <FormControl>
                 <Input {...field} id="name" />
               </FormControl>

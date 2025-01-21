@@ -21,7 +21,6 @@ export const CreateProjectDialog = ({
   repositoryId
 }: CreateProjectDialogProps) => {
 
-  console.log("form id", repositoryId)
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="bg-zinc-900 text-white">
