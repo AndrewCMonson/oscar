@@ -102,6 +102,7 @@ export const GetRepositories = graphql(`
         stars
         latestActivityDate
         latestActivityBranch
+        projectId
       }
     }
   }

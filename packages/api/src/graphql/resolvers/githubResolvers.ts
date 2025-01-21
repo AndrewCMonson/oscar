@@ -1,3 +1,4 @@
+import { prismadb } from "@api/src/config/index.js";
 import { OscarGit } from "@api/src/services/Github/githubService.js";
 import { Resolvers } from "@api/types/generated/graphql.js";
 
@@ -31,7 +32,17 @@ export const githubResolvers: Resolvers = {
 
       const repositories = await og.getRepositories(user.username);
 
-      return { repositories };
+      const projects = await prismadb.project.findMany()
+
+      const reposWithProjectIds = repositories.map((repo) => {
+        const project = projects.find((project) => project.repositoryId === repo.id)
+        return {
+          ...repo,
+          projectId: project?.id,
+        }
+      })
+
+      return { repositories: reposWithProjectIds };
     },
   },
   Mutation: {

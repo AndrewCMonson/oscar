@@ -468,6 +468,7 @@ export type Repository = {
   latestActivityBranch?: Maybe<Scalars['String']['output']>;
   latestActivityDate?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+  projectId?: Maybe<Scalars['String']['output']>;
   stars?: Maybe<Scalars['Int']['output']>;
   topics?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   url: Scalars['String']['output'];
@@ -1262,6 +1263,7 @@ export type RepositoryResolvers<ContextType = MiddlewareContext, ParentType exte
   latestActivityBranch?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   latestActivityDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  projectId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   stars?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   topics?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

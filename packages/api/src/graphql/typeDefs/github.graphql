@@ -11,6 +11,7 @@ type Repository {
   stars: Int
   latestActivityDate: String
   latestActivityBranch: String
+  projectId: String
 }
 
 type Issue {

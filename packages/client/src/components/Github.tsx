@@ -3,7 +3,7 @@ import colors from "@/utils/ghcolors.json";
 import { GetRepositories } from "@/utils/graphql/queries.ts";
 import { useQuery } from "@apollo/client";
 import { User } from "@auth0/auth0-react";
-import { Circle, GitBranch, Search, Star } from "lucide-react";
+import { Circle, GitBranch, Search, Star, CircleCheckBig, CirclePlus } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card.tsx";
 import {
@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "./ui/select.tsx";
 import { Spinner } from "./ui/spinner.tsx";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip.tsx";
 
 interface GithubProps {
   user: User | undefined;
@@ -65,27 +66,6 @@ export const Github = ({ user }: GithubProps) => {
           return repos;
       }
     },
-    //   if (sort === "latestActivity") {
-    //     return repos.sort((a, b) => {
-    //       if (a.latestActivityDate && b.latestActivityDate) {
-    //         return (
-    //           new Date(b.latestActivityDate).getTime() -
-    //           new Date(a.latestActivityDate).getTime()
-    //         );
-    //       } else if (a.latestActivityDate) {
-    //         return -1;
-    //       } else if (b.latestActivityDate) {
-    //         return 1;
-    //       } else {
-    //         return 0;
-    //       }
-    //     });
-    //   } else if (sort === "stars") {
-    //     return repos.sort((a, b) => (b?.stars ?? 0) - (a?.stars ?? 0));
-    //   } else {
-    //     return repos;
-    //   }
-    // },
     [sort],
   );
 
@@ -162,14 +142,44 @@ export const Github = ({ user }: GithubProps) => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   {repo?.isPrivate ? (
-                    <Circle className="text-gray-500" size={16} />
+                    <Circle
+                      className="text-gray-500"
+                      size={16}
+                      aria-label="private repository"
+                    />
                   ) : (
-                    <Circle className="text-green-500" size={16} />
+                    <Circle
+                      className="text-green-500"
+                      size={16}
+                      aria-label="public repository"
+                    />
                   )}
-                  <CardTitle className="text-white text-lg font-semibold">
+                  <CardTitle className="text-white text-lg font-semibold flex gap-2">
                     <a href={repo?.url} target="_blank" rel="noreferrer">
                       {repo?.name}
                     </a>
+                    {repo.projectId ? (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <CircleCheckBig height={16}/>
+                          </TooltipTrigger>
+                          <TooltipContent>Chat exists</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <CirclePlus
+                              height={16}
+                              className="cursor-pointer"
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>Create Chat</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
                   </CardTitle>
                 </div>
                 <div className="flex items-center gap-4 text-sm text-gray-600">
