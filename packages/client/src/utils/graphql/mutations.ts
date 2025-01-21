@@ -31,8 +31,9 @@ export const CreateProject = graphql(`
     $name: String!
     $description: String!
     $type: ProjectType!
+    $repositoryId: Int
   ) {
-    createProject(name: $name, description: $description, type: $type) {
+    createProject(name: $name, description: $description, type: $type, repositoryId: $repositoryId) {
       id
       name
     }

@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Github } from "./Github.tsx";
 import { useSearchParams } from "react-router";
+import { CreateProjectDialog } from "./CreateProjectDialog.tsx";
 
 export const Profile = () => {
   const { user, isAuthenticated, isLoading } = useAuth0();
@@ -17,6 +18,10 @@ export const Profile = () => {
     const settings = searchParams.get("settings");
     return settings ? settings : "user";
   });
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false)
+  const [repositoryId, setRepositoryId] = useState<number | null>(null)
+
+  console.log(repositoryId)
 
   const handleSelectedSettings = (selectedItem: string) => {
     setSelectedSettings(selectedItem);
@@ -164,7 +169,7 @@ export const Profile = () => {
                   )} */}
                   {selectedSettings === "github" && (
                     <div className="mt-2 h-full overflow-y-auto no-scrollbar">
-                      {user && <Github user={user} />}
+                      {user && <Github user={user} setDialogOpen={setDialogOpen} setRepositoryId={setRepositoryId}/>}
                     </div>
                   )}
                 </div>
@@ -181,6 +186,11 @@ export const Profile = () => {
         <div
           className="absolute bottom-1/4 right-1/4 w-48 sm:w-64 h-48 sm:h-64 bg-purple-600/20 rounded-full blur-3xl translate-x-1/2 -z-10"
           aria-hidden="true"
+        />
+        <CreateProjectDialog 
+          open={dialogOpen}
+          setOpen={setDialogOpen}
+          repositoryId={repositoryId}
         />
       </motion.main>
     )
