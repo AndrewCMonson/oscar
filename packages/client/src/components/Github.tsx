@@ -1,12 +1,10 @@
 import { Repository } from "@/gql/graphql.ts";
-import colors from "@/utils/ghcolors.json";
 import { GetRepositories } from "@/utils/graphql/queries.ts";
 import { useQuery } from "@apollo/client";
 import { User } from "@auth0/auth0-react";
-import { Circle, CircleCheckBig, CirclePlus, GitBranch, Search, Star } from "lucide-react";
+import { Search } from "lucide-react";
 import { useCallback, useState } from "react";
-import { Link } from "react-router";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card.tsx";
+import { RepoCard } from "./RepoCard.tsx";
 import {
   Select,
   SelectContent,
@@ -15,24 +13,18 @@ import {
   SelectValue,
 } from "./ui/select.tsx";
 import { Spinner } from "./ui/spinner.tsx";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip.tsx";
 
 interface GithubProps {
   user: User | undefined;
-  setDialogOpen: (open: boolean) => void
-  setRepositoryId: (id: number) => void
+  setDialogOpen: (open: boolean) => void;
+  setRepositoryId: (id: number) => void;
 }
 
-interface LanguageColor {
-  color: string | null;
-  url: string;
-}
-
-interface ColorData {
-  [key: string]: LanguageColor;
-}
-
-export const Github = ({ user, setDialogOpen, setRepositoryId }: GithubProps) => {
+export const Github = ({
+  user,
+  setDialogOpen,
+  setRepositoryId,
+}: GithubProps) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sort, setSort] = useState<string>("latestActivity");
   const { data, loading, error } = useQuery(GetRepositories);
@@ -73,30 +65,17 @@ export const Github = ({ user, setDialogOpen, setRepositoryId }: GithubProps) =>
 
   const handleOpenDialog = (id: number) => {
     setRepositoryId(id);
-    setDialogOpen(true)
-  }
+    setDialogOpen(true);
+  };
 
   const handleSortChange = (value: string) => {
     setSort(value);
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(date);
   };
 
   if (error) {
     console.error(error);
     return <div>Error fetching repositories, {user?.name}</div>;
   }
-
-  const jsonColors = colors as ColorData;
 
   return (
     <div className="w-full h-full">
@@ -141,113 +120,11 @@ export const Github = ({ user, setDialogOpen, setRepositoryId }: GithubProps) =>
             (repo): repo is Repository => repo !== null,
           ),
         ).map((repo) => (
-          <Card
-            key={repo?.id}
-            className="w-full bg-transparent shadow-none max-h-28"
-          >
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {repo?.isPrivate ? (
-                    <Circle
-                      className="text-gray-500"
-                      size={16}
-                      aria-label="private repository"
-                    />
-                  ) : (
-                    <Circle
-                      className="text-green-500"
-                      size={16}
-                      aria-label="public repository"
-                    />
-                  )}
-                  <CardTitle className="text-white text-lg font-semibold flex gap-2">
-                    <a href={repo?.url} target="_blank" rel="noreferrer">
-                      {repo?.name}
-                    </a>
-                    {repo.projectId ? (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <Link to={`/chat?projectId=${repo.projectId}`}>
-                              <CircleCheckBig height={16} />
-                            </Link>
-                          </TooltipTrigger>
-                          <TooltipContent>Chat exists</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    ) : (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <CirclePlus
-                              height={16}
-                              className="cursor-pointer"
-                              onClick={() => handleOpenDialog(repo.id)}
-                            />
-                          </TooltipTrigger>
-                          <TooltipContent>Create Chat</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                  </CardTitle>
-                </div>
-                <div className="flex items-center gap-4 text-sm text-gray-600">
-                  <div className="flex items-center text-white gap-1">
-                    <Star size={16} color="white" />
-                    {repo?.stars}
-                  </div>
-                  <div className="flex items-center text-white gap-1">
-                    <GitBranch size={16} color="white" />
-                    {repo?.forks}
-                  </div>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="flex flex-col">
-              {/* <p className="text-zinc-500 mb-2">{repo?.description}</p> */}
-              <div className="flex flex-wrap gap-2 mb-3">
-                {(repo?.topics ?? []).map((topic) => (
-                  <span
-                    key={topic}
-                    className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800"
-                  >
-                    {topic}
-                  </span>
-                ))}
-              </div>
-              <div className="flex items-center justify-between text-sm text-gray-500 mt-auto">
-                <div className="flex items-center gap-2 text-white">
-                  {repo?.language && (
-                    <>
-                      <span
-                        className="w-3 h-3 rounded-full"
-                        style={{
-                          backgroundColor:
-                            jsonColors[repo?.language]?.color ?? "transparent",
-                        }}
-                      />
-                      <div>{repo?.language}</div>
-                    </>
-                  )}
-                </div>
-                <div className="text-zinc-500">
-                  {repo?.latestActivityDate && (
-                    <span>
-                      Last activity: {formatDate(repo?.latestActivityDate)}
-                    </span>
-                  )}
-                </div>
-                {/* <div className="flex items-center gap-4">
-                  {repo.isInDatabase ? (
-                    <span className="text-green-600">In Database ✓</span>
-                  ) : (
-                    <span className="text-gray-400">Not in Database</span>
-                  )}
-                </div> */}
-              </div>
-            </CardContent>
-          </Card>
+          <RepoCard
+            key={repo.id}
+            repo={repo}
+            handleOpenDialog={handleOpenDialog}
+          ></RepoCard>
         ))}
       </div>
     </div>

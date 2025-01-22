@@ -32,15 +32,17 @@ export const githubResolvers: Resolvers = {
 
       const repositories = await og.getRepositories(user.username);
 
-      const projects = await prismadb.project.findMany()
+      const projects = await prismadb.project.findMany();
 
       const reposWithProjectIds = repositories.map((repo) => {
-        const project = projects.find((project) => project.repositoryId === repo.id)
+        const project = projects.find(
+          (project) => project.repositoryId === repo.id,
+        );
         return {
           ...repo,
           projectId: project?.id,
-        }
-      })
+        };
+      });
 
       return { repositories: reposWithProjectIds };
     },

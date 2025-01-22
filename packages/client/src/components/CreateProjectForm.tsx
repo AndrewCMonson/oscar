@@ -30,19 +30,19 @@ const formSchema = z.object({
   type: z
     .enum([ProjectType.Client, ProjectType.Internal, ProjectType.Personal])
     .describe("The type of project"),
-  repositoryId: z.number()
+  repositoryId: z.number(),
 });
 
 interface CreateProjectFormProps {
   setOpen: (open: boolean) => void;
   setSelectedProject?: (projectId: string | null) => void;
-  repositoryId?: number | null
+  repositoryId?: number | null;
 }
 
 export const CreateProjectForm = ({
   setOpen,
   setSelectedProject,
-  repositoryId
+  repositoryId,
 }: CreateProjectFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,7 +50,7 @@ export const CreateProjectForm = ({
       projectName: "",
       description: "",
       type: ProjectType.Client,
-      repositoryId: repositoryId ?? undefined
+      repositoryId: repositoryId ?? undefined,
     },
   });
 
@@ -72,7 +72,7 @@ export const CreateProjectForm = ({
         name: values.projectName,
         description: values.description,
         type: values.type,
-        repositoryId: repositoryId
+        repositoryId: repositoryId,
       },
     });
   };
@@ -146,9 +146,7 @@ export const CreateProjectForm = ({
               <FormControl>
                 <Input {...field} id="repositoryId" disabled />
               </FormControl>
-              <FormDescription>
-                Associated Repository Id
-              </FormDescription>
+              <FormDescription>Associated Repository Id</FormDescription>
               <FormMessage />
             </FormItem>
           )}
