@@ -11,16 +11,15 @@ type CreateProjectDialogProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   setSelectedProject?: (projectId: string | null) => void;
-  repositoryId?: number | null
+  repositoryId?: number | null;
 };
 
 export const CreateProjectDialog = ({
   open,
   setOpen,
   setSelectedProject,
-  repositoryId
+  repositoryId,
 }: CreateProjectDialogProps) => {
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="bg-zinc-900 text-white">
@@ -34,11 +33,8 @@ export const CreateProjectDialog = ({
               setOpen={setOpen}
               setSelectedProject={setSelectedProject}
             />
-          ): (
-            <CreateProjectForm 
-              setOpen={setOpen}
-              repositoryId={repositoryId}
-            />
+          ) : (
+            <CreateProjectForm setOpen={setOpen} repositoryId={repositoryId} />
           )}
         </DialogHeader>
       </DialogContent>

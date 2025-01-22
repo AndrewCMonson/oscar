@@ -75,7 +75,11 @@ export const projectResolvers: Resolvers = {
     },
   },
   Mutation: {
-    createProject: async (_, { name, description, type, repositoryId }, { user }) => {
+    createProject: async (
+      _,
+      { name, description, type, repositoryId },
+      { user },
+    ) => {
       if (!user) {
         throw new Error("User is required to create a new project");
       }
