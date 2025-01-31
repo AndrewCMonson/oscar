@@ -28,6 +28,7 @@ export const Github = ({
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sort, setSort] = useState<string>("latestActivity");
   const { data, loading, error } = useQuery(GetRepositories);
+
   const filteredRepos = data?.getRepositories?.repositories?.filter((repo) =>
     repo?.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
