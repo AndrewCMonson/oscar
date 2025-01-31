@@ -20,6 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip.tsx";
+import { useState } from "react";
 
 interface RepoCardProps {
   repo: Repository;
@@ -36,6 +37,12 @@ interface ColorData {
 }
 
 export const RepoCard = ({ repo, handleOpenDialog }: RepoCardProps) => {
+  const [expandedCard, setExpandedCard] = useState<number | null>(null);
+
+  const toggleCard = (id: number) => {
+    setExpandedCard((prev) => (prev === id ? null : id));
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat("en-US", {
@@ -50,7 +57,18 @@ export const RepoCard = ({ repo, handleOpenDialog }: RepoCardProps) => {
   const jsonColors = colors as ColorData;
 
   return (
-    <Card className="w-full bg-transparent shadow-none ">
+    <Card
+      key={repo.id}
+      className={`
+        w-full 
+        relative
+        bg-transparent 
+        shadow-none 
+        overflow-hidden 
+        transition-all 
+        duration-300 
+        ease-in-out  ${expandedCard === repo.id ? "max-h-[500px]" : "max-h-[200px]"}`}
+    >
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -136,12 +154,35 @@ export const RepoCard = ({ repo, handleOpenDialog }: RepoCardProps) => {
               </>
             )}
           </div>
+          <div
+            onClick={() => toggleCard(repo.id)}
+            className="absolute left-1/2 cursor-pointer text-blue-400 hover:text-blue-600 transition"
+          >
+            {expandedCard === repo.id ? "Show Less" : "See More"}
+          </div>
           <div className="text-zinc-500">
             {repo?.latestActivityDate && (
               <span>Last activity: {formatDate(repo?.latestActivityDate)}</span>
             )}
           </div>
         </div>
+        {expandedCard === repo.id && (
+          <div className="p-4 text-white space-y-3">
+            <div>
+              <strong>Description:</strong>
+              <p>{repo.description || "No description available"}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                {/* <strong>Created:</strong> {"Today"} */}
+              </div>
+              <div>
+                {/* <strong>Updated:</strong> {formatDate(repo.updatedAt)} */}
+              </div>
+            </div>
+            {/* Add more detailed repository information */}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
