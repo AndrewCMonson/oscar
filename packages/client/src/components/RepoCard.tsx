@@ -1,18 +1,21 @@
 import {
   Card,
   CardContent,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card.tsx";
 import { Repository } from "@/gql/graphql.ts";
 import colors from "@/utils/ghcolors.json";
 import {
-  Circle,
   CircleCheckBig,
   CirclePlus,
+  Expand,
   GitBranch,
+  Minimize,
   Star,
 } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router";
 import {
   Tooltip,
@@ -20,7 +23,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip.tsx";
-import { useState } from "react";
 
 interface RepoCardProps {
   repo: Repository;
@@ -62,29 +64,16 @@ export const RepoCard = ({ repo, handleOpenDialog }: RepoCardProps) => {
       className={`
         w-full 
         relative
-        bg-transparent 
+        bg-gray-800
         shadow-none 
         overflow-hidden 
         transition-all 
-        duration-300 
+        duration-700
         ease-in-out  ${expandedCard === repo.id ? "max-h-[500px]" : "max-h-[200px]"}`}
     >
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {repo?.isPrivate ? (
-              <Circle
-                className="text-gray-500"
-                size={16}
-                aria-label="private repository"
-              />
-            ) : (
-              <Circle
-                className="text-green-500"
-                size={16}
-                aria-label="public repository"
-              />
-            )}
             <CardTitle className="text-white text-lg font-semibold flex gap-2">
               <a href={repo?.url} target="_blank" rel="noreferrer">
                 {repo?.name}
@@ -129,61 +118,57 @@ export const RepoCard = ({ repo, handleOpenDialog }: RepoCardProps) => {
         </div>
       </CardHeader>
       <CardContent className="flex flex-col">
-        <div className="flex flex-wrap gap-2 mb-3">
-          {(repo?.topics ?? []).map((topic) => (
-            <span
-              key={topic}
-              className="px-2 py-1 text-xs rounded bg-blue-100 text-blue-800"
-            >
-              {topic}
-            </span>
-          ))}
+        <div className="flex items-center gap-2 text-white">
+          {repo?.language && (
+            <>
+              <span
+                className="w-3 h-3 rounded-full"
+                style={{
+                  backgroundColor:
+                    jsonColors[repo?.language]?.color ?? "transparent",
+                }}
+              />
+              <div className="text-sm">{repo?.language}</div>
+            </>
+          )}
         </div>
-        <div className="flex items-center justify-between text-sm text-gray-500 mt-auto">
-          <div className="flex items-center gap-2 text-white">
-            {repo?.language && (
-              <>
-                <span
-                  className="w-3 h-3 rounded-full"
-                  style={{
-                    backgroundColor:
-                      jsonColors[repo?.language]?.color ?? "transparent",
-                  }}
-                />
-                <div>{repo?.language}</div>
-              </>
-            )}
-          </div>
-          <div
-            onClick={() => toggleCard(repo.id)}
-            className="absolute left-1/2 cursor-pointer text-blue-400 hover:text-blue-600 transition"
-          >
-            {expandedCard === repo.id ? "Show Less" : "See More"}
-          </div>
-          <div className="text-zinc-500">
-            {repo?.latestActivityDate && (
-              <span>Last activity: {formatDate(repo?.latestActivityDate)}</span>
-            )}
-          </div>
-        </div>
+        <div className="flex items-center justify-between text-sm text-gray-500 mt-auto"></div>
         {expandedCard === repo.id && (
-          <div className="p-4 text-white space-y-3">
+          <div className=" text-white space-y-3">
             <div>
               <strong>Description:</strong>
               <p>{repo.description || "No description available"}</p>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                {/* <strong>Created:</strong> {"Today"} */}
-              </div>
-              <div>
-                {/* <strong>Updated:</strong> {formatDate(repo.updatedAt)} */}
-              </div>
+            <div className="flex flex-wrap gap-2 mb-3">
+              {(repo?.topics ?? []).map((topic) => (
+                <span
+                  key={topic}
+                  className="px-2 py-1 text-xs rounded bg-blue-100 text-blue-800"
+                >
+                  {topic}
+                </span>
+              ))}
             </div>
-            {/* Add more detailed repository information */}
           </div>
         )}
       </CardContent>
+      <CardFooter className="flex justify-between">
+        <div className="text-zinc-200">
+          {repo?.latestActivityDate && (
+            <span>Last activity: {formatDate(repo?.latestActivityDate)}</span>
+          )}
+        </div>
+        <div
+          onClick={() => toggleCard(repo.id)}
+          className="cursor-pointer text-blue-400 hover:text-blue-600 transition"
+        >
+          {expandedCard === repo.id ? (
+            <Minimize size={20} />
+          ) : (
+            <Expand size={20} />
+          )}
+        </div>
+      </CardFooter>
     </Card>
   );
 };

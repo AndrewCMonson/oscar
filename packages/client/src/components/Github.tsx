@@ -107,7 +107,7 @@ export const Github = ({
           </Select>
         </div>
       </div>
-      <div className="h-full flex flex-wrap gap-4 mt-4 content-start ">
+      <div className="h-full flex flex-wrap gap-4 mt-4 content-start">
         {loading && (
           <div className="w-full flex items-center justify-center">
             <Spinner className="w-12 h-12 text-white text-center" />
