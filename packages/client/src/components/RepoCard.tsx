@@ -155,7 +155,7 @@ export const RepoCard = ({ repo, handleOpenDialog }: RepoCardProps) => {
       <CardFooter className="flex justify-between">
         <div className="text-zinc-200">
           {repo?.latestActivityDate && (
-            <span>Last activity: {formatDate(repo?.latestActivityDate)}</span>
+            <span className="text-sm md:text-md">Last activity: {formatDate(repo?.latestActivityDate)}</span>
           )}
         </div>
         <div
