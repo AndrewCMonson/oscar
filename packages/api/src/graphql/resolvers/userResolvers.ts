@@ -93,37 +93,10 @@ export const userResolvers: Resolvers = {
     },
   },
   User: {
-    notificationSettings: async (parent) => {
-      try {
-        const notificationSettings =
-          await prismadb.notificationSettings.findUnique({
-            where: {
-              userId: parent.id,
-            },
-          });
-
-        if (!notificationSettings) {
-          throw new Error(
-            "An error occurred getting the notification settings",
-          );
-        }
-
-        return {
-          ...notificationSettings,
-          user: parent,
-        };
-      } catch (error) {
-        console.error(error);
-        throw new Error("An error occurred getting the notification settings");
-      }
-    },
     preferences: async (parent) => {
       const preferences = await prismadb.userPreferences.findUnique({
         where: {
           userId: parent.id,
-        },
-        include: {
-          integrations: true,
         },
       });
 
@@ -131,21 +104,6 @@ export const userResolvers: Resolvers = {
         throw new Error("An error occurred getting the user preferences");
       }
       return preferences;
-    },
-    memory: async (parent) => {
-      const memory = await prismadb.userMemory.findUnique({
-        where: {
-          userId: parent.id,
-        },
-        include: {
-          memories: true,
-        },
-      });
-
-      if (!memory) {
-        throw new Error("An error occurred getting the user memory");
-      }
-      return memory;
     },
     projects: async (parent) => {
       const projects = await prismadb.project.findMany({

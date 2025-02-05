@@ -26,13 +26,6 @@ export const GetUser = graphql(`
         responseStyle
         preferredLanguage
         timezone
-        integrations {
-          type
-          enabled
-          apiToken
-          baseUrl
-          workspace
-        }
       }
     }
   }

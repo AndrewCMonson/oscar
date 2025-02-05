@@ -39,7 +39,6 @@ export const getContext = async (
           },
         },
         preferences: true,
-        notificationSettings: true,
       },
     });
 
