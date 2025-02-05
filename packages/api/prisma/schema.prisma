@@ -57,13 +57,6 @@ enum ResponseStyle {
   DIRECT
 }
 
-enum IntegrationType {
-  JIRA
-  MOTION
-  NOTION
-  GITHUB
-}
-
 enum ReportingFrequency {
   DAILY
   WEEKLY
@@ -95,12 +88,8 @@ model User {
   githubAccessToken    String?
   conversations        Conversation[]
   projects             Project[]
-  tasks                Task[]
   preferencesId        String?               @unique
-  memoryId             String?               @unique
   preferences          UserPreferences?
-  memory               UserMemory?
-  notificationSettings NotificationSettings?
   Messages              Message[]
   Sessions             Session[]
 }
@@ -115,49 +104,7 @@ model UserPreferences {
   preferredLanguage String            @default("English")
   chatModel         String            @default("GPT-4o")
   timezone          String            @default("America/New_York")
-  integrations      UserIntegration[]
   user              User?             @relation(fields: [userId], references: [id])
-}
-
-model UserIntegration {
-  id        String          @id @default(cuid())
-  type      IntegrationType
-  enabled   Boolean         @default(false)
-  apiToken  String?
-  baseUrl   String?
-  workspace String?
-
-  UserPreferences   UserPreferences? @relation(fields: [userPreferencesId], references: [id])
-  userPreferencesId String?
-}
-
-model NotificationSettings {
-  id     String  @id @default(cuid())
-  email  Boolean @default(true)
-  sms    Boolean @default(false)
-  inApp  Boolean @default(true)
-  user   User    @relation(fields: [userId], references: [id])
-  userId String  @unique
-}
-
-model UserMemory {
-  id          String    @id @default(cuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  userId      String    @unique
-  memories    Memory[]
-  version     Int       @default(1)
-  lastSummary DateTime?
-  user        User?     @relation(fields: [userId], references: [id])
-}
-
-model Memory {
-  id           String     @id @default(cuid())
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  note         String
-  userMemory   UserMemory @relation(fields: [userMemoryId], references: [id])
-  userMemoryId String
 }
 
 model Conversation {
@@ -186,7 +133,6 @@ model Message {
   conversationId  String
   conversation    Conversation? @relation(fields: [conversationId], references: [id])
   taskId          String?
-  task            Task?         @relation(fields: [taskId], references: [id])
   isGlobalContext Boolean       @default(false)
 }
 
@@ -221,7 +167,6 @@ model Project {
   repositoryId   Int?
   userId         String
   user           User            @relation(fields: [userId], references: [id])
-  tasks          Task[]
   conversationId String?
   conversation   Conversation?
   projectContext ProjectContext?
@@ -234,9 +179,7 @@ model ProjectContext {
   projectId   String              @unique
   project     Project             @relation(fields: [projectId], references: [id])
   metadata    ProjectMetadata?
-  goals       ProjectGoal[]
   preferences ProjectPreferences?
-  updates     ProjectUpdate[]
 }
 
 model ProjectMetadata {
@@ -252,24 +195,6 @@ model ProjectMetadata {
   projectContext   ProjectContext? @relation(fields: [projectContextId], references: [id])
 }
 
-model ProjectGoal {
-  id               String          @id @default(cuid())
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  goal             String
-  projectContextId String?
-  projectContext   ProjectContext? @relation(fields: [projectContextId], references: [id])
-}
-
-model ProjectUpdate {
-  id               String          @id @default(cuid())
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  content          String
-  projectContextId String?
-  projectContext   ProjectContext? @relation(fields: [projectContextId], references: [id])
-}
-
 model ProjectPreferences {
   id                 String             @id @default(cuid())
   createdAt          DateTime           @default(now())
@@ -279,24 +204,6 @@ model ProjectPreferences {
   reportingFrequency ReportingFrequency @default(MONTHLY)
   projectContextId   String?            @unique
   projectContext     ProjectContext?    @relation(fields: [projectContextId], references: [id])
-}
-
-model Task {
-  id            String       @id @default(cuid())
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  title         String
-  description   String?
-  status        TaskStatus   @default(TODO)
-  priority      TaskPriority @default(MEDIUM)
-  dueDate       DateTime?
-  projectId     String?
-  project       Project?     @relation(fields: [projectId], references: [id])
-  userId        String
-  user          User         @relation(fields: [userId], references: [id])
-  messages      Message[]
-  jiraTaskId    String?
-  motionEventId String?
 }
 
 model Assistant {

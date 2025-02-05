@@ -8,7 +8,6 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -179,16 +178,6 @@ export enum IntegrationType {
 export type Issue = {
   __typename?: 'Issue';
   title?: Maybe<Scalars['String']['output']>;
-};
-
-export type Memory = {
-  __typename?: 'Memory';
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id: Scalars['ID']['output'];
-  note?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  userMemory?: Maybe<UserMemory>;
-  userMemoryId?: Maybe<Scalars['String']['output']>;
 };
 
 export type Message = {
@@ -529,53 +518,13 @@ export type User = {
   githubAccessToken?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   lastName?: Maybe<Scalars['String']['output']>;
-  memory?: Maybe<UserMemory>;
-  memoryId?: Maybe<Scalars['String']['output']>;
   messages?: Maybe<Array<Maybe<Message>>>;
-  notificationSettings?: Maybe<UserNotificationSettings>;
   preferenceId?: Maybe<Scalars['String']['output']>;
   preferences?: Maybe<UserPreferences>;
   projects?: Maybe<Array<Maybe<Project>>>;
   role?: Maybe<Scalars['String']['output']>;
-  tasks?: Maybe<Array<Maybe<Task>>>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   username?: Maybe<Scalars['String']['output']>;
-};
-
-export type UserIntegration = {
-  __typename?: 'UserIntegration';
-  apiToken?: Maybe<Scalars['String']['output']>;
-  baseUrl?: Maybe<Scalars['String']['output']>;
-  enabled?: Maybe<Scalars['Boolean']['output']>;
-  id: Scalars['ID']['output'];
-  type?: Maybe<IntegrationType>;
-  userPreferences?: Maybe<UserPreferences>;
-  userPreferencesId?: Maybe<Scalars['String']['output']>;
-  workspace?: Maybe<Scalars['String']['output']>;
-};
-
-export type UserMemory = {
-  __typename?: 'UserMemory';
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id: Scalars['ID']['output'];
-  lastSummary?: Maybe<Scalars['DateTime']['output']>;
-  memories?: Maybe<Array<Maybe<Memory>>>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  user?: Maybe<User>;
-  userId?: Maybe<Scalars['String']['output']>;
-  version?: Maybe<Scalars['Int']['output']>;
-};
-
-export type UserNotificationSettings = {
-  __typename?: 'UserNotificationSettings';
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  email?: Maybe<Scalars['Boolean']['output']>;
-  id: Scalars['ID']['output'];
-  inApp?: Maybe<Scalars['Boolean']['output']>;
-  sms?: Maybe<Scalars['Boolean']['output']>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  user?: Maybe<User>;
-  userId?: Maybe<Scalars['String']['output']>;
 };
 
 export type UserPreferences = {
@@ -583,7 +532,6 @@ export type UserPreferences = {
   chatModel?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
-  integrations?: Maybe<Array<Maybe<UserIntegration>>>;
   preferredLanguage?: Maybe<Scalars['String']['output']>;
   responseStyle?: Maybe<ResponseStyle>;
   timezone?: Maybe<Scalars['String']['output']>;
@@ -724,7 +672,6 @@ export type ResolversTypes = ResolversObject<{
   Long: ResolverTypeWrapper<Scalars['Long']['output']>;
   Longitude: ResolverTypeWrapper<Scalars['Longitude']['output']>;
   MAC: ResolverTypeWrapper<Scalars['MAC']['output']>;
-  Memory: ResolverTypeWrapper<MemoryModel>;
   Message: ResolverTypeWrapper<MessageModel>;
   MessageInput: MessageInput;
   MessageSubData: ResolverTypeWrapper<MessageSubData>;
@@ -768,9 +715,6 @@ export type ResolversTypes = ResolversObject<{
   UnsignedFloat: ResolverTypeWrapper<Scalars['UnsignedFloat']['output']>;
   UnsignedInt: ResolverTypeWrapper<Scalars['UnsignedInt']['output']>;
   User: ResolverTypeWrapper<UserModel>;
-  UserIntegration: ResolverTypeWrapper<UserIntegrationsModel>;
-  UserMemory: ResolverTypeWrapper<UserMemoryModel>;
-  UserNotificationSettings: ResolverTypeWrapper<Omit<UserNotificationSettings, 'user'> & { user?: Maybe<ResolversTypes['User']> }>;
   UserPreferences: ResolverTypeWrapper<UserPreferencesModel>;
   UserPreferencesInput: UserPreferencesInput;
   UtcOffset: ResolverTypeWrapper<Scalars['UtcOffset']['output']>;
@@ -829,7 +773,6 @@ export type ResolversParentTypes = ResolversObject<{
   Long: Scalars['Long']['output'];
   Longitude: Scalars['Longitude']['output'];
   MAC: Scalars['MAC']['output'];
-  Memory: MemoryModel;
   Message: MessageModel;
   MessageInput: MessageInput;
   MessageSubData: MessageSubData;
@@ -868,9 +811,6 @@ export type ResolversParentTypes = ResolversObject<{
   UnsignedFloat: Scalars['UnsignedFloat']['output'];
   UnsignedInt: Scalars['UnsignedInt']['output'];
   User: UserModel;
-  UserIntegration: UserIntegrationsModel;
-  UserMemory: UserMemoryModel;
-  UserNotificationSettings: Omit<UserNotificationSettings, 'user'> & { user?: Maybe<ResolversParentTypes['User']> };
   UserPreferences: UserPreferencesModel;
   UserPreferencesInput: UserPreferencesInput;
   UtcOffset: Scalars['UtcOffset']['output'];
@@ -1102,16 +1042,6 @@ export interface LongitudeScalarConfig extends GraphQLScalarTypeConfig<Resolvers
 export interface MacScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['MAC'], any> {
   name: 'MAC';
 }
-
-export type MemoryResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['Memory'] = ResolversParentTypes['Memory']> = ResolversObject<{
-  createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  note?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  userMemory?: Resolver<Maybe<ResolversTypes['UserMemory']>, ParentType, ContextType>;
-  userMemoryId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
 
 export type MessageResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['Message'] = ResolversParentTypes['Message']> = ResolversObject<{
   content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1347,53 +1277,13 @@ export type UserResolvers<ContextType = MiddlewareContext, ParentType extends Re
   githubAccessToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  memory?: Resolver<Maybe<ResolversTypes['UserMemory']>, ParentType, ContextType>;
-  memoryId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   messages?: Resolver<Maybe<Array<Maybe<ResolversTypes['Message']>>>, ParentType, ContextType>;
-  notificationSettings?: Resolver<Maybe<ResolversTypes['UserNotificationSettings']>, ParentType, ContextType>;
   preferenceId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   preferences?: Resolver<Maybe<ResolversTypes['UserPreferences']>, ParentType, ContextType>;
   projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
   role?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  tasks?: Resolver<Maybe<Array<Maybe<ResolversTypes['Task']>>>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   username?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type UserIntegrationResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['UserIntegration'] = ResolversParentTypes['UserIntegration']> = ResolversObject<{
-  apiToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  baseUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  enabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  type?: Resolver<Maybe<ResolversTypes['IntegrationType']>, ParentType, ContextType>;
-  userPreferences?: Resolver<Maybe<ResolversTypes['UserPreferences']>, ParentType, ContextType>;
-  userPreferencesId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  workspace?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type UserMemoryResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['UserMemory'] = ResolversParentTypes['UserMemory']> = ResolversObject<{
-  createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  lastSummary?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  memories?: Resolver<Maybe<Array<Maybe<ResolversTypes['Memory']>>>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  version?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type UserNotificationSettingsResolvers<ContextType = MiddlewareContext, ParentType extends ResolversParentTypes['UserNotificationSettings'] = ResolversParentTypes['UserNotificationSettings']> = ResolversObject<{
-  createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  email?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  inApp?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  sms?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1401,7 +1291,6 @@ export type UserPreferencesResolvers<ContextType = MiddlewareContext, ParentType
   chatModel?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integrations?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserIntegration']>>>, ParentType, ContextType>;
   preferredLanguage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   responseStyle?: Resolver<Maybe<ResolversTypes['ResponseStyle']>, ParentType, ContextType>;
   timezone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1466,7 +1355,6 @@ export type Resolvers<ContextType = MiddlewareContext> = ResolversObject<{
   Long?: GraphQLScalarType;
   Longitude?: GraphQLScalarType;
   MAC?: GraphQLScalarType;
-  Memory?: MemoryResolvers<ContextType>;
   Message?: MessageResolvers<ContextType>;
   MessageSubData?: MessageSubDataResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
@@ -1503,9 +1391,6 @@ export type Resolvers<ContextType = MiddlewareContext> = ResolversObject<{
   UnsignedFloat?: GraphQLScalarType;
   UnsignedInt?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
-  UserIntegration?: UserIntegrationResolvers<ContextType>;
-  UserMemory?: UserMemoryResolvers<ContextType>;
-  UserNotificationSettings?: UserNotificationSettingsResolvers<ContextType>;
   UserPreferences?: UserPreferencesResolvers<ContextType>;
   UtcOffset?: GraphQLScalarType;
   Void?: GraphQLScalarType;

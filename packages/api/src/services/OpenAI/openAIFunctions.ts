@@ -1,8 +1,7 @@
 import {
-  createTask,
   getProjects,
   updateProject,
-  updateUserPreferences,
+  updateUserPreferences
 } from "@api/src/services/index.js";
 import { ToolCallFunctionReturn, ToolCallFunctions } from "@api/types/types.js";
 
@@ -34,15 +33,6 @@ export const handleToolCallFunction = async <T extends keyof ToolCallFunctions>(
         await updateUserPreferences(toolCallFunctionArgs);
 
       return updatedUserPreferences;
-    }
-    case "createTask": {
-      if (!("title" in toolCallFunctionArgs)) {
-        throw new Error("Invalid arguments for createTask");
-      }
-
-      const createdTask = await createTask(toolCallFunctionArgs);
-
-      return createdTask;
     }
     case "getProjects": {
       if (!("userId" in toolCallFunctionArgs)) {

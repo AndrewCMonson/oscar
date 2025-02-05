@@ -7,21 +7,19 @@ import {
   UserPreferences,
 } from "@api/node_modules/.prisma/client";
 import {
-  createTaskParameters,
   getProjectsParameters,
   openAIStructuredOutput,
   updateProjectParameters,
   updateUserPreferenceParameters,
 } from "@api/src/services/OpenAI/index.js";
 import { Endpoints } from "@octokit/types";
-import { User as Auth0User } from "auth0";
+import { User as Auth0User} from "auth0";
 import { Request, Response } from "express";
 import { z } from "zod";
 
 export type UpdateUserPreferenceParameters = z.infer<
   typeof updateUserPreferenceParameters
 >;
-export type CreateTaskParameters = z.infer<typeof createTaskParameters>;
 export type GetProjectsParameters = z.infer<typeof getProjectsParameters>;
 export type UpdateProjectDataParameters = z.infer<
   typeof updateProjectParameters
@@ -30,7 +28,6 @@ export type OpenAIStructuredOutput = z.infer<typeof openAIStructuredOutput>;
 
 export type ToolCallFunctions = {
   updateUserPreferences: UpdateUserPreferenceParameters;
-  createTask: CreateTaskParameters;
   getProjects: GetProjectsParameters;
   updateProjectData: UpdateProjectDataParameters;
 };
@@ -68,7 +65,6 @@ export interface FormattedMessage {
 
 export type ToolCallFunctionArgs =
   | UpdateUserPreferenceParameters
-  | CreateTaskParameters
   | GetProjectsParameters
   | UpdateProjectDataParameters;
 
@@ -128,13 +124,6 @@ export interface AWSSecrets {
 export interface Auth0APIUserWithAccessToken extends Auth0User {
   githubAccessToken: string;
 }
-
-// Response types from Github Service
-// export interface GithubServiceResponse<T = unknown> {
-//   headers: AxiosHeaders;
-//   status: number;
-//   data: T;
-// }
 
 // Github API types
 export type CreateNewRepositoryData =

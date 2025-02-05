@@ -1,6 +1,9 @@
 import { User } from "auth0";
 import axios from "axios";
 import { Auth0APIUserWithAccessToken } from "@api/types/types.js";
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 /**
  * Fetches an Auth0 user by their user ID and retrieves their GitHub access token.
@@ -13,8 +16,8 @@ export const getAuth0User = async (
   userId: string,
 ): Promise<Auth0APIUserWithAccessToken> => {
   const domain = process.env.AUTH0_DOMAIN;
-  const token = process.env.AUTH0_MANAGEMENT_API_TOKEN;
-  const trimmedToken = token?.trim();
+  const accessToken = await getAuth0APIKey();
+  const trimmedToken = accessToken?.trim();
 
   try {
     const { data: userData } = await axios.get<User>(
@@ -61,3 +64,27 @@ export const getAuth0User = async (
     }
   }
 };
+
+export const getAuth0APIKey = async (): Promise<string> => {
+  try {
+    const response = await axios.request({
+      method: 'POST',
+      url: 'https://dev-bcm7n7u27bjemuzy.us.auth0.com/oauth/token',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      data: new URLSearchParams({
+        grant_type: 'client_credentials',
+        client_id: 'PJCHAj5yS7J2L6ULXKTAVl0sQHLcAqpZ',
+        client_secret: process.env.AUTH0_CLIENT_SECRET!,
+        audience: 'https://dev-bcm7n7u27bjemuzy.us.auth0.com/api/v2/'
+      })
+    })
+
+    const { access_token } = response.data
+    
+    return access_token as string
+  } catch (e){
+    console.log(e)
+    throw new Error(`Error fetching Auth0 key: ${e.message}`)
+  }
+}
+

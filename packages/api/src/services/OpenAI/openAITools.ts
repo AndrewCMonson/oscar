@@ -2,9 +2,7 @@ import {
   ProjectPriority,
   ProjectStatus,
   ResponseStyle,
-  TaskPriority,
-  TaskStatus,
-  Tone,
+  Tone
 } from "@prisma/client";
 import { zodFunction } from "openai/helpers/zod.js";
 import { z } from "zod";
@@ -55,29 +53,6 @@ export const updateUserPreferenceParameters = z.object({
   userId: z.string().describe("The user's id"),
 });
 
-export const createTaskParameters = z.object({
-  title: z.string().describe("The name of the project"),
-  status: z
-    .enum([
-      TaskStatus.BLOCKED,
-      TaskStatus.COMPLETED,
-      TaskStatus.IN_PROGRESS,
-      TaskStatus.TODO,
-    ])
-    .describe("The current status of the task"),
-  priority: z
-    .enum([
-      TaskPriority.HIGH,
-      TaskPriority.LOW,
-      TaskPriority.MEDIUM,
-      TaskPriority.URGENT,
-    ])
-    .describe("The priority of the task"),
-  dueDate: z.string().describe("The date the project is due"),
-  projectId: z.string().describe("The project the task is assigned to"),
-  userId: z.string().describe("The userId of the project owner"),
-});
-
 export const updateProjectParameters = z.object({
   id: z.string().describe("The id of the project"),
   startDate: z.string().describe("The date the project starts"),
@@ -112,11 +87,6 @@ export const openAITools = [
     name: "updateUserPreferences",
     parameters: updateUserPreferenceParameters,
     description: "this function is used to update a user's preferences",
-  }),
-  zodFunction({
-    name: "createTask",
-    parameters: createTaskParameters,
-    description: "Used to create a new task",
   }),
   zodFunction({
     name: "getProjects",

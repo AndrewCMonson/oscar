@@ -1,12 +1,11 @@
 import { prismadb } from "@api/src/config/db.js";
 import { initialLLMPrompt } from "@api/src/utils/index.js";
 import {
-  IntegrationType,
   ProjectPriority,
   ProjectStatus,
   ReportingFrequency,
   ResponseStyle,
-  Tone,
+  Tone
 } from "@prisma/client";
 
 export const seed = async (): Promise<void> => {
@@ -64,31 +63,11 @@ export const seed = async (): Promise<void> => {
                 priority: ProjectPriority.LOW,
               },
             },
-            goals: {
-              create: [
-                {
-                  goal: "Create a user friendly CRM/ATS system",
-                },
-                {
-                  goal: "Integrate with LinkedIn and Dice",
-                },
-              ],
-            },
             preferences: {
               create: {
                 responseStyle: ResponseStyle.CONVERSATIONAL,
                 reportingFrequency: ReportingFrequency.WEEKLY,
               },
-            },
-            updates: {
-              create: [
-                {
-                  content: "Created project overview document in Notion",
-                },
-                {
-                  content: "Created project timeline in Jira",
-                },
-              ],
             },
           },
         },
@@ -100,37 +79,11 @@ export const seed = async (): Promise<void> => {
         responseStyle: ResponseStyle.CONVERSATIONAL,
         userId: user.id,
         timezone: "America/New York",
-        integrations: {
-          create: {
-            type: IntegrationType.GITHUB,
-            enabled: true,
-            apiToken: "jira-api",
-            baseUrl: "https://jira.com",
-          },
-        },
-      },
-    });
-    const userMemory = await prismadb.userMemory.create({
-      data: {
-        userId: user.id,
-        memories: {
-          createMany: {
-            data: [
-              {
-                note: "I need to finish the CRM/ATS project by the end of the year",
-              },
-              {
-                note: "I have a meeting with the team on Monday to discuss the project timeline",
-              },
-            ],
-          },
-        },
       },
     });
 
     console.log("Seeded project", project);
     console.log("Seeded user", user);
-    console.log("Seeded userMemory", userMemory);
     console.log("Seeded assistant", assistant);
     console.log("Seeded userPreferences", userPreferences);
   } catch (e) {

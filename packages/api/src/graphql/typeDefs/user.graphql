@@ -12,12 +12,8 @@ type User {
   messages: [Message]
   conversations: [Conversation]
   projects: [Project]
-  tasks: [Task]
   preferenceId: String
-  memoryId: String
   preferences: UserPreferences
-  memory: UserMemory
-  notificationSettings: UserNotificationSettings
 }
 
 type UserPreferences {
@@ -30,7 +26,6 @@ type UserPreferences {
   preferredLanguage: String
   chatModel: String
   timezone: String
-  integrations: [UserIntegration]
 }
 
 input UserPreferencesInput {
@@ -39,48 +34,6 @@ input UserPreferencesInput {
   preferredLanguage: String
   chatModel: String
   timezone: String
-}
-
-type UserIntegration {
-  id: ID!
-  type: IntegrationType
-  enabled: Boolean
-  apiToken: String
-  baseUrl: String
-  workspace: String
-  userPreferencesId: String
-  userPreferences: UserPreferences
-}
-
-type UserNotificationSettings {
-  id: ID!
-  createdAt: DateTime
-  updatedAt: DateTime
-  userId: String
-  email: Boolean
-  sms: Boolean
-  inApp: Boolean
-  user: User
-}
-
-type UserMemory {
-  id: ID!
-  createdAt: DateTime
-  updatedAt: DateTime
-  userId: String
-  memories: [Memory]
-  version: Int
-  lastSummary: DateTime
-  user: User
-}
-
-type Memory {
-  id: ID!
-  createdAt: DateTime
-  updatedAt: DateTime
-  note: String
-  userMemory: UserMemory
-  userMemoryId: String
 }
 
 type Query {
