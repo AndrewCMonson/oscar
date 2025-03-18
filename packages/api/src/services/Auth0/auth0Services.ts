@@ -82,9 +82,14 @@ export const getAuth0APIKey = async (): Promise<string> => {
     const { access_token } = response.data
     
     return access_token as string
-  } catch (e){
-    console.log(e)
-    throw new Error("error fetching auth0 key")
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      console.log(e);
+      throw new Error(`Error fetching auth0 key: ${e.message}`);
+    } else {
+      console.log(e);
+      throw new Error("Error fetching auth0 key");
+    }
   }
 }
 
